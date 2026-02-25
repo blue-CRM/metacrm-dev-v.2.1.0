@@ -68,7 +68,7 @@
                           <!-- rows -->
                           <div class="space-y-5 pb-5">
                             <div
-                                v-for="row in filteredRowsSorted"
+                                v-for="row in secRowsSorted(sec.key)"
                                 :key="sec.key + '-' + row.key"
                                 class="grid items-center gap-3 min-w-0"
                                 :style="{ gridTemplateColumns: `${labelColWidth}px 1fr` }"
@@ -95,7 +95,7 @@
                                   <!-- 보조선: 트랙 내부 레이어 (배경 위, 색막대 아래) -->
                                   <div class="pointer-events-none absolute inset-[1px] z-10" aria-hidden="true">
                                     <div
-                                        v-for="tick in ticks"
+                                        v-for="tick in ticksOf(sec.key)"
                                         :key="sec.key + '-' + row.key + '-guide-' + tick"
                                         class="absolute top-0 bottom-0 bg-gray-200 dark:bg-gray-700"
                                         :style="{ left: tickInnerLeftPx(sec.key, tick) + 'px', width: '1px', transform: 'translateZ(0)' }"
@@ -104,14 +104,27 @@
 
                                   <!-- 막대는 보조선 위 -->
                                   <div class="relative z-20 flex flex-col">
-                                    <!-- 위: PartitionBar -->
+<!--                                    &lt;!&ndash; 위: PartitionBar &ndash;&gt;-->
+<!--                                    <div class="h-4 w-full">-->
+<!--                                      <div class="flex h-full">-->
+<!--                                        <div-->
+<!--                                            v-for="seg in partitionSegs(row.total)"-->
+<!--                                            :key="sec.key + '-' + row.key + '-p-' + seg.from"-->
+<!--                                            class="h-full"-->
+<!--                                            :style="{ width: pctX(seg.value) + '%', backgroundColor: seg.color }"-->
+<!--                                        />-->
+<!--                                        <div class="flex-1" />-->
+<!--                                      </div>-->
+<!--                                    </div>-->
+                                    <!-- 위: PartitionBar (단색 버킷) -->
                                     <div class="h-4 w-full">
                                       <div class="flex h-full">
                                         <div
-                                            v-for="seg in partitionSegs(row.total)"
-                                            :key="sec.key + '-' + row.key + '-p-' + seg.from"
                                             class="h-full"
-                                            :style="{ width: pctX(seg.value) + '%', backgroundColor: seg.color }"
+                                            :style="{
+                                              width: pctX(sec.key, row.total) + '%',
+                                              backgroundColor: bucketColor(row.total),
+                                            }"
                                         />
                                         <div class="flex-1" />
                                       </div>
@@ -123,7 +136,7 @@
                                         <!-- A(파란색) -->
                                         <div
                                             class="relative h-full overflow-hidden"
-                                            :style="{ width: pctX(row.a) + '%', backgroundColor: '#3B82F6' }"
+                                            :style="{ width: pctX(sec.key, row.a) + '%', backgroundColor: '#3B82F6' }"
                                         >
                                           <div
                                               v-if="showBluePct(sec.key, row)"
@@ -136,7 +149,7 @@
                                         <!-- B(초록색) = b+c -->
                                         <div
                                             class="relative h-full overflow-hidden"
-                                            :style="{ width: pctX(Number(row.b || 0) + Number(row.c || 0)) + '%', backgroundColor: '#22C55E' }"
+                                            :style="{ width: pctX(sec.key, Number(row.b||0)+Number(row.c||0)) + '%', backgroundColor: '#22C55E' }"
                                         >
                                           <div
                                               v-if="showGreenPct(sec.key, row)"
@@ -154,7 +167,7 @@
                                   <!-- 총액 라벨 -->
                                   <div
                                       class="absolute top-1/2 z-30 -translate-y-1/2 text-xs font-semibold text-gray-700 dark:text-gray-200"
-                                      :style="endLabelStyle(row.total)"
+                                      :style="endLabelStyle(sec.key, row.total)"
                                   >
                                     {{ money(row.total) }}
                                   </div>
@@ -175,7 +188,7 @@
                               <div />
                               <div class="relative h-6" :ref="el => setAxisTrackEl(sec.key, el)">
                                 <div
-                                    v-for="tick in ticks"
+                                    v-for="tick in ticksOf(sec.key)"
                                     :key="sec.key + '-tickLabel-' + tick"
                                     class="absolute -translate-x-1/2 text-xs text-gray-400"
                                     :style="{ left: tickAxisLeftPx(sec.key, tick) + 'px' }"
@@ -213,7 +226,7 @@
 
                         <tbody>
                         <tr
-                            v-for="(r, idx) in topRanks"
+                            v-for="(r, idx) in secTopRanks(sec.key)"
                             :key="sec.key + '-rank-' + r.key"
                             :class="idx === 0 ? 'bg-sky-100/70 dark:bg-sky-900/25' : 'bg-white dark:bg-gray-900/10'"
                             class="border-t border-gray-200 dark:border-gray-800"
@@ -230,7 +243,7 @@
                           </td>
                         </tr>
 
-                        <tr v-if="topRanks.length === 0" class="border-t border-gray-200 dark:border-gray-800">
+                        <tr v-if="secTopRanks(sec.key).length === 0" class="border-t border-gray-200 dark:border-gray-800">
                           <td colspan="3" class="px-3 py-6 text-center text-sm text-gray-400">
                             데이터 없음
                           </td>
@@ -293,11 +306,12 @@
 </template>
 
 <script setup>
-import { computed, ref, onBeforeUnmount, nextTick } from 'vue'
+import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import PageBreadcrumb from '@/components/common/PageBreadcrumb.vue'
 import { UsersIcon, UserIcon } from '@heroicons/vue/24/outline'
 import { BuildingStorefrontIcon } from '@heroicons/vue/24/solid'
+import api from '@/plugins/axios.js'
 
 /** 섹션 */
 const sections = [
@@ -317,91 +331,115 @@ function rankTitle(secKey) {
 const viewMode = ref('BRANCH')
 const includeResigned = ref(false)
 
-/** DB 구간(보조선/색상) */
-const partitionStops = ref([3000, 5000, 7000, 10000, 12000])
-const partitionColors = ref([
-  '#9CA3AF',
-  '#A7826D',
-  '#F59E0B',
-  '#FBBF24',
-  '#60A5FA',
-  '#34D399',
-])
+// PartitionBar 구간(서버 값으로 덮어씀)
+const partitionStops = ref([])
+const partitionColors = ref([])
 
-/** 더미데이터 */
-const DUMMY = {
-  BRANCH: [
-    { key: 'b1', label: 'A지점', a: 2500, b: 8800, c: 0, resigned: false },
-    { key: 'b2', label: 'B지점', a: 2000, b: 1400, c: 200, resigned: false },
-    { key: 'b3', label: 'C지점', a: 1600, b: 1000, c: 200, resigned: false },
-    { key: 'b4', label: '강남구지점', a: 1100, b: 650, c: 150, resigned: false },
-    { key: 'b5', label: '송파지점', a: 500, b: 620, c: 100, resigned: false },
-    { key: 'b6', label: '마포합정지점', a: 420, b: 380, c: 60, resigned: false },
-    { key: 'b7', label: '분당서현지점', a: 350, b: 240, c: 40, resigned: false },
-    { key: 'b8', label: '부산해운대지점', a: 280, b: 160, c: 30, resigned: false },
-    { key: 'b9', label: '대구동성로지점', a: 180, b: 90, c: 20, resigned: false },
-    { key: 'b10', label: '운영지원', a: 60, b: 120, c: 20, resigned: false },
-    { key: 'b11', label: '테스트지점1', a: 30, b: 50, c: 10, resigned: false },
-    { key: 'b12', label: '테스트지점2', a: 10, b: 20, c: 5, resigned: true },
-  ],
-  TEAM: [
-    { key: 't1', label: '1팀', a: 1800, b: 2600, c: 600, resigned: false },
-    { key: 't2', label: '2팀', a: 1400, b: 1700, c: 300, resigned: false },
-    { key: 't3', label: '3팀', a: 700, b: 850, c: 150, resigned: false },
-    { key: 't4', label: '4팀', a: 500, b: 650, c: 100, resigned: false },
-    { key: 't5', label: '운영지원팀', a: 60, b: 120, c: 20, resigned: false },
-    { key: 't6', label: '교육지원팀', a: 40, b: 70, c: 10, resigned: false },
-    { key: 't7', label: '디자인지원팀', a: 20, b: 30, c: 5, resigned: false },
-    { key: 't8', label: '외주관리팀', a: 10, b: 15, c: 3, resigned: false },
-    { key: 't9', label: '퇴사팀', a: 100, b: 50, c: 10, resigned: true },
-  ],
-  PERSON: [
-    { key: 'p1', label: '홍길동', a: 1200, b: 900, c: 300, resigned: false },
-    { key: 'p2', label: '김철수', a: 1000, b: 700, c: 200, resigned: false },
-    { key: 'p3', label: '이영희', a: 800, b: 550, c: 150, resigned: true },
-    { key: 'p4', label: '박민수', a: 650, b: 450, c: 120, resigned: false },
-    { key: 'p5', label: '최지은', a: 480, b: 300, c: 60, resigned: false },
-    { key: 'p6', label: '한지원', a: 350, b: 220, c: 30, resigned: false },
-    { key: 'p7', label: '오세훈', a: 240, b: 140, c: 20, resigned: false },
-    { key: 'p8', label: '정민윤', a: 120, b: 70, c: 10, resigned: false },
-    { key: 'p9', label: '테스트사용자A', a: 40, b: 30, c: 10, resigned: false },
-    { key: 'p10', label: '테스트사용자B', a: 15, b: 10, c: 5, resigned: false },
-  ],
+function bucketIndex(total) {
+  const t = Number(total || 0)
+  const stops = [...(partitionStops.value || [])].sort((a, b) => a - b)
+
+  for (let i = 0; i < stops.length; i++) {
+    if (t <= stops[i]) return i
+  }
+  return stops.length // 마지막 구간(최대 초과)
+}
+function bucketColor(total) {
+  const colors = partitionColors.value || []
+  const i = bucketIndex(total)
+
+  // 이상 케이스 대비: i번째 없으면 마지막 색, 그것도 없으면 회색
+  return colors[i] || colors[colors.length - 1] || '#D1D5DB'
+}
+// function partitionSegs(secKey, total) {
+//   const t = Number(total || 0)
+//   const stops = [...(partitionStops.value || [])].sort((a, b) => a - b)
+//   const bounds = [0, ...stops, Infinity]
+//   const colors = partitionColors.value || []
+//
+//   const out = []
+//   for (let i = 0; i < bounds.length - 1; i++) {
+//     const from = bounds[i]
+//     const to = bounds[i + 1]
+//     const val = Math.max(0, Math.min(t, to) - from)
+//     if (val <= 0) continue
+//     out.push({ from, to, value: val, color: colors[i] || '#D1D5DB' })
+//   }
+//   return out
+// }
+
+/** 통계 데이터 */
+const dashboard = ref(null)
+
+function normalizeRows(rows) {
+  const arr = Array.isArray(rows) ? rows : []
+  return arr.map(r => {
+    const a = Number(r.a || 0)
+    const b = Number(r.b || 0)
+    const c = Number(r.c || 0)
+    const total = Number(r.total ?? (a + b + c))
+    return { ...r, a, b, c, total, resigned: !!r.resigned }
+  })
 }
 
-const rows = computed(() => {
-  const arr = DUMMY[viewMode.value] ?? []
-  return arr.map(r => ({
-    ...r,
-    total: Number(r.a || 0) + Number(r.b || 0) + Number(r.c || 0),
-  }))
-})
+async function fetchDashboard() {
+  const params = {
+    viewMode: viewMode.value,                 // BRANCH | TEAM | PERSON
+    includeResigned: includeResigned.value,   // true/false
+    // dateFrom/dateTo UI 붙이면 여기 추가
+    // dateFrom: dateFrom.value || undefined,
+    // dateTo: dateTo.value || undefined,
+  }
 
-const filteredRows = computed(() => rows.value.filter(r => (includeResigned.value ? true : !r.resigned)))
-const filteredRowsSorted = computed(() => [...filteredRows.value].sort((a, b) => b.total - a.total))
+  const { data } = await api.get('/api/work/sales/dashboard', { params })
 
-/** 스케일 */
-const maxValue = computed(() => {
-  const rowMax = Math.max(1, ...filteredRowsSorted.value.map(r => r.total))
-  return Math.ceil(rowMax * 1.15) // 15% 여유
-})
-// const maxValue = computed(() => {
-//   const rowMax = Math.max(1, ...filteredRowsSorted.value.map(r => r.total))
-//   const stopMax = Math.max(0, ...partitionStops.value)
-//   const m = Math.max(rowMax, stopMax)
-//   const step = 1000
-//   const pad = Math.max(m * 0.08, m > 1000 ? 300 : 100)
-//   return Math.ceil((m + pad) / step) * step
-// })
+  dashboard.value = {
+    ...data,
+    month: { ...data.month, rows: normalizeRows(data?.month?.rows), topRanks: data?.month?.topRanks || [] },
+    range: { ...data.range, rows: normalizeRows(data?.range?.rows), topRanks: data?.range?.topRanks || [] },
+    all:   { ...data.all,   rows: normalizeRows(data?.all?.rows),   topRanks: data?.all?.topRanks   || [] },
+  }
 
-/** 눈금 */
-const ticks = computed(() => {
-  const m = maxValue.value
+  partitionStops.value = data?.partitionStops || []
+  partitionColors.value = data?.partitionColors || []
+}
+
+function endLabelStyle(secKey, total) {
+  const p = pctX(secKey, total)
+  if (p > 92) return { right: '0px', paddingRight: '6px' }
+  return { left: `calc(${p}% + 8px)` }
+}
+
+function secRows(secKey) {
+  const base = dashboard.value?.[secKey]?.rows || []
+  // includeResigned는 서버에 이미 반영되지만, 방어로 한 번 더 걸어도 됨
+  return includeResigned.value ? base : base.filter(r => !r.resigned)
+}
+
+function secRowsSorted(secKey) {
+  return [...secRows(secKey)].sort((a, b) => b.total - a.total)
+}
+
+function secTopRanks(secKey) {
+  return dashboard.value?.[secKey]?.topRanks || []
+}
+
+function maxValueOf(secKey) {
+  const rows = secRowsSorted(secKey)
+  const rowMax = Math.max(1, ...rows.map(r => r.total))
+  const stopMax = Math.max(0, ...(partitionStops.value || []))
+  const m = Math.max(rowMax, stopMax)
+  return Math.ceil(m * 1.15)
+}
+
+function ticksOf(secKey) {
+  const m = maxValueOf(secKey)
   return (partitionStops.value || []).filter(v => v > 0 && v < m)
-})
+}
 
-function pctX(v) {
-  return Math.max(0, Math.min(100, (Number(v || 0) / maxValue.value) * 100))
+function pctX(secKey, v) {
+  const m = maxValueOf(secKey)
+  return Math.max(0, Math.min(100, (Number(v || 0) / m) * 100))
 }
 
 function money(n) {
@@ -414,34 +452,6 @@ function percent(part, total) {
   if (!t) return '0%'
   return `${Math.round((Number(part || 0) / t) * 100)}%`
 }
-
-/** PartitionBar */
-function partitionSegs(total) {
-  const t = Number(total || 0)
-  const stops = [...(partitionStops.value || [])].sort((a, b) => a - b)
-  const bounds = [0, ...stops, Infinity]
-  const colors = partitionColors.value || []
-
-  const out = []
-  for (let i = 0; i < bounds.length - 1; i++) {
-    const from = bounds[i]
-    const to = bounds[i + 1]
-    const val = Math.max(0, Math.min(t, to) - from)
-    if (val <= 0) continue
-    out.push({ from, to, value: val, color: colors[i] || '#D1D5DB' })
-  }
-  return out
-}
-
-/** 총액 라벨 위치 */
-function endLabelStyle(total) {
-  const p = pctX(total)
-  if (p > 92) return { right: '0px', paddingRight: '6px' }
-  return { left: `calc(${p}% + 8px)` }
-}
-
-/** 상위 3명 */
-const topRanks = computed(() => filteredRowsSorted.value.slice(0, 3))
 
 /** 버튼 스타일 */
 function modeBtnClass(active) {
@@ -512,7 +522,7 @@ function innerW(secKey) {
 function valueToInnerPx(secKey, v) {
   const w = innerW(secKey)
   if (!w) return 0
-  const ratio = Math.max(0, Math.min(1, Number(v || 0) / maxValue.value))
+  const ratio = Math.max(0, Math.min(1, Number(v || 0) / maxValueOf(secKey)))
   return Math.round(ratio * w)
 }
 function tickInnerLeftPx(secKey, tick) {
@@ -632,6 +642,16 @@ function openTipAt(e, row) {
 let closeTimer = null
 const CLOSE_DELAY_MS = 200
 
+function closeTip() {
+  if (closeTimer) {
+    clearTimeout(closeTimer)
+    closeTimer = null
+  }
+  tooltip.value.open = false
+  tooltip.value.rowKey = ''
+  tipBoundsRect = null
+}
+
 function closeTipDelayed() {
   if (closeTimer) return
 
@@ -703,6 +723,12 @@ document.addEventListener('click', onDocClick)
 document.addEventListener('keydown', onKeyDown)
 document.addEventListener('mousemove', onMouseMove)
 document.addEventListener('scroll', onAnyScroll, true)
+
+onMounted(fetchDashboard)
+
+watch([viewMode, includeResigned], () => {
+  fetchDashboard()
+})
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', onDocClick)

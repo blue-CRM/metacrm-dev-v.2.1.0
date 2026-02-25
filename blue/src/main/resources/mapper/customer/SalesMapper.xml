@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.blue.sales.mapper.SalesMapper">
+
+  <!-- 로그인 사용자 컨텍스트(로그인만 확인용) -->
+  <select id="findUserContextByEmail" resultType="com.blue.customer.all.dto.UserContextDto">
+    SELECT
+      u.user_id              AS userId,
+      u.user_role            AS role,
+      u.center_id            AS centerId,
+      u.user_email           AS email,
+      u.manager_phone_access AS visible
+    FROM users u
+    WHERE u.user_email = #{email}
+    LIMIT 1
+  </select>
+
+  <!-- PartitionBar 구간 -->
+  <select id="findSalesPartitions" resultType="com.blue.sales.dto.SalesPartitionRow">
+    SELECT
+      partition_id   AS partitionId,
+      partition_type AS partitionType,
+      segment        AS segment,
+      name           AS name,
+      color          AS color
+    FROM sales_partitions
+    WHERE partition_type = #{partitionType}
+    ORDER BY segment ASC
+  </select>
+
+  <!-- rows 집계 -->
+  <select id="findAggRows" resultType="com.blue.sales.dto.SalesAggRowDto">
+    WITH
+    base AS (
+      SELECT
+        c.customer_id   AS customerId,
+        u.user_id       AS userId,
+        u.user_name     AS userName,
+        u.user_approved AS userApproved,
+        ce.center_id    AS centerId,
+        ce.center_name  AS centerName,
+        b.branch_id     AS branchId,
+        b.branch_name   AS branchName
+      FROM customers c
+      JOIN users u ON u.user_id = c.user_id
+      LEFT JOIN centers ce ON ce.center_id = u.center_id
+      LEFT JOIN branches b ON b.branch_id = ce.branch_id
+      WHERE c.user_id IS NOT NULL
+        AND u.center_id IS NOT NULL
+        AND u.center_id &lt;&gt; 1
+        <if test="includeResigned == false">
+          AND u.user_approved &lt;&gt; 'X'
+        </if>
+    ),
+
+    -- ✅ endTs 기준 마지막 RESET (reset anchor)
+    reset_anchor AS (
+      SELECT customer_id, MAX(log_id) AS reset_log_id
+      FROM sales_logs
+      WHERE sales_type = 'RESET'
+        AND action_at &lt; #{endTs}
+      GROUP BY customer_id
+    ),
+
+    -- endTs 직전 최신 INITIAL/UPSELL (reset anchor 이후)
+    initial_end_id AS (
+      SELECT sl.customer_id, MAX(sl.log_id) AS log_id
+      FROM sales_logs sl
+      LEFT JOIN reset_anchor r ON r.customer_id = sl.customer_id
+      WHERE sl.sales_type = 'INITIAL'
+        AND sl.action_at &lt; #{endTs}
+        AND sl.log_id &gt; IFNULL(r.reset_log_id, 0)
+      GROUP BY sl.customer_id
+    ),
+    initial_end AS (
+      SELECT i.customer_id, l.amount
+      FROM initial_end_id i
+      JOIN sales_logs l ON l.log_id = i.log_id
+    ),
+    upsell_end_id AS (
+      SELECT sl.customer_id, MAX(sl.log_id) AS log_id
+      FROM sales_logs sl
+      LEFT JOIN reset_anchor r ON r.customer_id = sl.customer_id
+      WHERE sl.sales_type = 'UPSELL'
+        AND sl.action_at &lt; #{endTs}
+        AND sl.log_id &gt; IFNULL(r.reset_log_id, 0)
+      GROUP BY sl.customer_id
+    ),
+    upsell_end AS (
+      SELECT u.customer_id, l.amount
+      FROM upsell_end_id u
+      JOIN sales_logs l ON l.log_id = u.log_id
+    ),
+
+    -- startTs 직전 최신 INITIAL/UPSELL (같은 reset anchor 이후)
+    initial_start_id AS (
+      SELECT sl.customer_id, MAX(sl.log_id) AS log_id
+      FROM sales_logs sl
+      LEFT JOIN reset_anchor r ON r.customer_id = sl.customer_id
+      WHERE sl.sales_type = 'INITIAL'
+        AND sl.action_at &lt; #{startTs}
+        AND sl.log_id &gt; IFNULL(r.reset_log_id, 0)
+      GROUP BY sl.customer_id
+    ),
+    initial_start AS (
+      SELECT i.customer_id, l.amount
+      FROM initial_start_id i
+      JOIN sales_logs l ON l.log_id = i.log_id
+    ),
+    upsell_start_id AS (
+      SELECT sl.customer_id, MAX(sl.log_id) AS log_id
+      FROM sales_logs sl
+      LEFT JOIN reset_anchor r ON r.customer_id = sl.customer_id
+      WHERE sl.sales_type = 'UPSELL'
+        AND sl.action_at &lt; #{startTs}
+        AND sl.log_id &gt; IFNULL(r.reset_log_id, 0)
+      GROUP BY sl.customer_id
+    ),
+    upsell_start AS (
+      SELECT u.customer_id, l.amount
+      FROM upsell_start_id u
+      JOIN sales_logs l ON l.log_id = u.log_id
+    )
+
+    SELECT
+      <!-- key -->
+      <choose>
+        <when test="viewMode == 'BRANCH'">
+          CONCAT('b', IFNULL(b.branchId, 0)) AS `key`,
+        </when>
+        <when test="viewMode == 'TEAM'">
+          CONCAT('t', IFNULL(b.centerId, 0)) AS `key`,
+        </when>
+        <otherwise>
+          CONCAT('p', b.userId) AS `key`,
+        </otherwise>
+      </choose>
+
+      <!-- label -->
+      <choose>
+        <when test="viewMode == 'BRANCH'">
+          IFNULL(b.branchName, '') AS label,
+        </when>
+        <when test="viewMode == 'TEAM'">
+          IFNULL(b.centerName, '') AS label,
+        </when>
+        <otherwise>
+          IFNULL(b.userName, '') AS label,
+        </otherwise>
+      </choose>
+
+      -- a,b,c (c는 일단 0)
+      SUM(GREATEST(0, IFNULL(ie.amount, 0) - IFNULL(is1.amount, 0))) AS a,
+      SUM(GREATEST(0, IFNULL(ue.amount, 0) - IFNULL(us1.amount, 0))) AS b,
+      0 AS c,
+
+      -- resigned: PERSON만 의미있게(팀/지점은 false로 고정)
+      <choose>
+        <when test="viewMode == 'PERSON'">
+          CASE WHEN MAX(b.userApproved = 'X') = 1 THEN 1 ELSE 0 END AS resigned
+        </when>
+        <otherwise>
+          0 AS resigned
+        </otherwise>
+      </choose>
+
+    FROM base b
+    LEFT JOIN initial_end   ie  ON ie.customer_id  = b.customerId
+    LEFT JOIN initial_start is1 ON is1.customer_id = b.customerId
+    LEFT JOIN upsell_end    ue  ON ue.customer_id  = b.customerId
+    LEFT JOIN upsell_start  us1 ON us1.customer_id = b.customerId
+
+    <choose>
+      <when test="viewMode == 'BRANCH'">
+        GROUP BY CONCAT('b', IFNULL(b.branchId, 0)), IFNULL(b.branchName, '')
+      </when>
+      <when test="viewMode == 'TEAM'">
+        GROUP BY CONCAT('t', IFNULL(b.centerId, 0)), IFNULL(b.centerName, '')
+      </when>
+      <otherwise>
+        GROUP BY CONCAT('p', b.userId), IFNULL(b.userName, '')
+      </otherwise>
+    </choose>
+
+    ORDER BY (SUM(GREATEST(0, IFNULL(ie.amount, 0) - IFNULL(is1.amount, 0)))
+           +  SUM(GREATEST(0, IFNULL(ue.amount, 0) - IFNULL(us1.amount, 0)))) DESC
+  </select>
+
+</mapper>
