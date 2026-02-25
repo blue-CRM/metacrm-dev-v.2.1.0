@@ -108,6 +108,7 @@ export const useAuthStore = defineStore('auth', {
             try {
                 // 서버 응답: { accessToken, refreshToken: null, role, email, name, Exp }
                 const { data } = await axios.post('/api/auth/login', payload, { withCredentials: true })
+                // const ret = await axios.post('/api/auth/login', payload, { withCredentials: true })
 
                 // 사용자 정보 초기화
                 this.setAuth(data)
