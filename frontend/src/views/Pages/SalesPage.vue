@@ -306,11 +306,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
+import { computed, ref, onMounted, watch, onBeforeUnmount } from 'vue'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import PageBreadcrumb from '@/components/common/PageBreadcrumb.vue'
 import { UsersIcon, UserIcon } from '@heroicons/vue/24/outline'
 import { BuildingStorefrontIcon } from '@heroicons/vue/24/solid'
+import { useAuthStore } from '@/stores/auth.js'
+import { globalFilters } from '@/composables/globalFilters.js'
 import api from '@/plugins/axios.js'
 
 /** 섹션 */
@@ -382,13 +384,22 @@ function normalizeRows(rows) {
   })
 }
 
+let dateWatchTimer = null
+
+watch(
+    () => [globalFilters.dateFrom, globalFilters.dateTo],
+    () => {
+      if (dateWatchTimer) clearTimeout(dateWatchTimer)
+      dateWatchTimer = setTimeout(() => fetchDashboard(), 150)
+    }
+)
+
 async function fetchDashboard() {
   const params = {
-    viewMode: viewMode.value,                 // BRANCH | TEAM | PERSON
-    includeResigned: includeResigned.value,   // true/false
-    // dateFrom/dateTo UI 붙이면 여기 추가
-    // dateFrom: dateFrom.value || undefined,
-    // dateTo: dateTo.value || undefined,
+    viewMode: viewMode.value, // BRANCH | TEAM | PERSON
+    includeResigned: includeResigned.value, // true/false
+    dateFrom: globalFilters.dateFrom || undefined,
+    dateTo: globalFilters.dateTo || undefined,
   }
 
   const { data } = await api.get('/api/work/sales/dashboard', { params })
