@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import com.blue.global.exception.AuthException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,9 +21,11 @@ import java.util.List;
 public class SalesService {
   
   private final SalesMapper mapper;
+  private final SalesMailService mailService;
   
   private static final ZoneId KST = ZoneId.of("Asia/Seoul");
   private static final DateTimeFormatter TS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+  private static final DateTimeFormatter SUBJECT_TS = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
   
   private UserContextDto requireMe(String callerEmail) {
     UserContextDto me = mapper.findUserContextByEmail(callerEmail);
@@ -113,5 +116,42 @@ public class SalesService {
         .resigned(r.getResigned())
         .total(r.getTotal())
         .build()).toList();
+  }
+  
+  public void sendSnapshotEmail(
+      String callerEmail,
+      SalesSnapshotMeta meta,
+      MultipartFile month,
+      MultipartFile range,
+      MultipartFile all
+  ) {
+    UserContextDto me = requireMe(callerEmail);
+    
+    if (!"SUPERADMIN".equals(me.getRole())) {
+      throw new AuthException("관리자만 스냅샷 촬영이 가능합니다.", HttpStatus.FORBIDDEN);
+    }
+    
+    meta = (meta == null) ? new SalesSnapshotMeta() : meta;
+    
+    String now = LocalDateTime.now(KST).format(SUBJECT_TS);
+    String subject = "매출현황 스냅샷 - " + now;
+    
+    String text =
+        "매출현황 스냅샷입니다.\n"
+            + "viewMode=" + nvl(meta.getViewMode()) + "\n"
+            + "includeResigned=" + (Boolean.TRUE.equals(meta.getIncludeResigned()) ? "true" : "false") + "\n"
+            + "dateFrom=" + nvl(meta.getDateFrom()) + "\n"
+            + "dateTo=" + nvl(meta.getDateTo()) + "\n";
+    
+    mailService.sendSalesSnapshot(
+        me.getEmail(),
+        subject,
+        text,
+        month, range, all
+    );
+  }
+  
+  private String nvl(String s) {
+    return (s == null) ? "" : s.trim();
   }
 }

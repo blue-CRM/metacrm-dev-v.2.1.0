@@ -30,7 +30,7 @@
               <div class="flex items-center gap-2">
                 <button
                     class="inline-flex h-11 items-center gap-2 rounded-lg border border-gray-200 px-4 text-sm font-medium text-gray-600
-             hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                        hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
                     @click="includeResigned = !includeResigned"
                 >
                   퇴사자 포함
@@ -39,7 +39,9 @@
 
                 <button
                     class="inline-flex h-11 items-center gap-2 rounded-lg border border-gray-200 px-4 text-sm font-medium text-gray-600
-             hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                          hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                    :disabled="!canSnapshot || snapshotLoading"
+                    @click="onSnapshot"
                 >
                   스냅샷 촬영
                 </button>
@@ -49,7 +51,7 @@
             <hr />
 
             <!-- 섹션 3개 -->
-            <div v-for="sec in sections" :key="sec.key" class="space-y-3">
+            <div v-for="sec in sections" :key="sec.key" class="space-y-3" :ref="el => setShotEl(sec.key, el)" :data-shot-key="sec.key">
               <div class="mt-5 text-sm font-semibold text-gray-700 dark:text-gray-200">
                 {{ sec.title }}
               </div>
@@ -62,48 +64,62 @@
                       <div class="relative p-4 min-w-0">
                         <!-- 스크롤 영역 -->
                         <div
-                            class="relative h-[260px] overflow-y-auto pr-2"
-                            style="scrollbar-gutter: stable;"
+                            class="relative h-[260px] flex flex-col min-w-0 overflow-hidden"
                         >
-                          <!-- rows -->
-                          <div class="space-y-5 pb-5">
+                          <!-- 배경 세로선(섹션당 1번) -->
+                          <div class="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
                             <div
-                                v-for="row in secRowsSorted(sec.key)"
-                                :key="sec.key + '-' + row.key"
-                                class="grid items-center gap-3 min-w-0"
-                                :style="{ gridTemplateColumns: `${labelColWidth}px 1fr` }"
+                                class="grid h-full"
+                                :style="{ gridTemplateColumns: `${labelColWidth}px 1fr`, columnGap: '12px' }"
                             >
-                              <!-- 라벨 -->
-                              <div
-                                  class="shrink-0 truncate text-sm text-gray-700 dark:text-gray-200"
-                                  :title="row.label"
-                              >
-                                {{ shortLabel(row.label) }}
-                              </div>
-
-                              <!-- 바 영역 -->
-                              <div
-                                  class="relative min-w-0"
-                                  @pointerdown.stop.prevent="onBarPointerDown($event, row)"
-                                  @click.stop="onBarClick($event, row)"
-                              >
-                                <!-- 트랙 -->
+                              <div /> <!-- 라벨 컬럼 -->
+                              <div class="relative">
                                 <div
-                                    class="relative w-full overflow-hidden rounded-md border border-gray-200 bg-gray-100
-                                         dark:border-gray-700 dark:bg-gray-800"
-                                >
-                                  <!-- 보조선: 트랙 내부 레이어 (배경 위, 색막대 아래) -->
-                                  <div class="pointer-events-none absolute inset-[1px] z-10" aria-hidden="true">
-                                    <div
-                                        v-for="tick in ticksOf(sec.key)"
-                                        :key="sec.key + '-' + row.key + '-guide-' + tick"
-                                        class="absolute top-0 bottom-0 bg-gray-200 dark:bg-gray-700"
-                                        :style="{ left: tickInnerLeftPx(sec.key, tick) + 'px', width: '1px', transform: 'translateZ(0)' }"
-                                    />
-                                  </div>
+                                    v-for="tick in allTicksOf(sec.key)"
+                                    :key="sec.key + '-bg-tick-' + tick"
+                                    class="absolute top-0 bottom-0"
+                                    :class="bgTickLineClass(tick)"
+                                    :style="bgTickStyle(sec.key, tick)"
+                                />
+                              </div>
+                            </div>
+                          </div>
 
-                                  <!-- 막대는 보조선 위 -->
-                                  <div class="relative z-20 flex flex-col">
+                          <!-- rows -->
+                          <div
+                              class="relative z-10 flex-1 min-h-0 overflow-y-auto"
+                              style="scrollbar-gutter: stable;"
+                              data-shot-scroll
+                              :ref="el => setScrollEl(sec.key, el)"
+                          >
+                            <div class="space-y-5 pb-5 relative z-10">
+                              <div
+                                  v-for="row in secRowsSorted(sec.key)"
+                                  :key="sec.key + '-' + row.key"
+                                  class="grid items-center gap-3 min-w-0"
+                                  :style="{ gridTemplateColumns: `${labelColWidth}px 1fr`, columnGap: '12px' }"
+                              >
+                                <!-- 라벨 -->
+                                <div
+                                    class="shrink-0 truncate text-sm text-gray-700 dark:text-gray-200"
+                                    :title="row.label"
+                                >
+                                  {{ shortLabel(row.label) }}
+                                </div>
+
+                                <!-- 바 영역 -->
+                                <div
+                                    class="relative min-w-0"
+                                    @pointerdown.stop.prevent="onBarPointerDown($event, row)"
+                                    @click.stop="onBarClick($event, row)"
+                                >
+                                  <!-- 트랙 -->
+                                  <div
+                                      class="relative w-full overflow-hidden rounded-md border border-gray-200 bg-gray-100
+                                         dark:border-gray-700 dark:bg-gray-800"
+                                  >
+                                    <!-- 막대는 보조선 위 -->
+                                    <div class="relative z-20 flex flex-col">
 <!--                                    &lt;!&ndash; 위: PartitionBar &ndash;&gt;-->
 <!--                                    <div class="h-4 w-full">-->
 <!--                                      <div class="flex h-full">-->
@@ -116,90 +132,91 @@
 <!--                                        <div class="flex-1" />-->
 <!--                                      </div>-->
 <!--                                    </div>-->
-                                    <!-- 위: PartitionBar (단색 버킷) -->
-                                    <div class="h-4 w-full">
-                                      <div class="flex h-full">
-                                        <div
-                                            class="h-full"
-                                            :style="{
+                                      <!-- 위: PartitionBar (단색 버킷) -->
+                                      <div class="h-4 w-full">
+                                        <div class="flex h-full">
+                                          <div
+                                              class="h-full"
+                                              :style="{
                                               width: pctX(sec.key, row.total) + '%',
                                               backgroundColor: bucketColor(row.total),
                                             }"
-                                        />
-                                        <div class="flex-1" />
+                                          />
+                                          <div class="flex-1" />
+                                        </div>
+                                      </div>
+
+                                      <!-- 아래: ABStackBar -->
+                                      <div class="h-4 w-full">
+                                        <div class="flex h-full">
+                                          <!-- A(파란색) -->
+                                          <div
+                                              class="relative h-full overflow-hidden"
+                                              :style="{ width: pctX(sec.key, row.a) + '%', backgroundColor: '#3B82F6' }"
+                                          >
+                                            <div
+                                                v-if="showBluePct(sec.key, row)"
+                                                class="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-white/90"
+                                            >
+                                              {{ percent(row.a, row.total) }}
+                                            </div>
+                                          </div>
+
+                                          <!-- B(초록색) = b+c -->
+                                          <div
+                                              class="relative h-full overflow-hidden"
+                                              :style="{ width: pctX(sec.key, Number(row.b||0)+Number(row.c||0)) + '%', backgroundColor: '#22C55E' }"
+                                          >
+                                            <div
+                                                v-if="showGreenPct(sec.key, row)"
+                                                class="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-white/90"
+                                            >
+                                              {{ percent(Number(row.b || 0) + Number(row.c || 0), row.total) }}
+                                            </div>
+                                          </div>
+
+                                          <div class="flex-1" />
+                                        </div>
                                       </div>
                                     </div>
 
-                                    <!-- 아래: ABStackBar -->
-                                    <div class="h-4 w-full">
-                                      <div class="flex h-full">
-                                        <!-- A(파란색) -->
-                                        <div
-                                            class="relative h-full overflow-hidden"
-                                            :style="{ width: pctX(sec.key, row.a) + '%', backgroundColor: '#3B82F6' }"
-                                        >
-                                          <div
-                                              v-if="showBluePct(sec.key, row)"
-                                              class="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-white/90"
-                                          >
-                                            {{ percent(row.a, row.total) }}
-                                          </div>
-                                        </div>
-
-                                        <!-- B(초록색) = b+c -->
-                                        <div
-                                            class="relative h-full overflow-hidden"
-                                            :style="{ width: pctX(sec.key, Number(row.b||0)+Number(row.c||0)) + '%', backgroundColor: '#22C55E' }"
-                                        >
-                                          <div
-                                              v-if="showGreenPct(sec.key, row)"
-                                              class="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-white/90"
-                                          >
-                                            {{ percent(Number(row.b || 0) + Number(row.c || 0), row.total) }}
-                                          </div>
-                                        </div>
-
-                                        <div class="flex-1" />
-                                      </div>
+                                    <!-- 총액 라벨 -->
+                                    <div
+                                        class="absolute top-1/2 z-30 -translate-y-1/2 text-xs font-semibold text-gray-700 dark:text-gray-200"
+                                        :style="endLabelStyle(sec.key, row.total)"
+                                    >
+                                      {{ money(row.total) }}
                                     </div>
                                   </div>
-
-                                  <!-- 총액 라벨 -->
-                                  <div
-                                      class="absolute top-1/2 z-30 -translate-y-1/2 text-xs font-semibold text-gray-700 dark:text-gray-200"
-                                      :style="endLabelStyle(sec.key, row.total)"
-                                  >
-                                    {{ money(row.total) }}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <!-- x축: sticky + 윗쪽 회색 선 -->
-                          <div
-                              class="sticky bottom-0 z-50 border-t border-gray-200 bg-white pt-2 backdrop-blur-sm
-                                   dark:border-gray-800 dark:bg-gray-900"
-                          >
-                            <div
-                                class="grid items-center gap-3"
-                                :style="{ gridTemplateColumns: `${labelColWidth}px 1fr` }"
-                            >
-                              <div />
-                              <div class="relative h-6" :ref="el => setAxisTrackEl(sec.key, el)">
-                                <div
-                                    v-for="tick in ticksOf(sec.key)"
-                                    :key="sec.key + '-tickLabel-' + tick"
-                                    class="absolute -translate-x-1/2 text-xs text-gray-400"
-                                    :style="{ left: tickAxisLeftPx(sec.key, tick) + 'px' }"
-                                >
-                                  {{ tick }}
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
                         <!-- /스크롤 -->
+
+                        <!-- x축: sticky + 윗쪽 회색 선 -->
+                        <div
+                            class="mt-auto sticky bottom-0 z-50 border-t border-gray-200 bg-white pt-2 backdrop-blur-sm
+                                  dark:border-gray-800 dark:bg-gray-900"
+                        >
+                          <div
+                              class="grid items-center gap-3"
+                              :style="{ gridTemplateColumns: `${labelColWidth}px 1fr`, columnGap: '12px' }"
+                          >
+                            <div />
+                            <div class="relative h-6" :ref="el => setAxisTrackEl(sec.key, el)">
+                              <div
+                                  v-for="tick in allTicksOf(sec.key)"
+                                  :key="sec.key + '-tickLabel-' + tick"
+                                  :class="tickLabelClass(tick)"
+                                  :style="tickLabelStyle(sec.key, tick)"
+                              >
+                                {{ tickText(tick) }}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -311,9 +328,264 @@ import AdminLayout from '@/components/layout/AdminLayout.vue'
 import PageBreadcrumb from '@/components/common/PageBreadcrumb.vue'
 import { UsersIcon, UserIcon } from '@heroicons/vue/24/outline'
 import { BuildingStorefrontIcon } from '@heroicons/vue/24/solid'
+import html2canvas from 'html2canvas-pro'
 import { useAuthStore } from '@/stores/auth.js'
 import { globalFilters } from '@/composables/globalFilters.js'
 import api from '@/plugins/axios.js'
+
+const auth = useAuthStore()
+const role = computed(() => auth?.grants?.role)
+const canSnapshot = computed(() => role.value === 'SUPERADMIN')
+
+const snapshotLoading = ref(false)
+
+// 섹션 DOM ref (month/range/all)
+const shotEl = new Map()
+function setShotEl(key, el) {
+  if (!el) return
+  shotEl.set(key, el)
+}
+
+async function canvasToPngBlob(canvas) {
+  return await new Promise((resolve) => {
+    canvas.toBlob((b) => resolve(b), 'image/png', 0.92)
+  })
+}
+
+function viewModeLabel(v) {
+  if (v === 'BRANCH') return '지점별'
+  if (v === 'TEAM') return '팀별'
+  if (v === 'PERSON') return '개인별'
+  return String(v || '')
+}
+
+function ymd(d) {
+  // yyyy-mm-dd
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+function snapshotRangeBySection(secKey, dateFrom, dateTo) {
+  // 표기 전용
+  const now = new Date()
+
+  if (secKey === 'month') {
+    const first = new Date(now.getFullYear(), now.getMonth(), 1)
+    return { from: ymd(first), to: ymd(now) }
+  }
+
+  if (secKey === 'all') {
+    return { from: '2025-08-01', to: ymd(now) }
+  }
+
+  // range는 기존 필터 그대로
+  return {
+    from: dateFrom ? String(dateFrom) : '-',
+    to: dateTo ? String(dateTo) : '-',
+  }
+}
+
+function fmtRange(from, to) {
+  const f = from ? String(from) : '-'
+  const t = to ? String(to) : '-'
+  return `${f} ~ ${t}`
+}
+
+function sectionLabel(secKey) {
+  if (secKey === 'month') return '이번달'
+  if (secKey === 'range') return '기간내'
+  if (secKey === 'all') return '전체기간'
+  return secKey
+}
+
+function expandScrollAreasForSnapshot(rootEl) {
+  rootEl.querySelectorAll('[data-shot-scroll]').forEach((el) => {
+    // 스크롤 요소 자체 확장
+    el.style.overflow = 'visible'
+    el.style.maxHeight = 'none'
+    el.style.height = el.scrollHeight + 'px'
+
+    // 부모가 overflow-hidden이면 같이 풀어줘야 캔버스에 안 잘림
+    const p = el.parentElement
+    if (p) {
+      p.style.overflow = 'visible'
+      p.style.maxHeight = 'none'
+      p.style.height = 'auto'
+    }
+  })
+
+  rootEl.querySelectorAll('.sticky').forEach((el) => {
+    el.style.position = 'static'
+    el.style.bottom = 'auto'
+    el.style.top = 'auto'
+  })
+}
+
+async function captureElement(el, options = {}) {
+  try { closeTip?.() } catch (e) {}
+
+  const targetEl =
+      typeof el === 'string'
+          ? document.querySelector(el)
+          : (el?.$el ?? el)
+
+  if (!targetEl) throw new Error('캡처 대상 엘리먼트를 찾지 못했습니다.')
+
+  const PAD = 24
+  const rect = targetEl.getBoundingClientRect()
+
+  // offscreen wrapper
+  const wrap = document.createElement('div')
+  wrap.setAttribute('data-shot-wrap', options.secKey || 'shot')
+  wrap.style.position = 'fixed'
+  wrap.style.left = '-10000px'
+  wrap.style.top = '0'
+  wrap.style.width = `${Math.ceil(rect.width)}px`
+  wrap.style.padding = `${PAD}px`
+  wrap.style.background = '#ffffff'
+  wrap.style.boxSizing = 'content-box'
+  wrap.style.pointerEvents = 'none'
+  wrap.style.zIndex = '-1'
+
+  // 상단 정보 바(기간/보기모드/섹션)
+  const header = document.createElement('div')
+  header.style.display = 'flex'
+  header.style.alignItems = 'flex-start'
+  header.style.justifyContent = 'space-between'
+  header.style.gap = '12px'
+  header.style.padding = '12px 14px'
+  header.style.marginBottom = '12px'
+  header.style.border = '1px solid #E5E7EB'
+  header.style.borderRadius = '12px'
+  header.style.background = '#ffffff'
+
+  const left = document.createElement('div')
+  left.style.display = 'flex'
+  left.style.flexDirection = 'column'
+  left.style.gap = '6px'
+
+  const title = document.createElement('div')
+  title.style.fontSize = '14px'
+  title.style.fontWeight = '700'
+  title.style.color = '#111827'
+  title.textContent = `매출현황 · ${viewModeLabel(options.viewMode)} · ${sectionLabel(options.secKey)}`
+  left.appendChild(title)
+
+  const sub = document.createElement('div')
+  sub.style.fontSize = '12px'
+  sub.style.color = '#6B7280'
+  const r = snapshotRangeBySection(options.secKey, options.dateFrom, options.dateTo)
+  sub.textContent = `기간 ${r.from} ~ ${r.to} · 퇴사자 ${options.includeResigned ? 'ON' : 'OFF'}`
+  left.appendChild(sub)
+
+  const right = document.createElement('div')
+  right.style.fontSize = '12px'
+  right.style.color = '#6B7280'
+  right.style.whiteSpace = 'nowrap'
+  right.textContent = new Date().toLocaleString('ko-KR')
+  header.appendChild(left)
+  header.appendChild(right)
+
+  // 대상 clone
+  const clone = targetEl.cloneNode(true)
+
+  // 내부 스크롤 위치/입력값 보존(있으면)
+  const origNodes = targetEl.querySelectorAll('*')
+  const cloneNodes = clone.querySelectorAll('*')
+  const n = Math.min(origNodes.length, cloneNodes.length)
+  for (let i = 0; i < n; i++) {
+    const o = origNodes[i]
+    const c = cloneNodes[i]
+    if (o.scrollTop) c.scrollTop = o.scrollTop
+    if (o.scrollLeft) c.scrollLeft = o.scrollLeft
+    if (o instanceof HTMLInputElement || o instanceof HTMLTextAreaElement) c.value = o.value
+  }
+
+  wrap.appendChild(header)
+  wrap.appendChild(clone)
+  document.body.appendChild(wrap)
+
+  try {
+    // 1프레임: 붙인 뒤 레이아웃 확정 (scrollHeight 정확해짐)
+    await new Promise(r => requestAnimationFrame(r))
+
+    // 스크롤 펼치기 + sticky 제거
+    expandScrollAreasForSnapshot(wrap)
+
+    // 1프레임: 스타일 반영
+    await new Promise(r => requestAnimationFrame(r))
+
+    try {
+      await (document.fonts?.ready ?? Promise.resolve())
+    } catch (e) {}
+
+    const canvas = await html2canvas(wrap, {
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      scale: window.devicePixelRatio || 1,
+    })
+
+    return await canvasToPngBlob(canvas)
+  } finally {
+    wrap.remove()
+  }
+}
+
+async function onSnapshot() {
+  if (!canSnapshot.value) return
+  if (snapshotLoading.value) return
+
+  snapshotLoading.value = true
+  try {
+    const monthEl = shotEl.get('month')
+    const rangeEl = shotEl.get('range')
+    const allEl   = shotEl.get('all')
+
+    if (!monthEl || !rangeEl || !allEl) {
+      alert('스냅샷 대상 영역을 찾지 못했습니다.')
+      return
+    }
+
+    const common = {
+      viewMode: viewMode.value,
+      includeResigned: includeResigned.value,
+      dateFrom: globalFilters.dateFrom,
+      dateTo: globalFilters.dateTo,
+    }
+
+    const [monthBlob, rangeBlob, allBlob] = await Promise.all([
+      captureElement(monthEl, { ...common, secKey: 'month' }),
+      captureElement(rangeEl, { ...common, secKey: 'range' }),
+      captureElement(allEl,   { ...common, secKey: 'all' }),
+    ])
+
+    const meta = {
+      viewMode: viewMode.value,
+      includeResigned: includeResigned.value,
+      dateFrom: globalFilters.dateFrom,
+      dateTo: globalFilters.dateTo,
+    }
+
+    const form = new FormData()
+    form.append('meta', new Blob([JSON.stringify(meta)], { type: 'application/json' }))
+    form.append('month', monthBlob, 'sales-month.png')
+    form.append('range', rangeBlob, 'sales-range.png')
+    form.append('all', allBlob, 'sales-all.png')
+
+    await api.post('/api/work/sales/snapshot', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+
+    alert('스냅샷이 이메일로 발송되었습니다.')
+  } catch (err) {
+    console.error(err)
+    alert('스냅샷 발송 중 오류가 발생했습니다.')
+  } finally {
+    snapshotLoading.value = false
+  }
+}
 
 /** 섹션 */
 const sections = [
@@ -346,29 +618,104 @@ function bucketIndex(total) {
   }
   return stops.length // 마지막 구간(최대 초과)
 }
-function bucketColor(total) {
-  const colors = partitionColors.value || []
-  const i = bucketIndex(total)
+const DEFAULT_OVER_PARTITION_COLOR = '#f9bf31' // 원하는 디폴트 색으로 바꿔
 
-  // 이상 케이스 대비: i번째 없으면 마지막 색, 그것도 없으면 회색
+function bucketColor(total) {
+  const t = Number(total || 0)
+  const stops = [...(partitionStops.value || [])].sort((a, b) => a - b)
+  const colors = partitionColors.value || []
+
+  const lastStop = stops.length ? stops[stops.length - 1] : null
+  const isOverflow = lastStop != null && t > lastStop
+
+  if (isOverflow) {
+    // 서버가 overflow 색을 같이 주면 colors[stops.length] 로 받을 수 있게
+    return colors[stops.length] || DEFAULT_OVER_PARTITION_COLOR
+  }
+
+  const i = bucketIndex(t) // 0..stops.length
   return colors[i] || colors[colors.length - 1] || '#D1D5DB'
 }
-// function partitionSegs(secKey, total) {
-//   const t = Number(total || 0)
-//   const stops = [...(partitionStops.value || [])].sort((a, b) => a - b)
-//   const bounds = [0, ...stops, Infinity]
-//   const colors = partitionColors.value || []
-//
-//   const out = []
-//   for (let i = 0; i < bounds.length - 1; i++) {
-//     const from = bounds[i]
-//     const to = bounds[i + 1]
-//     const val = Math.max(0, Math.min(t, to) - from)
-//     if (val <= 0) continue
-//     out.push({ from, to, value: val, color: colors[i] || '#D1D5DB' })
-//   }
-//   return out
-// }
+
+function isPartitionTick(v) {
+  const t = Number(v)
+  return (partitionStops.value || []).some(s => Number(s) === t)
+}
+
+// max 기준 적당한 step(1,2,5 * 10^n) 고르기
+function niceStep(max, targetTicks = 5) {
+  const m = Math.max(1, Number(max || 0))
+  const raw = m / targetTicks
+  const pow = Math.pow(10, Math.floor(Math.log10(raw)))
+  const candidates = [1, 2, 5, 10].map(x => x * pow)
+  return candidates.find(c => raw <= c) || candidates[candidates.length - 1]
+}
+
+function generalTicksOf(secKey) {
+  const m = maxValueOf(secKey)
+  if (m <= 1) return []
+
+  const step = niceStep(m, 5)
+  const set = new Set()
+  for (let v = step; v < m; v += step) {
+    const r = Math.round(v)
+    if (r > 0 && r < m) set.add(r) // m(끝)은 제외(오른쪽 overflow 방지)
+  }
+  return [...set].sort((a, b) => a - b)
+}
+
+function partitionTicksOf(secKey) {
+  const m = maxValueOf(secKey)
+  return (partitionStops.value || [])
+      .map(Number)
+      .filter(v => v > 0 && v < m)
+}
+
+function allTicksOf(secKey) {
+  const set = new Set([...generalTicksOf(secKey), ...partitionTicksOf(secKey)])
+  return [...set].sort((a, b) => a - b)
+}
+
+function tickText(v) {
+  return Number(v || 0).toLocaleString()
+}
+
+function tickLabelClass(tick) {
+  return isPartitionTick(tick)
+      ? 'absolute text-xs font-semibold text-gray-600 dark:text-gray-200 whitespace-nowrap'
+      : 'absolute text-xs text-gray-400 whitespace-nowrap'
+}
+
+function tickLabelStyle(secKey, tick) {
+  const w = effectiveTrackW(secKey)
+  const left = tickAxisLeftPx(secKey, tick)
+
+  if (!w) return { left: '0px', transform: 'translateX(0)' }
+
+  const margin = 2
+  if (left <= margin) return { left: '0px', transform: 'translateX(0)' }
+  if (left >= w - margin) return { left: w + 'px', transform: 'translateX(-100%)' }
+  return { left: left + 'px', transform: 'translateX(-50%)' }
+}
+
+function bgTickStyle(secKey, tick) {
+  const left = tickAxisLeftPx(secKey, tick) // 축 기준 px (outer 기준)
+  const w = isPartitionTick(tick) ? 1.2 : 1.1
+
+  return {
+    left: left + 'px',
+    width: w + 'px',
+    transform: 'translateX(-50%) translateZ(0)',
+    opacity: isPartitionTick(tick) ? 0.85 : 0.65, // 배경은 살짝만
+  }
+}
+
+function bgTickLineClass(tick) {
+  // 파티션은 더 진하게
+  return isPartitionTick(tick)
+      ? 'bg-gray-300 dark:bg-gray-500'
+      : 'bg-gray-200 dark:bg-gray-700'
+}
 
 /** 통계 데이터 */
 const dashboard = ref(null)
@@ -437,15 +784,41 @@ function secTopRanks(secKey) {
 
 function maxValueOf(secKey) {
   const rows = secRowsSorted(secKey)
-  const rowMax = Math.max(1, ...rows.map(r => r.total))
-  const stopMax = Math.max(0, ...(partitionStops.value || []))
-  const m = Math.max(rowMax, stopMax)
-  return Math.ceil(m * 1.15)
+  if (!rows.length) return 1
+
+  const rowMax = rows.length ? Math.max(...rows.map(r => Number(r.total || 0))) : 0
+  const m = Math.max(1, rowMax)
+  return Math.ceil(m * 1.15) // 기존 여유치 유지(원하면 1.0으로)
 }
 
-function ticksOf(secKey) {
-  const m = maxValueOf(secKey)
-  return (partitionStops.value || []).filter(v => v > 0 && v < m)
+const scrollElByKey = new Map()
+const scrollBarWByKey = ref({})
+const scrollRos = new Map()
+
+function setScrollEl(secKey, el) {
+  if (!el) return
+
+  const prevEl = scrollElByKey.get(secKey)
+  if (prevEl === el) return
+  scrollElByKey.set(secKey, el)
+
+  const prev = scrollRos.get(secKey)
+  if (prev) prev.disconnect()
+
+  const measure = () => {
+    const sbw = Math.max(0, (el.offsetWidth || 0) - (el.clientWidth || 0)) // 스크롤바 폭
+    const cur = Number(scrollBarWByKey.value[secKey] || 0)
+    if (cur !== sbw) scrollBarWByKey.value = { ...scrollBarWByKey.value, [secKey]: sbw }
+  }
+
+  const ro = new ResizeObserver(measure)
+  ro.observe(el)
+  scrollRos.set(secKey, ro)
+  measure()
+}
+
+function sbw(secKey) {
+  return Number(scrollBarWByKey.value[secKey] || 0)
 }
 
 function pctX(secKey, v) {
@@ -482,7 +855,7 @@ function shortLabel(s) {
 
 /** 레이아웃 */
 const labelColWidth = 92
-const TRACK_BORDER_PX = 1
+const TRACK_BORDER_PX = 0
 
 /** 섹션별 x축 트랙 폭 측정 */
 const axisTrackElByKey = new Map()
@@ -527,8 +900,12 @@ onBeforeUnmount(() => {
 function trackW(secKey) {
   return Number(axisTrackWidthByKey.value[secKey] || 0)
 }
+function effectiveTrackW(secKey) {
+  return Math.max(0, trackW(secKey) - sbw(secKey))
+}
+
 function innerW(secKey) {
-  return Math.max(0, trackW(secKey) - TRACK_BORDER_PX * 2)
+  return Math.max(0, effectiveTrackW(secKey) - TRACK_BORDER_PX * 2)
 }
 function valueToInnerPx(secKey, v) {
   const w = innerW(secKey)

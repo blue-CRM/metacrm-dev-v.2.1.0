@@ -33,26 +33,34 @@
   <!-- rows 집계 -->
   <select id="findAggRows" resultType="com.blue.sales.dto.SalesAggRowDto">
     WITH
+    user_base AS (
+    SELECT
+    u.user_id       AS userId,
+    u.user_name     AS userName,
+    u.user_approved AS userApproved,
+    ce.center_id    AS centerId,
+    ce.center_name  AS centerName,
+    br.branch_id    AS branchId,
+    br.branch_name  AS branchName
+    FROM users u
+    LEFT JOIN centers ce  ON ce.center_id = u.center_id
+    LEFT JOIN branches br ON br.branch_id = ce.branch_id
+    WHERE u.center_id IS NOT NULL
+    AND u.center_id &lt;&gt; 1
+    AND u.user_role IN ('MANAGER','STAFF')
+    <if test="includeResigned == false">
+      AND u.user_approved &lt;&gt; 'X'
+    </if>
+    ),
+
     base AS (
       SELECT
-        c.customer_id   AS customerId,
-        u.user_id       AS userId,
-        u.user_name     AS userName,
-        u.user_approved AS userApproved,
-        ce.center_id    AS centerId,
-        ce.center_name  AS centerName,
-        b.branch_id     AS branchId,
-        b.branch_name   AS branchName
-      FROM customers c
-      JOIN users u ON u.user_id = c.user_id
-      LEFT JOIN centers ce ON ce.center_id = u.center_id
-      LEFT JOIN branches b ON b.branch_id = ce.branch_id
-      WHERE c.user_id IS NOT NULL
-        AND u.center_id IS NOT NULL
-        AND u.center_id &lt;&gt; 1
-        <if test="includeResigned == false">
-          AND u.user_approved &lt;&gt; 'X'
-        </if>
+      ub.userId, ub.userName, ub.userApproved,
+      ub.centerId, ub.centerName,
+      ub.branchId, ub.branchName,
+      c.customer_id AS customerId
+      FROM user_base ub
+      LEFT JOIN customers c ON c.user_id = ub.userId
     ),
 
     -- ✅ endTs 기준 마지막 RESET (reset anchor)
@@ -60,7 +68,7 @@
       SELECT customer_id, MAX(log_id) AS reset_log_id
       FROM sales_logs
       WHERE sales_type = 'RESET'
-        AND action_at &lt; #{endTs}
+      AND action_at &lt; #{endTs}
       GROUP BY customer_id
     ),
 

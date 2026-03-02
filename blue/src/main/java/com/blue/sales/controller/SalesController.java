@@ -2,14 +2,14 @@ package com.blue.sales.controller;
 
 import com.blue.sales.dto.SalesDashboardReq;
 import com.blue.sales.dto.SalesDashboardRes;
+import com.blue.sales.dto.SalesSnapshotMeta;
 import com.blue.sales.service.SalesService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,5 +34,17 @@ public class SalesController {
         .build();
     
     return ResponseEntity.ok(service.getDashboard(auth.getName(), req));
+  }
+  
+  @PostMapping(value = "/snapshot", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<Void> snapshot(
+      Authentication auth,
+      @RequestPart("meta") SalesSnapshotMeta meta,
+      @RequestPart("month") MultipartFile month,
+      @RequestPart("range") MultipartFile range,
+      @RequestPart("all") MultipartFile all
+  ) {
+    service.sendSnapshotEmail(auth.getName(), meta, month, range, all);
+    return ResponseEntity.ok().build();
   }
 }
