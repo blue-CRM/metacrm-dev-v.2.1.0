@@ -118,13 +118,8 @@ public class SalesService {
         .build()).toList();
   }
   
-  public void sendSnapshotEmail(
-      String callerEmail,
-      SalesSnapshotMeta meta,
-      MultipartFile month,
-      MultipartFile range,
-      MultipartFile all
-  ) {
+  public void sendSnapshotEmail(String callerEmail, SalesSnapshotMeta meta,
+                                MultipartFile month, MultipartFile range, MultipartFile all) {
     UserContextDto me = requireMe(callerEmail);
     
     if (!"SUPERADMIN".equals(me.getRole())) {
@@ -133,22 +128,78 @@ public class SalesService {
     
     meta = (meta == null) ? new SalesSnapshotMeta() : meta;
     
-    String now = LocalDateTime.now(KST).format(SUBJECT_TS);
-    String subject = "매출현황 스냅샷 - " + now;
+    var now = java.time.ZonedDateTime.now(KST);
+    String nowStr = now.format(java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd (E) HH:mm"));
     
-    String text =
-        "매출현황 스냅샷입니다.\n"
-            + "viewMode=" + nvl(meta.getViewMode()) + "\n"
-            + "includeResigned=" + (Boolean.TRUE.equals(meta.getIncludeResigned()) ? "true" : "false") + "\n"
-            + "dateFrom=" + nvl(meta.getDateFrom()) + "\n"
-            + "dateTo=" + nvl(meta.getDateTo()) + "\n";
+    String subject = "매출현황 스냅샷 - " + now.format(SUBJECT_TS);
     
+    // 보기모드 라벨
+    String modeLabel = viewModeLabel(meta.getViewMode());
+    
+    // 스케줄용 문구(옵션) — meta에 값이 없으면 그냥 빈값
+    String scheduleTitle = buildScheduleTitleIfAny(meta); // 아래 helper 참고
+    
+    String plain =
+        "매출현황 스냅샷\n"
+            + "캡처 일시: " + nowStr + "\n"
+            + (scheduleTitle.isBlank() ? "" : (scheduleTitle + "\n"))
+            + "조건\n"
+            + "- 보기 모드: " + modeLabel + " (" + nvl(meta.getViewMode()) + ")\n"
+            + "- 퇴사자 포함: " + (Boolean.TRUE.equals(meta.getIncludeResigned()) ? "ON" : "OFF") + "\n"
+            + "- 기간내: " + fmtRange(meta.getDateFrom(), meta.getDateTo()) + "\n"
+            + "\n첨부: 이번달 / 기간내 / 전체기간 스냅샷 이미지\n";
+    
+    // html은 메타로 예쁘게 만들기 (SalesMailService에서)
     mailService.sendSalesSnapshot(
         me.getEmail(),
         subject,
-        text,
+        plain,
+        nowStr,
+        scheduleTitle,
+        meta,
         month, range, all
     );
+  }
+  
+  private String viewModeLabel(String v) {
+    if (v == null) return "지점별";
+    return switch (v.trim()) {
+      case "BRANCH" -> "지점별";
+      case "TEAM" -> "팀별";
+      case "PERSON" -> "개인별";
+      default -> v;
+    };
+  }
+  
+  private String fmtRange(String from, String to) {
+    String f = (from == null || from.isBlank()) ? "-" : from.trim();
+    String t = (to == null || to.isBlank()) ? "-" : to.trim();
+    return f + " ~ " + t;
+  }
+  
+  /**
+   * 스케줄 스냅샷일 때만 예: 2026년 03월 전체 데이터 스냅샷
+   * (meta에 scheduled/snapshotYm 같은 필드를 나중에 추가해도 되고, 없으면 빈 문자열 반환)
+   */
+  private String buildScheduleTitleIfAny(SalesSnapshotMeta meta) {
+    // 아래처럼 meta에 필드 추가하면 바로 동작하게 만들어둠 (없으면 무조건 빈 문자열)
+    try {
+      java.lang.reflect.Method mScheduled = meta.getClass().getMethod("getScheduled");
+      Object scheduled = mScheduled.invoke(meta);
+      if (!(scheduled instanceof Boolean) || !((Boolean) scheduled)) return "";
+      
+      java.lang.reflect.Method mYm = meta.getClass().getMethod("getSnapshotYm");
+      Object ym = mYm.invoke(meta);
+      String s = (ym == null) ? "" : ym.toString().trim(); // "2026-03" 기대
+      if (s.matches("\\d{4}-\\d{2}")) {
+        String y = s.substring(0, 4);
+        String mm = s.substring(5, 7);
+        return y + "년 " + mm + "월 전체 데이터 스냅샷";
+      }
+      return "스케줄 전체 데이터 스냅샷";
+    } catch (Exception ignore) {
+      return "";
+    }
   }
   
   private String nvl(String s) {

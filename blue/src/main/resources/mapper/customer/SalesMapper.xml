@@ -49,7 +49,7 @@
     AND u.center_id &lt;&gt; 1
     AND u.user_role IN ('MANAGER','STAFF')
     <if test="includeResigned == false">
-      AND u.user_approved &lt;&gt; 'X'
+      AND u.user_approved &lt;&gt; 'N'
     </if>
     ),
 
@@ -63,7 +63,7 @@
       LEFT JOIN customers c ON c.user_id = ub.userId
     ),
 
-    -- ✅ endTs 기준 마지막 RESET (reset anchor)
+    -- endTs 기준 마지막 RESET (reset anchor)
     reset_anchor AS (
       SELECT customer_id, MAX(log_id) AS reset_log_id
       FROM sales_logs
@@ -167,7 +167,7 @@
       -- resigned: PERSON만 의미있게(팀/지점은 false로 고정)
       <choose>
         <when test="viewMode == 'PERSON'">
-          CASE WHEN MAX(b.userApproved = 'X') = 1 THEN 1 ELSE 0 END AS resigned
+          CASE WHEN MAX(b.userApproved = 'N') = 1 THEN 1 ELSE 0 END AS resigned
         </when>
         <otherwise>
           0 AS resigned
@@ -196,4 +196,28 @@
            +  SUM(GREATEST(0, IFNULL(ue.amount, 0) - IFNULL(us1.amount, 0)))) DESC
   </select>
 
+  <select id="findAdminEmails" resultType="string">
+    SELECT DISTINCT u.user_email
+    FROM users u
+    WHERE u.user_email IS NOT NULL
+    AND u.user_email &lt;&gt; ''
+    AND u.user_role IN ('SUPERADMIN')  <!-- 너희 관리자 정의에 맞게 조정 -->
+    AND u.user_approved &lt;&gt; 'N'
+  </select>
+
+  <!-- partition stops: segment 목록 -->
+  <select id="findPartitionStops" resultType="long">
+    SELECT segment
+    FROM sales_partitions
+    WHERE partition_type = #{partitionType}
+    ORDER BY segment
+  </select>
+
+  <!-- partition colors: segment 정렬 순서 그대로 color 목록 -->
+  <select id="findPartitionColors" resultType="string">
+    SELECT color
+    FROM sales_partitions
+    WHERE partition_type = #{partitionType}
+    ORDER BY segment
+  </select>
 </mapper>

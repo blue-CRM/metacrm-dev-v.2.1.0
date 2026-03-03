@@ -23,4 +23,7 @@ public interface SalesMapper {
                                    @Param("startTs") String startTs,   // yyyy-MM-dd HH:mm:ss
                                    @Param("endTs") String endTs);      // yyyy-MM-dd HH:mm:ss (exclusive)
   
+  List<String> findAdminEmails();
+  List<Long> findPartitionStops(@Param("partitionType") String partitionType);
+  List<String> findPartitionColors(@Param("partitionType") String partitionType);
 }

@@ -570,9 +570,9 @@ async function onSnapshot() {
 
     const form = new FormData()
     form.append('meta', new Blob([JSON.stringify(meta)], { type: 'application/json' }))
-    form.append('month', monthBlob, 'sales-month.png')
-    form.append('range', rangeBlob, 'sales-range.png')
-    form.append('all', allBlob, 'sales-all.png')
+    form.append('month', monthBlob, '매출현황_이번달.png')
+    form.append('range', rangeBlob, '매출현황_기간별.png')
+    form.append('all', allBlob, '매출현황_전체.png')
 
     await api.post('/api/work/sales/snapshot', form, {
       headers: { 'Content-Type': 'multipart/form-data' },
