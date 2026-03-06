@@ -81,10 +81,15 @@ public class UserService {
       throw new AuthException("권한이 없습니다.",HttpStatus.GONE);
     }
     
-    // 3-1) 가시권한: 대상이 관리자(SUPERADMIN)인 경우만 허용
+    // 3-1) 가시권한: 대상이 관리자(SUPERADMIN), 센터장, 전문가인 경우만 허용
     if ("visible".equals(field)) {
-      if (!"SUPERADMIN".equals(targetRole)) {
-        throw new AuthException("관리자의 가시권한만 변경할 수 있습니다.",HttpStatus.GONE);
+      boolean canChangeVisibleTarget =
+          "SUPERADMIN".equals(targetRole) ||
+              "CENTERHEAD".equals(targetRole) ||
+              "EXPERT".equals(targetRole);
+      
+      if (!canChangeVisibleTarget) {
+        throw new AuthException("관리자/센터장/전문가의 가시권한만 변경할 수 있습니다.", HttpStatus.GONE);
       }
     }
     
