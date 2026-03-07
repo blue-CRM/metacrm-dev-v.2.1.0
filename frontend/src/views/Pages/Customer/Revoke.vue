@@ -103,6 +103,20 @@
     </transition>
   </Teleport>
 
+  <AllocateModal
+      v-if="transferModal.open"
+      mode="HQ"
+      :selected-count="selectedRows.length"
+      :exclude-center-ids="excludedCenterIds"
+      api-base="/api/work/revoke/transfer"
+      title="DB 일괄 이관"
+      primary-label="이관하기"
+      manager-pool-label="팀 공용 이관"
+      manager-personal-label="팀장 개인 이관"
+      @close="closeTransferModal"
+      @confirm="onConfirmTransfer"
+  />
+
 </template>
 
 <script setup lang="ts">
@@ -111,6 +125,7 @@ import AdminLayout from '@/components/layout/AdminLayout.vue'
 import PageBreadcrumb from '@/components/common/PageBreadcrumb.vue'
 import ComponentCard from '@/components/common/ComponentCard.vue'
 import PsnsTable from '@/components/tables/basic-tables/PsnsTable.vue'
+import AllocateModal from '@/components/ui/AllocateModal.vue'
 import { useAuthStore } from '@/stores/auth.js'
 import { useTableQuery } from '@/composables/useTableQuery.js'
 import { globalFilters } from '@/composables/globalFilters.js'
@@ -120,6 +135,9 @@ import axios from '@/plugins/axios.js'
 const auth = useAuthStore()
 const role = auth.grants.role
 const pageTitle = ref('DB 회수하기')
+
+const isSuper = computed(() => auth.grants.isSuper)
+const canTransfer = computed(() => role === 'SUPERADMIN' && isSuper.value)
 
 /** 목록 훅 (공용 필터: 날짜/카테고리/키워드) */
 const {
@@ -165,10 +183,17 @@ onUnmounted(() => {
 /** 테이블 선택 */
 const tableRef = ref<any>(null)
 const selectedRows = ref<any[]>([])
+const excludedCenterIds = computed(() => {
+  return [...new Set(
+      selectedRows.value
+          .map((r: any) => r.centerId)
+          .filter((v: any) => v != null)
+  )]
+})
 const onRowSelect = (rows: any[]) => { selectedRows.value = rows }
-function needSelection(): number[] {
+function needSelection(action: '회수' | '이관' = '회수'): number[] {
   const ids = selectedRows.value.map((r: any) => r.id)
-  if (!ids.length) alert('회수할 고객을 선택해주세요.')
+  if (!ids.length) alert(`${action}할 고객을 선택해주세요.`)
   return ids
 }
 
@@ -246,8 +271,18 @@ const sortLabel = computed(() =>
 )
 
 // 3. 버튼 배열 생성 (sortLabel 사용)
-const hqButtons = computed(() => [sortLabel.value, '회수하기'])
+const hqButtons = computed(() => {
+  const btns = [sortLabel.value, '회수하기']
+  if (canTransfer.value) btns.push('이관하기')
+  return btns
+})
 const mgrButtons = computed(() => [sortLabel.value, '회수하기'])
+
+// 이관 모달 상태 추가
+const transferModal = ref<{ open: boolean }>({ open: false })
+function closeTransferModal() {
+  transferModal.value.open = false
+}
 
 // 공통 정렬 토글 로직
 async function toggleSort() {
@@ -267,16 +302,22 @@ async function toggleSort() {
 // ===== 모달 및 버튼 핸들러 =====
 function onHqButton(btn: string) {
   if (btn === sortLabel.value) {
-    toggleSort();
-    return;
+    toggleSort()
+    return
   }
+
   if (btn === '회수하기') {
     const ids = needSelection()
-
     if (!ids.length) return
-    if (!confirm(ids.length + "개 DB를 회수하시겠습니까?")) return
-
+    if (!confirm(ids.length + '개 DB를 회수하시겠습니까?')) return
     onConfirmRevoke(ids)
+    return
+  }
+
+  if (btn === '이관하기') {
+    const ids = needSelection('이관')
+    if (!ids.length) return
+    transferModal.value.open = true
   }
 }
 function onMgrButton(btn: string) {
@@ -292,6 +333,42 @@ function onMgrButton(btn: string) {
 
     onConfirmRevokeByMgr(ids)
   }
+}
+
+/*이관 실행*/
+async function onConfirmTransfer(payload: {
+  centerId?: number | null,
+  userId?: number | null,
+  assignToManagerAsStaff?: boolean
+}) {
+  const ids = needSelection('이관')
+  if (!ids.length) return
+
+  await runBusy(async () => {
+    if (!payload.centerId) {
+      alert('팀을 선택하세요.')
+      return
+    }
+    if (!payload.userId) {
+      alert('직원을 선택하세요.')
+      return
+    }
+
+    await axios.post('/api/work/revoke/transfer', {
+      customerIds: ids,
+      targetCenterId: payload.centerId,
+      targetUserId: payload.userId,
+      assignToManagerAsStaff: payload.assignToManagerAsStaff || false,
+    })
+
+    transferModal.value.open = false
+    selectedRows.value = []
+    tableRef.value?.clearSelection?.()
+    await refetchAndClamp()
+  }).catch((e: any) => {
+    console.error(e)
+    alert(e?.response?.data || '이관 중 오류가 발생했습니다.')
+  })
 }
 
 /** 회수 실행 */

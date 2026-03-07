@@ -1998,9 +1998,6 @@ function onPwCancel() {
 
 onMounted(async () => {
   await loadMe()
-
-  // 스프레드시트 설정 초기 로드
-  await loadSheetConfig()
 })
 
 /* 서버에서 내 정보 로드 */
@@ -2011,7 +2008,7 @@ async function loadMe() {
     email.value = data.userEmail
     phone.value = data.userPhone
 
-    console.log(data)
+    // console.log(data)
     if (data.grants.role === 'SUPERADMIN') roleLabel.value = '관리자'
     else if (data.grants.role === 'MANAGER') roleLabel.value = '팀장'
     else if (data.grants.role === 'STAFF') roleLabel.value = '프로'
@@ -2020,7 +2017,7 @@ async function loadMe() {
     else roleLabel.value = '-'
 
     orgLabel.value   = data.centerName || '미할당'
-    isSuperEmail.value = !!data.grants.isSuper
+    isSuperEmail.value = data.grants.isSuper
 
     phoneInput.value = phone.value || ''
   } catch (_) {

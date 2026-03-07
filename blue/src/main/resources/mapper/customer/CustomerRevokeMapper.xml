@@ -12,7 +12,8 @@
             u.expert_id  AS expertId,
             u.user_email AS email,
             u.can_allocate AS canAllocate,
-            u.manager_phone_access AS visible
+            u.manager_phone_access AS visible,
+            u.is_super   AS isSuper
         FROM users u
         WHERE u.user_email = #{email}
         LIMIT 1
@@ -77,6 +78,7 @@
         SELECT
         c.customer_id         AS id,
         c.customer_name       AS name,
+        u.center_id AS centerId,
 
         CASE WHEN #{visible} = 'Y'
         THEN c.customer_phone
@@ -131,6 +133,7 @@
         c.customer_id         AS id,
         c.customer_name       AS name,
         c.customer_phone      AS phone,
+        u.center_id AS centerId,
 
         CASE
         WHEN c.customer_status != '없음' THEN u.user_name
@@ -176,6 +179,7 @@
         SELECT
         c.customer_id         AS id,
         c.customer_name       AS name,
+        u.center_id AS centerId,
 
         CASE WHEN #{visible} = 'Y'
         THEN c.customer_phone
@@ -242,6 +246,7 @@
         SELECT
         c.customer_id         AS id,
         c.customer_name       AS name,
+        u.center_id AS centerId,
 
         CASE WHEN #{visible} = 'Y'
         THEN c.customer_phone

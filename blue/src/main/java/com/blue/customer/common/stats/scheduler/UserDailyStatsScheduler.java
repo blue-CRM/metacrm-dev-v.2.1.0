@@ -14,7 +14,7 @@ public class UserDailyStatsScheduler {
   private final UserDailyStatsService statsService;
   
   // 매일 새벽 1시 (KST)
-  @Scheduled(cron = "0 0 1 * * *", zone = "Asia/Seoul")
+  @Scheduled(cron = "0 1 * * * *", zone = "Asia/Seoul")
   public void runDailyIncrementalJob() {
     log.info("[UserDailyStatsScheduler] user_daily_stats incremental batch start");
     statsService.applyIncrementalFromAllocLogs();

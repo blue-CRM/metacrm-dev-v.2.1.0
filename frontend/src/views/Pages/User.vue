@@ -97,6 +97,11 @@ async function onRefresh() {
 const expertOptions = ref([]) // [{ expertId, expertName }]
 onMounted(async () => {
   try {
+    if (!auth.grants.isSuper) {
+      expertOptions.value = []
+      return
+    }
+
     const res = await axios.get("/api/me/experts")
     // 기대 응답: [{ expertId, expertName, ... }, ...]
     expertOptions.value = res.data.map(e => ({
@@ -307,13 +312,8 @@ function canEdit(row) {
   return !((row.type === "관리자" || row.center === "본사") && !auth.grants.isSuper);
 }
 
-// super만 수정할 수 있는지 판단
-function canEditVisible() {
-  return isSuper.value; // super만 true
-}
-
 // 프론트는 백엔드가 내려준 isSuper만 사용
-const isSuper = computed(() => !!auth.grants.isSuper);
+const isSuper = computed(() => auth.grants.isSuper)
 
 // 팀장 중복 확인 함수
 async function hasManager(centerName, excludeUserId) {

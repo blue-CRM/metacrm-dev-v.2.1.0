@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import axios from '@/plugins/axios.js'
 import router from "@/router/index.js";
 
+const toBool = (v) => v === 'Y' || v === true
+
 export const useAuthStore = defineStore('auth', {
     state: () => ({
         accessToken: null, // 현재 활성화된 액세스 토큰
@@ -39,7 +41,7 @@ export const useAuthStore = defineStore('auth', {
             const g = data.grants ?? {}
             this.grants = {
                 role: g.role,
-                isSuper: g.isSuper,
+                isSuper: toBool(g.isSuper),
                 perms: g.perms && typeof g.perms === 'object' ? g.perms : {}
             }
 
@@ -56,7 +58,7 @@ export const useAuthStore = defineStore('auth', {
             const g = data.grants ?? {}
             this.grants = {
                 role: g.role,
-                isSuper: g.isSuper,
+                isSuper: toBool(g.isSuper),
                 perms: g.perms && typeof g.perms === 'object' ? g.perms : {}
             }
         },
