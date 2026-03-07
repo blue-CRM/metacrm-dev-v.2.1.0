@@ -140,7 +140,7 @@ import { globalFilters } from '@/composables/globalFilters.js'
 import axios from '@/plugins/axios.js'
 
 const auth = useAuthStore()
-const role = auth.grants.role
+const role = computed(() => auth.grants.role)
 const pageTitle = ref('DB 분배하기')
 
 // ===== 테이블 & 페이징 =====
@@ -269,7 +269,7 @@ const sortLabel = computed(() => viewOptions.value.oldest ? '최신순 보기' :
 const allocatorButtons = computed(() => {
   const btns = [sortLabel.value, '분배하기']
   // 이력초기화는 오직 본사(SUPERADMIN)만 가능
-  if (role === 'SUPERADMIN') {
+  if (role.value === 'SUPERADMIN') {
     btns.push('이력초기화')
   }
   return btns
@@ -343,7 +343,7 @@ function onTableButtonClick(row: any, key: string) {
 
   // 컬럼 정의에서 설정한 key가 'actions'일 때 동작
   if (key === 'actions') {
-    if (role !== 'SUPERADMIN') {
+    if (role.value !== 'SUPERADMIN') {
       alert('권한이 없습니다.')
       return
     }
@@ -381,7 +381,7 @@ async function onConfirmAllocate(payload: {
     }
 
     // 2. API 호출 분기
-    if (role === 'SUPERADMIN') {
+    if (role.value === 'SUPERADMIN') {
       // [본사]
       await axios.post('/api/work/allocate/hq', {
         customerIds: ids,
@@ -389,7 +389,7 @@ async function onConfirmAllocate(payload: {
         targetUserId: payload.userId,
         assignToManagerAsStaff: payload.assignToManagerAsStaff || false
       })
-    } else if (role === 'CENTERHEAD' || role === 'EXPERT') {
+    } else if (role.value === 'CENTERHEAD' || role.value === 'EXPERT') {
       // [센터장/전문가]
       await axios.post('/api/work/allocate/experthead', {
         customerIds: ids,

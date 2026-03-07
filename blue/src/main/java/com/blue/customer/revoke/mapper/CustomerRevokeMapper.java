@@ -1,5 +1,6 @@
 package com.blue.customer.revoke.mapper;
 
+import com.blue.customer.center.dto.CenterSimpleDto;
 import com.blue.customer.revoke.dto.RevokeListRowDto;
 import com.blue.customer.revoke.dto.UserContextDto;
 import org.apache.ibatis.annotations.Mapper;
@@ -22,7 +23,8 @@ public interface CustomerRevokeMapper {
                                        @Param("status")   String status,
                                        @Param("prevStatus") String prevStatus,
                                        @Param("sort") String sort,
-                                       @Param("visible") String visible);
+                                       @Param("visible") String visible,
+                                       @Param("filterCenterId") Long filterCenterId);
   int countListForHq(@Param("keyword") String keyword,
                      @Param("dateFrom") String dateFrom,
                      @Param("dateTo") String dateTo,
@@ -30,7 +32,8 @@ public interface CustomerRevokeMapper {
                      @Param("division") String division,
                      @Param("status")   String status,
                      @Param("prevStatus") String prevStatus,
-                     @Param("visible") String visible);
+                     @Param("visible") String visible,
+                     @Param("filterCenterId") Long filterCenterId);
   
   List<RevokeListRowDto> findListForManager(@Param("offset") int offset,
                                             @Param("size") int size,
@@ -65,7 +68,8 @@ public interface CustomerRevokeMapper {
                                                @Param("sort") String sort,
                                                @Param("centerId") Long centerId,
                                                @Param("visible") String visible,
-                                               @Param("excludeUserId") Long excludeUserId);
+                                               @Param("excludeUserId") Long excludeUserId,
+                                               @Param("filterCenterId") Long filterCenterId);
   
   int countListForCenterHead(@Param("keyword") String keyword,
                              @Param("dateFrom") String dateFrom,
@@ -75,7 +79,8 @@ public interface CustomerRevokeMapper {
                              @Param("prevStatus") String prevStatus,
                              @Param("centerId") Long centerId,
                              @Param("visible") String visible,
-                             @Param("excludeUserId") Long excludeUserId);
+                             @Param("excludeUserId") Long excludeUserId,
+                             @Param("filterCenterId") Long filterCenterId);
   
   List<RevokeListRowDto> findListForExpert(@Param("offset") int offset,
                                            @Param("size") int size,
@@ -87,7 +92,8 @@ public interface CustomerRevokeMapper {
                                            @Param("prevStatus") String prevStatus,
                                            @Param("sort") String sort,
                                            @Param("expertId") Long expertId,
-                                           @Param("visible") String visible);
+                                           @Param("visible") String visible,
+                                           @Param("filterCenterId") Long filterCenterId);
   
   int countListForExpert(@Param("keyword") String keyword,
                          @Param("dateFrom") String dateFrom,
@@ -96,7 +102,8 @@ public interface CustomerRevokeMapper {
                          @Param("status") String status,
                          @Param("prevStatus") String prevStatus,
                          @Param("expertId") Long expertId,
-                         @Param("visible") String visible);
+                         @Param("visible") String visible,
+                         @Param("filterCenterId") Long filterCenterId);
   
   List<Long> lockCustomersForRevokeByHq(@Param("ids") List<Long> ids);
   List<Long> lockCustomersForRevokeByManager(@Param("ids") List<Long> ids,
@@ -116,4 +123,9 @@ public interface CustomerRevokeMapper {
   void deleteSchedulesByCustomerIds(@Param("ids") List<Long> ids);
   // 회수 후 매출 로그 작성
   void insertRevokeSalesLogs(@Param("ids") List<Long> ids, @Param("userId") Long userId);
+  
+  // 팀 드롭박스
+  List<CenterSimpleDto> findRevokeTeamsForHq();
+  List<CenterSimpleDto> findRevokeTeamsForCenterHead(@Param("centerId") Long centerId);
+  List<CenterSimpleDto> findRevokeTeamsForExpert(@Param("expertId") Long expertId);
 }

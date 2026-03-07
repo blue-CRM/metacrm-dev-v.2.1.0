@@ -4,16 +4,12 @@
     <div class="grid grid-cols-12 gap-4 min-w-0">
       <div class="col-span-12 space-y-6 min-w-0">
 
-        <!-- SUPERADMIN (본사) -->
+        <!-- SUPERADMIN (본사) + CENTERHEAD, EXPERT -->
         <ComponentCard
             v-if="role === 'SUPERADMIN' || role === 'CENTERHEAD' || role === 'EXPERT'"
-            :selects="[
-                ['상태 전체', '부재1', '부재2', '부재3', '부재4', '부재5', '기타', '결번',
-                  '재콜', '내방', '내방취소', '신규', '가망', '자연풀', '카피', '거절', '없음', '회수'],
-                ['직전상태 전체', '부재1','부재2','부재3','부재4','부재5','기타','결번',
-                   '재콜','내방','내방취소','가망','자연풀','카피','거절']
-                   ]"
+            :selects="hqSelects"
             :buttons="hqButtons"
+            :disabledButtons="hqDisabledButtons"
             :showRefresh="true"
             :refreshing="isRefreshing"
             @refresh="onRefresh"
@@ -133,11 +129,11 @@ import axios from '@/plugins/axios.js'
 
 /** 권한/페이지 타이틀 */
 const auth = useAuthStore()
-const role = auth.grants.role
+const role = computed(() => auth.grants.role)
 const pageTitle = ref('DB 회수하기')
 
 const isSuper = computed(() => auth.grants.isSuper)
-const canTransfer = computed(() => role === 'SUPERADMIN' && isSuper.value)
+const canTransfer = computed(() => role.value === 'SUPERADMIN' && isSuper.value)
 
 /** 목록 훅 (공용 필터: 날짜/카테고리/키워드) */
 const {
@@ -145,7 +141,16 @@ const {
 } = useTableQuery({
   url: '/api/work/revoke/list',
   externalFilters: globalFilters,
-  useExternalKeys: { from: 'dateFrom', to: 'dateTo', category: 'category', keyword: 'keyword', status: 'status', prevStatus: 'prevStatus', sort: 'sort' },
+  useExternalKeys: {
+    from: 'dateFrom',
+    to: 'dateTo',
+    category: 'category',
+    keyword: 'keyword',
+    status: 'status',
+    prevStatus: 'prevStatus',
+    sort: 'sort',
+    centerId: 'centerId',
+  },
   mapper: (res: any) => ({
     items: res.data.items,
     totalPages: res.data.totalPages,
@@ -240,6 +245,35 @@ const mgrColumns = [
    드롭다운 필터 관련
 ============================= */
 
+const teamSelectOptions = ref<string[]>(['팀 전체'])
+const teamNameToId = ref<Record<string, number>>({})
+
+const hqSelects = computed(() => [
+  ['상태 전체', '부재1', '부재2', '부재3', '부재4', '부재5', '기타', '결번',
+    '재콜', '내방', '내방취소', '신규', '가망', '자연풀', '카피', '거절', '없음', '회수'],
+  ['직전상태 전체', '부재1','부재2','부재3','부재4','부재5','기타','결번',
+    '재콜','내방','내방취소','가망','자연풀','카피','거절'],
+  teamSelectOptions.value,
+])
+
+async function loadRevokeTeams() {
+  if (!['SUPERADMIN', 'CENTERHEAD', 'EXPERT'].includes(role.value)) return
+
+  try {
+    const { data } = await axios.get('/api/work/revoke/teams')
+    const rows = Array.isArray(data) ? data : []
+
+    teamSelectOptions.value = ['팀 전체', ...rows.map((r: any) => r.centerName)]
+    teamNameToId.value = Object.fromEntries(
+        rows.map((r: any) => [r.centerName, r.centerId])
+    )
+  } catch (e) {
+    console.error(e)
+    teamSelectOptions.value = ['팀 전체']
+    teamNameToId.value = {}
+  }
+}
+
 // 상단 드롭다운(Select) 변경 시 호출
 function onSelectChange({ idx, value }: { idx: number; value: string }) {
   // 첫 번째 드롭다운(index 0) : '상태(status)' 필터
@@ -251,10 +285,16 @@ function onSelectChange({ idx, value }: { idx: number; value: string }) {
     setFilter('status', filterValue)
   }
 
-  // 첫 번째 드롭다운(index 1) : '직전상태(prevStatus)' 필터
+  // 두 번째 드롭다운(index 1) : '직전상태(prevStatus)' 필터
   if (idx === 1) {
     const filterValue = value === '직전상태 전체' ? null : value
     setFilter('prevStatus', filterValue)
+  }
+
+  // 세 번째 드롭다운(index 2) : '팀선택(centerId)' 필터
+  if (idx === 2) {
+    const filterValue = value === '팀 전체' ? null : teamNameToId.value[value] ?? null
+    setFilter('centerId', filterValue)
   }
 }
 
@@ -315,6 +355,8 @@ function onHqButton(btn: string) {
   }
 
   if (btn === '이관하기') {
+    if (transferDisabled.value) return
+
     const ids = needSelection('이관')
     if (!ids.length) return
     transferModal.value.open = true
@@ -371,12 +413,74 @@ async function onConfirmTransfer(payload: {
   })
 }
 
+const remainingTransferCenterCount = ref(0)
+
+async function loadRemainingTransferCenters() {
+  if (!canTransfer.value) {
+    remainingTransferCenterCount.value = 0
+    return
+  }
+
+  try {
+    const params = new URLSearchParams()
+    excludedCenterIds.value.forEach((id) => {
+      params.append('excludeCenterIds', String(id))
+    })
+
+    const qs = params.toString()
+    const url = qs
+        ? `/api/work/revoke/transfer/centers?${qs}`
+        : '/api/work/revoke/transfer/centers'
+
+    const { data } = await axios.get(url)
+    remainingTransferCenterCount.value = Array.isArray(data) ? data.length : 0
+  } catch (e) {
+    console.error(e)
+    remainingTransferCenterCount.value = 0
+  }
+}
+
+watch(
+    [excludedCenterIds, canTransfer],
+    async () => {
+      if (!canTransfer.value) {
+        remainingTransferCenterCount.value = 0
+        return
+      }
+      await loadRemainingTransferCenters()
+    },
+    { deep: true, immediate: true }
+)
+
+watch(
+    role,
+    async (r) => {
+      if (['SUPERADMIN', 'CENTERHEAD', 'EXPERT'].includes(r)) {
+        await loadRevokeTeams()
+      } else {
+        teamSelectOptions.value = ['팀 전체']
+        teamNameToId.value = {}
+      }
+    },
+    { immediate: true }
+)
+
+const transferDisabled = computed(() =>
+    canTransfer.value &&
+    selectedRows.value.length > 0 &&
+    remainingTransferCenterCount.value === 0
+)
+
+const hqDisabledButtons = computed(() =>
+    transferDisabled.value ? ['이관하기'] : []
+)
+
 /** 회수 실행 */
 // 역할별 회수 엔드포인트만 추가
 function getRevokeUrlByRole() {
-  if (role === 'SUPERADMIN') return '/api/work/revoke/hq'
-  if (role === 'CENTERHEAD') return '/api/work/revoke/centerhead'
-  if (role === 'EXPERT')     return '/api/work/revoke/expert'
+  if (role.value === 'SUPERADMIN') return '/api/work/revoke/hq'
+  if (role.value === 'CENTERHEAD') return '/api/work/revoke/centerhead'
+  if (role.value === 'EXPERT') return '/api/work/revoke/expert'
   return '/api/work/revoke/hq'
 }
 async function onConfirmRevoke(ids: number[]) {

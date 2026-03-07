@@ -3,6 +3,7 @@ package com.blue.customer.revoke.controller;
 import com.blue.customer.all.dto.PagedResponse;
 import com.blue.customer.allocate.dto.CenterPickDto;
 import com.blue.customer.allocate.dto.UserPickDto;
+import com.blue.customer.center.dto.CenterSimpleDto;
 import com.blue.customer.revoke.dto.RevokeListRowDto;
 import com.blue.customer.revoke.dto.RevokeReq;
 import com.blue.customer.revoke.dto.RevokeResult;
@@ -33,8 +34,10 @@ public class CustomerRevokeController {
           @RequestParam(required = false) String division, // HQ only
           @RequestParam(required = false) String status,
           @RequestParam(required = false) String prevStatus,
-          @RequestParam(required = false) String sort) {
-    return service.list(auth.getName(), page, size, keyword, dateFrom, dateTo, category, division, status, prevStatus, sort);
+          @RequestParam(required = false) String sort,
+          @RequestParam(required = false) Long centerId) {
+    return service.list(auth.getName(), page, size, keyword, dateFrom, dateTo,
+        category, division, status, prevStatus, sort, centerId);
   }
   
   // 본사 회수 실행
@@ -81,5 +84,11 @@ public class CustomerRevokeController {
                                          @RequestParam(required = false) String q,
                                          @RequestParam(required = false) List<Long> excludeCenterIds) {
     return service.getTransferUsers(auth.getName(), centerId, q, excludeCenterIds);
+  }
+  
+  // 팀 드롭박스
+  @GetMapping("/work/revoke/teams")
+  public List<CenterSimpleDto> revokeTeams(Authentication auth) {
+    return service.getRevokeTeams(auth.getName());
   }
 }

@@ -6,6 +6,7 @@ import com.blue.customer.allocate.dto.UserPickDto;
 import com.blue.customer.alloclog.dto.AllocLogInsertDto;
 import com.blue.customer.alloclog.dto.CustomerOwnerSnapshotDto;
 import com.blue.customer.alloclog.mapper.AllocLogMapper;
+import com.blue.customer.center.dto.CenterSimpleDto;
 import com.blue.customer.revoke.dto.*;
 import com.blue.customer.revoke.mapper.CustomerRevokeMapper;
 import com.blue.customer.allocate.mapper.CustomerAllocateMapper;
@@ -32,7 +33,7 @@ public class CustomerRevokeService {
   public PagedResponse<RevokeListRowDto> list(String callerEmail, int page, int size,
                                               String keyword, String dateFrom, String dateTo,
                                               String category, String division, String status,
-                                              String prevStatus, String sort) {
+                                              String prevStatus, String sort, Long filterCenterId) {
     UserContextDto me = mapper.findUserContextByEmail(callerEmail);
     if (me == null) throw new AuthException("인증 사용자 정보를 찾을 수 없습니다.",HttpStatus.GONE);
     
@@ -42,20 +43,20 @@ public class CustomerRevokeService {
     
     switch (me.getRole()) {
       case "SUPERADMIN" -> {
-        items = mapper.findListForHq(offset, size, keyword, dateFrom, dateTo, category, division, status, prevStatus, sort, me.getVisible());
-        total = mapper.countListForHq(keyword, dateFrom, dateTo, category, division, status, prevStatus, me.getVisible());
+        items = mapper.findListForHq(offset, size, keyword, dateFrom, dateTo, category, division, status, prevStatus, sort, me.getVisible(), filterCenterId);
+        total = mapper.countListForHq(keyword, dateFrom, dateTo, category, division, status, prevStatus, me.getVisible(), filterCenterId);
       }
       case "MANAGER" -> {
         items = mapper.findListForManager(offset, size, keyword, dateFrom, dateTo, category, status, prevStatus, sort, me.getCenterId(), me.getVisible(), me.getUserId());
         total = mapper.countListForManager(keyword, dateFrom, dateTo, category, status, prevStatus, me.getCenterId(), me.getVisible(), me.getUserId());
       }
       case "CENTERHEAD" -> {
-        items = mapper.findListForCenterHead(offset, size, keyword, dateFrom, dateTo, category, status, prevStatus, sort, me.getCenterId(), me.getVisible(), me.getUserId());
-        total = mapper.countListForCenterHead(keyword, dateFrom, dateTo, category, status, prevStatus, me.getCenterId(), me.getVisible(), me.getUserId());
+        items = mapper.findListForCenterHead(offset, size, keyword, dateFrom, dateTo, category, status, prevStatus, sort, me.getCenterId(), me.getVisible(), me.getUserId(), filterCenterId);
+        total = mapper.countListForCenterHead(keyword, dateFrom, dateTo, category, status, prevStatus, me.getCenterId(), me.getVisible(), me.getUserId(), filterCenterId);
       }
       case "EXPERT" -> {
-        items = mapper.findListForExpert(offset, size, keyword, dateFrom, dateTo, category, status, prevStatus, sort, me.getExpertId(), me.getVisible());
-        total = mapper.countListForExpert(keyword, dateFrom, dateTo, category, status, prevStatus, me.getExpertId(), me.getVisible());
+        items = mapper.findListForExpert(offset, size, keyword, dateFrom, dateTo, category, status, prevStatus, sort, me.getExpertId(), me.getVisible(), filterCenterId);
+        total = mapper.countListForExpert(keyword, dateFrom, dateTo, category, status, prevStatus, me.getExpertId(), me.getVisible(), filterCenterId);
       }
       default -> throw new AuthException("이 메뉴는 분배권한이 있는 사용자만 사용할 수 있습니다.",HttpStatus.GONE);
     }
@@ -392,5 +393,20 @@ public class CustomerRevokeService {
     }
     
     return allocateMapper.searchStaffForAllocate(centerId, q);
+  }
+  
+  // 팀 드롭박스
+  public List<CenterSimpleDto> getRevokeTeams(String callerEmail) {
+    UserContextDto me = mapper.findUserContextByEmail(callerEmail);
+    if (me == null) {
+      throw new AuthException("인증 사용자 정보를 찾을 수 없습니다.", HttpStatus.GONE);
+    }
+    
+    return switch (me.getRole()) {
+      case "SUPERADMIN" -> mapper.findRevokeTeamsForHq();
+      case "CENTERHEAD" -> mapper.findRevokeTeamsForCenterHead(me.getCenterId());
+      case "EXPERT" -> mapper.findRevokeTeamsForExpert(me.getExpertId());
+      default -> throw new AuthException("팀 필터 조회 권한이 없습니다.", HttpStatus.GONE);
+    };
   }
 }

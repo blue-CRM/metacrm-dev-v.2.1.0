@@ -130,8 +130,8 @@ import { globalFilters } from "@/composables/globalFilters.js";
 import axios from "@/plugins/axios.js"
 
 const auth = useAuthStore();
-const role = auth.grants.role;
-const isManager = computed(() => role === 'MANAGER');
+const role = computed(() => auth.grants.role)
+const isManager = computed(() => role.value === 'MANAGER');
 const memoReadOnly = computed(() => ['CENTERHEAD', 'EXPERT'].includes(role))
 const mineOnly = ref(false);
 
