@@ -9,9 +9,9 @@
         >
           <!-- 상단 툴바 -->
           <div
-              class="flex items-center justify-between gap-2 px-4 py-3 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/60"
+              class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-3 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/60"
           >
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
               <button
                   :class="btnSoft"
                   @click="goPrevWeek"
@@ -30,13 +30,36 @@
               >
                 다음주 >
               </button>
+
+              <!-- 날짜 검색 -->
+              <div ref="jumpDateWrap" class="relative shrink-0">
+                <input
+                    ref="jumpDateInput"
+                    v-model="jumpDate"
+                    type="text"
+                    placeholder="날짜 검색"
+                    @keyup.enter="goToSearchedDate"
+                    class="h-9 w-[160px] rounded-xl border px-3 pr-9 text-sm
+             bg-white text-gray-700 shadow-sm
+             border-gray-200 hover:border-gray-300
+             focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+             dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200"
+                />
+              </div>
+
+              <button
+                  :class="btnSoft"
+                  @click="goToSearchedDate"
+              >
+                검색
+              </button>
             </div>
 
-            <div class="font-semibold text-gray-700 dark:text-white/70">
+            <div class="font-semibold text-gray-700 dark:text-white/70 text-center">
               {{ weekTitle }}
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 justify-self-end">
               <button
                   v-if="canWrite"
                   :class="[btnSoftPrimary, (lockEnabled && !isSuper) ? 'opacity-50' : '']"
@@ -258,16 +281,18 @@
                 <div class="grid grid-cols-12 gap-3">
                   <div class="col-span-6 space-y-1">
                     <label class="block text-sm text-gray-600 dark:text-gray-300">날짜</label>
-                    <input
-                        v-model="formDate"
-                        type="date"
-                        :disabled="!modalCanEdit"
-                        class="w-full h-11 rounded-lg border px-3
-                       bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                       dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                        @click="(e) => (e.currentTarget as HTMLInputElement).showPicker?.()"
-                        @change="syncPendingFromForm()"
-                    />
+                    <div ref="modalDateWrap" class="relative">
+                      <input
+                          ref="modalDateInput"
+                          v-model="formDate"
+                          type="text"
+                          placeholder="날짜 선택"
+                          :disabled="!modalCanEdit"
+                          class="w-full h-11 rounded-lg border px-3 pr-10
+                             bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+                             dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                      />
+                    </div>
                   </div>
 
                   <div class="col-span-3 space-y-1">
@@ -509,8 +534,24 @@ import axios from '@/plugins/axios.js'
 import { useAuthStore } from "@/stores/auth.js";
 import { useRoute } from 'vue-router'
 import {RefreshIcon} from "@/icons";
+import flatpickr from 'flatpickr'
+import { Korean } from 'flatpickr/dist/l10n/ko.js'
+import 'flatpickr/dist/flatpickr.css'
 
 const myUserId = ref<number | null>(null)
+
+// 날짜 관련 설정
+const modalDateInput = ref<HTMLInputElement | null>(null)
+const jumpDateInput = ref<HTMLInputElement | null>(null)
+
+const jumpDateWrap = ref<HTMLElement | null>(null)
+const modalDateWrap = ref<HTMLElement | null>(null)
+
+const jumpDate = ref('')
+const jumpFocusDayKey = ref<string | null>(null)
+
+let modalDateFp: any = null
+let jumpDateFp: any = null
 
 async function loadMyId() {
   try {
@@ -765,6 +806,23 @@ function startOfWeek(d: Date) {
   return x
 }
 function koDow(d: Date) { return ['일', '월', '화', '수', '목', '금', '토'][d.getDay()] }
+function parseYmdLocal(v: string) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec((v || '').trim())
+  if (!m) return null
+
+  const y = Number(m[1])
+  const mo = Number(m[2])
+  const d = Number(m[3])
+
+  const dt = new Date(y, mo - 1, d)
+  if (
+      dt.getFullYear() !== y ||
+      dt.getMonth() !== mo - 1 ||
+      dt.getDate() !== d
+  ) return null
+
+  return dt
+}
 
 /** ===== 상태 ===== */
 const todayKey = ref(ymd(new Date()))
@@ -895,6 +953,7 @@ onMounted(async () => {
 
   // 스크롤 대상: focusDayKey > (이번주면 오늘) > 주 시작
   await nextTick()
+  initJumpDatePicker()
   const target =
       (focusDayKey.value && days.value.some(d => d.key === focusDayKey.value)) ? focusDayKey.value
           : (days.value.some(d => d.key === todayKey.value) ? todayKey.value : days.value[0]?.key)
@@ -928,16 +987,22 @@ watch(weekStart, async () => {
   await nextTick()
   await loadSchedules()
 
+  // 이동 우선순위
   const target =
-      (followCustomerFocus.value && focusDayKey.value && days.value.some(d => d.key === focusDayKey.value))
-          ? focusDayKey.value
-          : (days.value.some(d => d.key === todayKey.value) ? todayKey.value : days.value[0]?.key)
+      (jumpFocusDayKey.value && days.value.some(d => d.key === jumpFocusDayKey.value))
+          ? jumpFocusDayKey.value
+          : (followCustomerFocus.value && focusDayKey.value && days.value.some(d => d.key === focusDayKey.value))
+              ? focusDayKey.value
+              : (days.value.some(d => d.key === todayKey.value) ? todayKey.value : days.value[0]?.key)
 
   if (target) {
     requestAnimationFrame(() => {
       scrollToDay(target)
-
-      // ⬇ customerId로 포커스 들어온 경우만 세로 스크롤
+      // 날짜 이동
+      if (jumpFocusDayKey.value && target === jumpFocusDayKey.value) {
+        jumpFocusDayKey.value = null
+      }
+      // customerId로 포커스 들어온 경우만 세로 스크롤
       if (followCustomerFocus.value && lockedCustomerId.value) {
         const ev = events.value.find(e => e.customerId === lockedCustomerId.value)
         if (ev) scrollToEventVertical(ev)
@@ -960,6 +1025,11 @@ onMounted(() => {
 onBeforeUnmount(() => {
   darkObs?.disconnect()
   darkObs = null
+
+  destroyFp(modalDateFp)
+  destroyFp(jumpDateFp)
+  modalDateFp = null
+  jumpDateFp = null
 })
 
 function timeLabel(slotIdx: number) {
@@ -1502,6 +1572,40 @@ function closeModal() {
   clearSelection()
 }
 
+watch(isOpen, async (open) => {
+  if (open) {
+    await nextTick()
+    initModalDatePicker()
+  } else {
+    destroyFp(modalDateFp)
+    modalDateFp = null
+  }
+})
+
+watch(formDate, (v) => {
+  const ins = modalDateFp
+  if (!ins) return
+
+  const cur = ins.input?.value || ''
+  if (!v) {
+    if (cur) ins.clear()
+    return
+  }
+  if (cur !== v) ins.setDate(v, false, 'Y-m-d')
+})
+
+watch(jumpDate, (v) => {
+  const ins = jumpDateFp
+  if (!ins) return
+
+  const cur = ins.input?.value || ''
+  if (!v) {
+    if (cur) ins.clear()
+    return
+  }
+  if (cur !== v) ins.setDate(v, false, 'Y-m-d')
+})
+
 async function openManualAdd() {
   if (!canWrite.value) return
   // if (lockEnabled.value && !isSuper.value) return
@@ -1879,6 +1983,7 @@ function goToday() {
   focusDayKey.value = null
   followCustomerFocus.value = false
   shouldAutoOpenFocus.value = false
+  jumpFocusDayKey.value = null
   weekStart.value = startOfWeek(new Date())
 }
 
@@ -2014,6 +2119,211 @@ function toggleCustomer(c: CustomerPick) {
   } else {
     pickedCustomer.value = c
   }
+}
+
+// 날짜 피커 설정
+function destroyFp(ins: any) {
+  if (!ins) return
+  try { ins.close?.() } catch {}
+  try { ins.destroy?.() } catch {}
+}
+
+function attachClearButton(
+    ins: any,
+    model: { value: string },
+    afterClear?: () => void,
+    opts?: {
+      right?: string
+      size?: number
+      top?: string
+      hostEl?: HTMLElement | null
+    }
+) {
+  const host = opts?.hostEl ?? ins.input?.parentElement
+  if (!host) return
+
+  // 기존 버튼 있으면 제거 후 다시 생성
+  if (ins._clearButton && ins._clearButton.parentNode) {
+    ins._clearButton.parentNode.removeChild(ins._clearButton)
+    ins._clearButton = null
+  }
+
+  const right = opts?.right ?? '10px'
+  const size = opts?.size ?? 18
+  const top = opts?.top ?? '50%'
+
+  const btn = document.createElement('button')
+  btn.type = 'button'
+  btn.textContent = '✕'
+
+  btn.style.position = 'absolute'
+  btn.style.right = right
+  btn.style.top = top
+  btn.style.transform = 'translateY(-50%)'
+  btn.style.width = `${size}px`
+  btn.style.height = `${size}px`
+  btn.style.display = 'flex'
+  btn.style.alignItems = 'center'
+  btn.style.justifyContent = 'center'
+  btn.style.borderRadius = '9999px'
+  btn.style.fontSize = '12px'
+  btn.style.lineHeight = '1'
+  btn.style.color = '#9CA3AF'
+  btn.style.background = 'transparent'
+  btn.style.border = 'none'
+  btn.style.cursor = 'pointer'
+  btn.style.zIndex = '30'
+  btn.style.pointerEvents = 'auto'
+
+  btn.addEventListener('mouseenter', () => {
+    btn.style.color = '#EF4444'
+  })
+  btn.addEventListener('mouseleave', () => {
+    btn.style.color = '#9CA3AF'
+  })
+
+  btn.addEventListener('click', (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    model.value = ''
+    ins.clear()
+    if (ins.input) ins.input.value = ''
+    afterClear?.()
+  })
+
+  host.style.position = 'relative'
+  host.appendChild(btn)
+  ins._clearButton = btn
+}
+
+function initModalDatePicker() {
+  if (!modalDateInput.value) return
+
+  destroyFp(modalDateFp)
+
+  modalDateFp = flatpickr(modalDateInput.value, {
+    locale: Korean,
+    dateFormat: 'Y-m-d',
+    allowInput: true,
+    disableMobile: true,
+    defaultDate: formDate.value || undefined,
+
+    onReady: (_d, _s, ins) => {
+      ins.calendarContainer.style.position = 'fixed'
+      ins.calendarContainer.style.zIndex = '2147483648'
+
+      attachClearButton(
+          ins,
+          formDate,
+          () => syncPendingFromForm(),
+          {
+            right: '10px',
+            size: 25,
+            top: '50%',
+            hostEl: modalDateWrap.value
+          }
+      )
+
+      if (formDate.value) ins.setDate(formDate.value, false, 'Y-m-d')
+      else ins.jumpToDate(new Date())
+    },
+
+    onOpen: (_d, _s, ins) => {
+      if (!formDate.value) ins.jumpToDate(new Date())
+    },
+
+    onChange: (_dates, dateStr) => {
+      formDate.value = dateStr || ''
+      syncPendingFromForm()
+    },
+
+    onClose: (_dates, dateStr) => {
+      formDate.value = dateStr || ''
+      syncPendingFromForm()
+    },
+  })
+}
+
+function initJumpDatePicker() {
+  if (!jumpDateInput.value) return
+
+  destroyFp(jumpDateFp)
+
+  jumpDateFp = flatpickr(jumpDateInput.value, {
+    locale: Korean,
+    dateFormat: 'Y-m-d',
+    allowInput: true,
+    disableMobile: true,
+    defaultDate: jumpDate.value || undefined,
+
+    onReady: (_d, _s, ins) => {
+      ins.calendarContainer.style.position = 'fixed'
+      ins.calendarContainer.style.zIndex = '2147483646'
+
+      attachClearButton(
+          ins,
+          formDate,
+          () => syncPendingFromForm(),
+          {
+            right: '10px',
+            size: 18,
+            top: '50%',
+            hostEl: modalDateWrap.value
+          }
+      )
+
+      if (jumpDate.value) ins.setDate(jumpDate.value, false, 'Y-m-d')
+      else ins.jumpToDate(new Date())
+    },
+
+    onOpen: (_d, _s, ins) => {
+      if (!jumpDate.value) ins.jumpToDate(new Date())
+    },
+
+    onChange: (_dates, dateStr) => {
+      jumpDate.value = dateStr || ''
+    },
+
+    onClose: (_dates, dateStr) => {
+      jumpDate.value = dateStr || ''
+    },
+  })
+}
+
+function isValidYmd(v: string) {
+  return !!parseYmdLocal(v)
+}
+
+async function goToSearchedDate() {
+  const v = (jumpDate.value || '').trim()
+  const targetDate = parseYmdLocal(v)
+
+  if (!targetDate) {
+    alert('검색할 날짜를 선택하세요.')
+    return
+  }
+
+  // 기존 자동 포커스 상태 완전히 해제
+  focusDayKey.value = null
+  followCustomerFocus.value = false
+  shouldAutoOpenFocus.value = false
+
+  // 검색 이동 전용 포커스
+  jumpFocusDayKey.value = v
+
+  const nextWeekStart = startOfWeek(targetDate)
+
+  // 같은 주면 서버 재조회 없이 바로 스크롤
+  if (ymd(nextWeekStart) === ymd(weekStart.value)) {
+    await nextTick()
+    requestAnimationFrame(() => {
+      scrollToDay(v)
+      jumpFocusDayKey.value = null
+    })
+    return
+  }
+
+  weekStart.value = nextWeekStart
 }
 
 // 새로고침

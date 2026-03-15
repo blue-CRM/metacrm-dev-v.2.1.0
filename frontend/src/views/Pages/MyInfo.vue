@@ -529,7 +529,7 @@
               <div class="col-span-2 mt-4">
                 <div
                     class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800
-                         max-h-85 overflow-auto spin-dark"
+                         max-h-100 overflow-auto spin-dark"
                 >
                   <!-- 로딩 -->
                   <div
@@ -843,7 +843,7 @@
               <div class="col-span-2 mt-4">
                 <div
                     class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800
-                           max-h-60 overflow-auto spin-dark"
+                           max-h-100 overflow-auto spin-dark"
                 >
                   <div v-if="branchesLoading" class="p-4 text-sm text-gray-500 dark:text-gray-400">
                     불러오는 중…
@@ -1088,7 +1088,7 @@
               <div class="col-span-2 mt-4">
                 <div
                     class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800
-                           max-h-60 overflow-auto spin-dark"
+                           max-h-100 overflow-auto spin-dark"
                 >
                   <div v-if="centersLoading" class="p-4 text-sm text-gray-500 dark:text-gray-400">
                     불러오는 중…
@@ -1401,7 +1401,7 @@
               <div class="col-span-2 mt-4">
                 <div
                     class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800
-                           max-h-60 overflow-auto spin-dark"
+                           max-h-100 overflow-auto spin-dark"
                 >
                   <div v-if="partitionsLoading" class="p-4 text-sm text-gray-500 dark:text-gray-400">
                     불러오는 중…
@@ -1688,7 +1688,7 @@
               <div class="col-span-2 mt-4">
                 <div
                     class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800
-                         max-h-60 overflow-auto spin-dark"
+                         max-h-100 overflow-auto spin-dark"
                 >
                   <div v-if="expertsLoading" class="p-4 text-sm text-gray-500 dark:text-gray-400">
                     불러오는 중…
@@ -1916,7 +1916,7 @@
 
               <!-- 목록 -->
               <div class="col-span-2 mt-4">
-                <div class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800 max-h-60 overflow-auto spin-dark">
+                <div class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800 max-h-100 overflow-auto spin-dark">
                   <div v-if="roomsLoading" class="p-4 text-sm text-gray-500 dark:text-gray-400">불러오는 중…</div>
 
                   <div v-else-if="!rooms || rooms.length === 0" class="p-4 text-sm text-gray-500 dark:text-gray-400">
