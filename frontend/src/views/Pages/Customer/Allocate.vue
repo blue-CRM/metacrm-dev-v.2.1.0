@@ -72,7 +72,16 @@
             :selected-count="selectedRows.length"
             @close="closeModal"
             @confirm="onConfirmAllocate"
-        />
+        >
+          <template
+              v-if="role === 'SUPERADMIN' && auth.grants.isSuper === true"
+              #extra
+          >
+            <AllocateExpertDailySummary
+                :customer-ids="selectedRows.map(row => row.id)"
+            />
+          </template>
+        </AllocateModal>
 
         <ResetModal
           :is-open="resetModal.open"
@@ -130,6 +139,7 @@ import PageBreadcrumb from '@/components/common/PageBreadcrumb.vue'
 import ComponentCard from '@/components/common/ComponentCard.vue'
 import PsnsTable from '@/components/tables/basic-tables/PsnsTable.vue'
 import AllocateModal from '@/components/ui/AllocateModal.vue'
+import AllocateExpertDailySummary from "@/components/ui/AllocateExpertDailySummary.vue";
 import ResetModal from '@/components/ui/ResetModal.vue'
 import Memo from '@/components/ui/MEMO.vue'
 import { EyeIcon } from '@heroicons/vue/24/outline'

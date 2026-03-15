@@ -83,4 +83,13 @@ public class CustomerAllocateController {
   public void deleteHistory(@RequestBody HistoryDeleteRequest request) {
     service.deleteHistory(request.getLogIds());
   }
+  
+  // 모달에서 : 슈퍼계정 전용 전문가 DB 집계 표 출력
+  @PostMapping("/work/allocate/expert-daily-summary")
+  public List<AllocateExpertDailySummaryRowDto> getExpertDailySummary(
+      Authentication auth,
+      @RequestBody CustomerIdListReq req
+  ) {
+    return service.getExpertDailySummary(auth.getName(), req.getCustomerIds());
+  }
 }

@@ -132,7 +132,7 @@ import axios from "@/plugins/axios.js"
 const auth = useAuthStore();
 const role = computed(() => auth.grants.role)
 const isManager = computed(() => role.value === 'MANAGER');
-const memoReadOnly = computed(() => ['CENTERHEAD', 'EXPERT'].includes(role))
+const memoReadOnly = computed(() => ['CENTERHEAD', 'EXPERT'].includes(role.value))
 const mineOnly = ref(false);
 
 const currentPageTitle = ref("전체 고객DB관리");
@@ -216,7 +216,7 @@ const {
 
 // 본사, 센터장, 전문가는 '관리자형 뷰' (구분 칼럼 O, 매출 칼럼 O)
 const isAdminView = computed(() => {
-  return ['SUPERADMIN', 'CENTERHEAD', 'EXPERT'].includes(role);
+  return ['SUPERADMIN', 'CENTERHEAD', 'EXPERT'].includes(role.value);
 });
 
 // 로딩 오버레이 설정
@@ -261,7 +261,7 @@ function isSalesEditable(row) {
 }
 
 function isNameEditable(row) {
-  return role === 'SUPERADMIN' && row.origin === 'CUSTOMER';
+  return role.value === 'SUPERADMIN' && row.origin !== 'DUPLICATE';
 }
 
 /* =============================
@@ -421,7 +421,7 @@ async function onSalesUpdate(row, key, newValue) {
 async function onTextUpdate(row, key, newValue) {
   if (key !== 'name') return;
 
-  if (role !== 'SUPERADMIN') {
+  if (role.value !== 'SUPERADMIN') {
     alert('권한이 없습니다.');
     return;
   }
@@ -499,7 +499,7 @@ const adminSelects = computed(() => {
   const base = [divisionOptions, statusOptions, prevStatusOptions];
 
   // 전문가(EXPERT)가 아닐 때만 '전문가 선택' 드롭박스 추가
-  if (role !== 'EXPERT') {
+  if (role.value !== 'EXPERT') {
     base.push(expertOptions.value); // 2:전문가
   }
 
@@ -683,7 +683,7 @@ onMounted(async () => {
   }
 
   // 전문가 권한이 아닐 때만 전문가 리스트 API 호출
-  if (role !== 'EXPERT') {
+  if (role.value !== 'EXPERT') {
     try {
       // 전문가 리스트 조회
       const {data} = await axios.get('/api/work/db/experts');

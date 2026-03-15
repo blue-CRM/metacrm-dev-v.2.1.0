@@ -14,6 +14,9 @@
         <!-- 선택 개수 -->
         <p class="text-sm text-gray-500 dark:text-gray-400">선택된 고객: <b>{{ selectedCount }}</b>명</p>
 
+        <!-- 슈퍼계정 전용 전문가 DB 갯수 집계 표 출력 slot -->
+        <slot name="extra" />
+
         <!-- HQ 전용: 팀 선택 -->
         <div v-if="mode==='HQ'" class="space-y-1">
           <label class="block text-sm text-gray-600 dark:text-gray-300">팀 선택</label>

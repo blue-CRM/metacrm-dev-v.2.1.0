@@ -142,7 +142,9 @@ onMounted(async () => {
     // console.log(teamUnitOptions.value);
   } catch (err) {
     console.error("센터 목록 불러오기 실패:", err.response?.data || err.message);
-    centerOptions.value = [] // 실패 시 안전하게 초기화
+    fullCenterList.value = []
+    centerUnitOptions.value = []
+    teamUnitOptions.value = []
   }
 });
 

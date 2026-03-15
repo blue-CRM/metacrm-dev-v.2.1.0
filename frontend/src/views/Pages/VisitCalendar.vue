@@ -2262,13 +2262,13 @@ function initJumpDatePicker() {
 
       attachClearButton(
           ins,
-          formDate,
-          () => syncPendingFromForm(),
+          jumpDate,
+          () => {},
           {
             right: '10px',
             size: 18,
             top: '50%',
-            hostEl: modalDateWrap.value
+            hostEl: jumpDateWrap.value
           }
       )
 
