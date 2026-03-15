@@ -5,7 +5,7 @@
     <div class="w-full max-w-[700px] rounded-2xl bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-gray-800">
       <!-- 헤더 -->
       <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
-        <h3 class="text-base font-semibold text-gray-800 dark:text-gray-100">DB 일괄 분배</h3>
+        <h3 class="text-base font-semibold text-gray-800 dark:text-gray-100">{{ title }}</h3>
         <button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" @click="$emit('close')">✕</button>
       </div>
 
@@ -13,6 +13,9 @@
       <div class="px-5 py-4 space-y-4">
         <!-- 선택 개수 -->
         <p class="text-sm text-gray-500 dark:text-gray-400">선택된 고객: <b>{{ selectedCount }}</b>명</p>
+
+        <!-- 슈퍼계정 전용 전문가 DB 갯수 집계 표 출력 slot -->
+        <slot name="extra" />
 
         <!-- HQ 전용: 팀 선택 -->
         <div v-if="mode==='HQ'" class="space-y-1">
@@ -112,12 +115,12 @@
           <button
               class="h-10 px-4 rounded-lg bg-gray-600 text-white text-sm hover:bg-gray-700 disabled:opacity-60"
               :disabled="submitting"
-              @click="confirm(false)"> 팀 공용 분배
+              @click="confirm(false)"> {{ managerPoolLabel }}
           </button>
           <button
               class="h-10 px-4 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-500 disabled:opacity-60"
               :disabled="submitting"
-              @click="confirm(true)"> 팀장 개인 분배
+              @click="confirm(true)"> {{ managerPersonalLabel }}
           </button>
         </template>
 
@@ -128,7 +131,7 @@
                     (mode==='HQ' && (!centerId || !pickedUser)) ||
                     (mode==='MANAGER' && !pickedUser)"
               @click="confirm(false)">
-            {{ submitting ? '처리 중...' : '분배하기' }}
+            {{ submitting ? '처리 중...' : primaryLabel }}
           </button>
         </template>
       </div>
@@ -138,9 +141,25 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
-import axios from '@/plugins/axios'
+import axios from '@/plugins/axios.js'
 
-const props = defineProps<{ mode: 'HQ'|'MANAGER', centerId?: number|null, selectedCount: number }>()
+const props = withDefaults(defineProps<{
+  mode: 'HQ' | 'MANAGER'
+  centerId?: number | null
+  selectedCount: number
+  title?: string
+  primaryLabel?: string
+  managerPoolLabel?: string
+  managerPersonalLabel?: string
+  excludeCenterIds?: number[]
+  apiBase?: string
+}>(), {
+  title: 'DB 일괄 분배',
+  primaryLabel: '분배하기',
+  managerPoolLabel: '팀 공용 분배',
+  managerPersonalLabel: '팀장 개인 분배',
+  apiBase: '/api/work/allocate'
+})
 const emit = defineEmits<{
   (e:'close'):void,
   (e:'confirm', payload:{
@@ -159,29 +178,71 @@ const query = ref('')
 const pickedUser = ref<any|null>(null)
 const submitting = ref(false)
 
-async function loadCenters(){
+async function loadCenters() {
   if (props.mode !== 'HQ') return
+
   try {
-    const { data } = await axios.get('/api/work/allocate/centers')
-    centers.value = data || []
-    // 자동 선택 금지(placeholder 유지)
-  } catch (e) { console.error(e) }
+    const params: any = {}
+
+    if (props.excludeCenterIds?.length) {
+      params.excludeCenterIds = props.excludeCenterIds
+    }
+
+    const { data } = await axios.get(`${props.apiBase}/centers`, {
+      params,
+      paramsSerializer: {
+        indexes: null,
+      },
+    })
+
+    if (props.excludeCenterIds?.length) {
+      const excludeSet = new Set(props.excludeCenterIds)
+      centers.value = (data || []).filter((c: any) => !excludeSet.has(c.centerId))
+
+      if (centerId.value && excludeSet.has(centerId.value)) {
+        centerId.value = null
+      }
+    } else {
+      centers.value = data || []
+    }
+  } catch (e) {
+    console.error(e)
+  }
 }
 
-async function searchUsers(){
+async function searchUsers() {
   try {
-    // HQ에서 팀 미선택이면 검색/표시 금지
     if (props.mode === 'HQ' && !centerId.value) {
       users.value = []
       return
     }
-    const params:any = {}
+
+    const params: any = {}
+
     if (props.mode === 'HQ') params.centerId = centerId.value || undefined
     if (props.mode === 'MANAGER') params.centerId = props.centerId || undefined
     if (query.value) params.q = query.value
-    const { data } = await axios.get('/api/work/allocate/users', { params })
-    users.value = data || []
-  } catch (e) { console.error(e) }
+
+    if (props.excludeCenterIds?.length) {
+      params.excludeCenterIds = props.excludeCenterIds
+    }
+
+    const { data } = await axios.get(`${props.apiBase}/users`, {
+      params,
+      paramsSerializer: {
+        indexes: null,
+      },
+    })
+
+    if (props.excludeCenterIds?.length) {
+      const excludeSet = new Set(props.excludeCenterIds)
+      users.value = (data || []).filter((u: any) => !excludeSet.has(u.centerId))
+    } else {
+      users.value = data || []
+    }
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 let t:any = null
@@ -233,4 +294,14 @@ watch(centerId, () => {
   pickedUser.value = null
   searchUsers()
 })
+
+watch(
+    () => props.excludeCenterIds,
+    async () => {
+      await loadCenters()
+      users.value = []
+      pickedUser.value = null
+    },
+    { deep: true }
+)
 </script>

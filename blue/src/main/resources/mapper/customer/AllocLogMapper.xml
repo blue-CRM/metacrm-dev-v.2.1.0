@@ -9,6 +9,8 @@
         customer_id,
         action_type,
         is_final_assign,
+        from_is_final_assign,
+        to_is_final_assign,
         from_user_id,
         to_user_id,
         acted_by_user_id,
@@ -20,6 +22,8 @@
             #{log.customerId},
             #{log.actionType},
             #{log.isFinalAssign},
+            #{log.fromIsFinalAssign},
+            #{log.toIsFinalAssign},
             #{log.fromUserId},
             #{log.toUserId},
             #{log.actedByUserId},
@@ -35,6 +39,7 @@
         c.customer_id     AS customerId,
         c.user_id         AS userId,
         u.user_role       AS userRole,
+        u.center_id       AS centerId,
         c.customer_status AS status
         FROM customers c
         LEFT JOIN users u ON u.user_id = c.user_id

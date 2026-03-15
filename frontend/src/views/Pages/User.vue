@@ -97,6 +97,11 @@ async function onRefresh() {
 const expertOptions = ref([]) // [{ expertId, expertName }]
 onMounted(async () => {
   try {
+    if (!auth.grants.isSuper) {
+      expertOptions.value = []
+      return
+    }
+
     const res = await axios.get("/api/me/experts")
     // 기대 응답: [{ expertId, expertName, ... }, ...]
     expertOptions.value = res.data.map(e => ({
@@ -137,7 +142,9 @@ onMounted(async () => {
     // console.log(teamUnitOptions.value);
   } catch (err) {
     console.error("센터 목록 불러오기 실패:", err.response?.data || err.message);
-    centerOptions.value = [] // 실패 시 안전하게 초기화
+    fullCenterList.value = []
+    centerUnitOptions.value = []
+    teamUnitOptions.value = []
   }
 });
 
@@ -261,8 +268,11 @@ const columns = computed(() => {
         key: "visible",
         label: "가시권한",
         type: "badge",
-        // super가 볼 때만 노출, 그리고 "행의 권한이 관리자"인 경우에만 편집 허용 (자기 자신은 수정 불가)
-        editable: (row) => isSuper.value && row.type === "관리자" && row.email !== auth.email,
+        // super가 볼 때만 노출, 그리고 "행의 권한이 관리자, 센터장, 전문가"인 경우에만 편집 허용 (자기 자신은 수정 불가)
+          editable: (row) =>
+              isSuper.value &&
+              ["관리자", "센터장", "전문가"].includes(row.type) &&
+              row.email !== auth.email,
         options: ["공개", "차단"]
       },
       { key: "",  label: "",   type: "text", ellipsis: { width: 20 } },
@@ -304,13 +314,8 @@ function canEdit(row) {
   return !((row.type === "관리자" || row.center === "본사") && !auth.grants.isSuper);
 }
 
-// super만 수정할 수 있는지 판단
-function canEditVisible() {
-  return isSuper.value; // super만 true
-}
-
 // 프론트는 백엔드가 내려준 isSuper만 사용
-const isSuper = computed(() => !!auth.grants.isSuper);
+const isSuper = computed(() => auth.grants.isSuper)
 
 // 팀장 중복 확인 함수
 async function hasManager(centerName, excludeUserId) {
@@ -443,8 +448,8 @@ async function onBadgeUpdate(row, key, newValue) {
   // --- [가드 로직] 권한 및 유효성 검사 ---
 
   // 가시권한 가드
-  if (key === "visible" && row.type !== "관리자") {
-    alert("가시권한은 '관리자' 권한에만 수정할 수 있습니다.");
+  if (key === "visible" && !["관리자", "센터장", "전문가"].includes(row.type)) {
+    alert("가시권한은 '관리자', '센터장', '전문가' 권한에만 수정할 수 있습니다.");
     await fetchData();
     return;
   }

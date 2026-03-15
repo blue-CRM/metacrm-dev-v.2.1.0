@@ -142,4 +142,7 @@ public interface CustomerAllocateMapper {
   // 모달에서 - 담당자 이력 선택 삭제 (현재 담당자는 실제로도 안 지워지게 가드)
   int deleteHistorySafely(@Param("ids") List<Long> ids);
   
+  // 모달에서 : 슈퍼계정 전용 전문가 DB 집계 표 출력
+  List<AllocateExpertDailySummaryRowDto> findExpertDailySummary(@Param("ids") List<Long> ids);
+  
 }

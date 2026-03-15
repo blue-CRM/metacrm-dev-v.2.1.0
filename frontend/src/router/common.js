@@ -15,6 +15,12 @@ export default [
         component: () => import('@/views/Pages/MyInfo.vue'),
         meta: { requiresAuth: true, role: ['SUPERADMIN','MANAGER','STAFF','CENTERHEAD','EXPERT'] }
     },
+    // 매출현황
+    {
+        path: '/sales',
+        component: () => import('@/views/Pages/SalesPage.vue'),
+        meta: { requiresAuth: true, role: ['SUPERADMIN','MANAGER','STAFF','CENTERHEAD','EXPERT'] }
+    },
     // DB분배
     {
         path: '/db/allocate',
@@ -51,13 +57,13 @@ export default [
         component: () => import('@/views/Pages/Info.vue'),
         meta: { requiresAuth: true, role: ['SUPERADMIN','MANAGER','STAFF','CENTERHEAD','EXPERT'] }
     },
-    // 내방 캘린더
+    // 내방일정
     {
         path: '/visit-calendar',
         component: () => import('@/views/Pages/VisitCalendar.vue'),
         meta: { requiresAuth: true, role: ['SUPERADMIN','MANAGER','STAFF','CENTERHEAD','EXPERT'] }
     },
-    // 회원관리
+    // 직원관리
     {
         path: '/user',
         component: () => import('@/views/Pages/User.vue'),

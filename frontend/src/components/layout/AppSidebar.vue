@@ -225,7 +225,8 @@ import {
   SettingsIcon,
   UserCircleIcon,
   PieChartIcon,
-  CalenderIcon
+  CalenderIcon,
+  BarChartIcon
 } from "../../icons";
 import { useSidebar } from "@/composables/useSidebar";
 import { useCan } from "@/composables/useAcl"
@@ -245,6 +246,12 @@ const menuGroups = [
         name: "대시보드",
         path: "/",
         perm: 'menu.dashboard'
+      },
+      {
+        icon: BarChartIcon,
+        name: "매출현황",
+        path: "/sales",
+        perm: 'menu.sales'
       },
       {
         icon: PieChartIcon,

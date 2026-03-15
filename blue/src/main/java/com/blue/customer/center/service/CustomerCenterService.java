@@ -223,6 +223,7 @@ public class CustomerCenterService {
       h.createCell(1).setCellValue("이름");
       h.createCell(2).setCellValue("전화번호");
       h.createCell(3).setCellValue("팀");
+      h.createCell(4).setCellValue("출처");
       
       int r = 1;
       for (CenterDbRowDto row : data) {
@@ -231,6 +232,7 @@ public class CustomerCenterService {
         rr.createCell(1).setCellValue(nz(row.getName()));
         rr.createCell(2).setCellValue(nz(row.getPhone()));
         rr.createCell(3).setCellValue(nz(row.getCenterName()));
+        rr.createCell(4).setCellValue(nz(row.getSource()));
       }
       
       wb.write(out);

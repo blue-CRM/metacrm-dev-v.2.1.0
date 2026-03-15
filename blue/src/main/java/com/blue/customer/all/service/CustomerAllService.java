@@ -180,6 +180,18 @@ public class CustomerAllService {
         
         mapper.updateCustomerStatus(customerId, dto.getValue());
       }
+      case "name" -> {
+        if (!"SUPERADMIN".equals(me.getRole())) {
+          throw new AuthException("권한이 없습니다.", HttpStatus.GONE);
+        }
+        
+        String nextName = dto.getValue() == null ? "" : dto.getValue().trim();
+        if (nextName.isBlank()) {
+          throw new AuthException("고객명이 비어있습니다.", HttpStatus.GONE);
+        }
+        
+        mapper.updateCustomerName(customerId, nextName);
+      }
       default -> throw new AuthException("지원하지 않는 필드: " + dto.getField(), HttpStatus.GONE);
     }
   }
