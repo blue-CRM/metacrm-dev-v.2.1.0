@@ -14,6 +14,7 @@ public class SalesMonthlySnapshotScheduler {
   private final SalesSnapshotBatchService batchService;
   
   // 매월 1일 새벽 1시 (KST)
+  // @Scheduled(cron = "0 1 * * * *", zone = "Asia/Seoul")
   @Scheduled(cron = "0 0 1 1 * *", zone = "Asia/Seoul")
   public void runMonthlySnapshot() {
     log.info("[SalesMonthlySnapshotScheduler] start");

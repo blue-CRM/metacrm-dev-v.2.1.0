@@ -182,39 +182,26 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { computed, ref, watch } from 'vue'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/vue/24/solid'
 import axios from '@/plugins/axios.js'
 
-type SummaryRow = {
-  statDate: string
-  expertName: string
-  count: number
-}
-
-type GroupedRow = {
-  statDate: string
-  expertCount: number
-  totalCount: number
-  experts: {
-    expertName: string
-    count: number
-  }[]
-}
-
-const props = defineProps<{
-  customerIds: number[]
-}>()
+const props = defineProps({
+  customerIds: {
+    type: Array,
+    default: () => [],
+  },
+})
 
 const loading = ref(false)
-const rows = ref<SummaryRow[]>([])
+const rows = ref([])
 
 /* 처음엔 전부 접힘 */
 const outerOpen = ref(false)
 const overallOpen = ref(false)
 const datesSectionOpen = ref(false)
-const openedDates = ref<string[]>([])
+const openedDates = ref([])
 const hasLoaded = ref(false)
 
 /* 같은 선택이면 재로딩 방지 */
@@ -223,7 +210,7 @@ const customerKey = computed(() => {
   return ids.join(',')
 })
 
-const cache = new Map<string, SummaryRow[]>()
+const cache = new Map()
 
 async function fetchSummary(force = false) {
   const key = customerKey.value
@@ -249,13 +236,12 @@ async function fetchSummary(force = false) {
       customerIds: props.customerIds,
     })
 
-    const result = (data || []) as SummaryRow[]
+    const result = data || []
     rows.value = result
     cache.set(key, result)
 
     hasLoaded.value = true
 
-    /* 데이터 새로 불러와도 전부 접힘 유지 */
     overallOpen.value = false
     datesSectionOpen.value = false
     openedDates.value = []
@@ -279,7 +265,6 @@ async function toggleOuter() {
   }
 }
 
-/* 선택 DB 자체가 바뀌면 다시 초기화 */
 watch(
     customerKey,
     (newKey, oldKey) => {
@@ -288,7 +273,6 @@ watch(
       rows.value = []
       hasLoaded.value = false
 
-      /* 다시 완전 초기 상태 */
       outerOpen.value = false
       overallOpen.value = false
       datesSectionOpen.value = false
@@ -297,8 +281,8 @@ watch(
     { immediate: true }
 )
 
-const groupedRows = computed<GroupedRow[]>(() => {
-  const map = new Map<string, GroupedRow>()
+const groupedRows = computed(() => {
+  const map = new Map()
 
   for (const r of rows.value) {
     if (!map.has(r.statDate)) {
@@ -310,7 +294,7 @@ const groupedRows = computed<GroupedRow[]>(() => {
       })
     }
 
-    const group = map.get(r.statDate)!
+    const group = map.get(r.statDate)
     group.experts.push({
       expertName: r.expertName,
       count: r.count,
@@ -339,7 +323,7 @@ const uniqueExpertCount = computed(() => {
 })
 
 const overallExpertTotals = computed(() => {
-  const map = new Map<string, number>()
+  const map = new Map()
 
   for (const r of rows.value) {
     map.set(r.expertName, (map.get(r.expertName) || 0) + r.count)
@@ -353,11 +337,11 @@ const overallExpertTotals = computed(() => {
       })
 })
 
-function isOpen(statDate: string) {
+function isOpen(statDate) {
   return openedDates.value.includes(statDate)
 }
 
-function toggleDate(statDate: string) {
+function toggleDate(statDate) {
   if (openedDates.value.includes(statDate)) {
     openedDates.value = openedDates.value.filter((d) => d !== statDate)
   } else {
