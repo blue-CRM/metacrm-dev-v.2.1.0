@@ -28,8 +28,10 @@
             NOW()
         FROM alloc_logs
         WHERE log_id > #{lastLogId} AND log_id &lt;= #{maxLogId}
-          AND action_type = 'ASSIGN'
-          AND is_final_assign = 1  GROUP BY action_date, to_user_id
+          AND (
+            (action_type = 'ASSIGN'   AND is_final_assign = 1)
+                OR (action_type = 'TRANSFER' AND to_is_final_assign = 1)
+            )
         ON DUPLICATE KEY UPDATE
                              main_count = main_count + VALUES(main_count),
                              updated_at = NOW()
@@ -48,8 +50,10 @@
             NOW()
         FROM alloc_logs
         WHERE log_id > #{lastLogId} AND log_id &lt;= #{maxLogId}
-          AND action_type = 'REVOKE'
-          AND is_final_assign = 1
+          AND (
+            (action_type = 'REVOKE'   AND is_final_assign = 1)
+                OR (action_type = 'TRANSFER' AND from_is_final_assign = 1)
+            )
           AND from_user_id IS NOT NULL
         GROUP BY action_date, from_user_id
         ON DUPLICATE KEY UPDATE
@@ -72,8 +76,10 @@
                  -- Main DB(l.customer_id)에 매달린 중복 DB들(d) 조인
                  INNER JOIN customers_duplicate d ON d.customer_id = l.customer_id
         WHERE l.log_id > #{lastLogId} AND l.log_id &lt;= #{maxLogId}
-          AND l.action_type = 'ASSIGN'
-          AND l.is_final_assign = 1
+          AND (
+            (l.action_type = 'ASSIGN'   AND l.is_final_assign = 1)
+                OR (l.action_type = 'TRANSFER' AND l.to_is_final_assign = 1)
+            )
         GROUP BY l.action_date, l.to_user_id
         ON DUPLICATE KEY UPDATE
                              dup_count = dup_count + VALUES(dup_count),
@@ -94,8 +100,10 @@
         FROM alloc_logs l
                  INNER JOIN customers_duplicate d ON d.customer_id = l.customer_id
         WHERE l.log_id > #{lastLogId} AND l.log_id &lt;= #{maxLogId}
-          AND l.action_type = 'REVOKE'
-          AND l.is_final_assign = 1
+          AND (
+            (l.action_type = 'REVOKE'   AND l.is_final_assign = 1)
+                OR (l.action_type = 'TRANSFER' AND l.from_is_final_assign = 1)
+            )
           AND l.from_user_id IS NOT NULL
         GROUP BY l.action_date, l.from_user_id
         ON DUPLICATE KEY UPDATE

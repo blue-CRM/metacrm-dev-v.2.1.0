@@ -158,6 +158,7 @@ public interface CustomerAllMapper {
   // 수정
   int updateCustomerReservation(@Param("customerId") Long customerId, @Param("when") LocalDateTime when);
   int updateCustomerStatus(@Param("customerId") Long customerId, @Param("status") String status);
+  int updateCustomerName(@Param("customerId") Long customerId, @Param("name") String name);
   
   // 현재 상태값 조회
   String selectStatusOnly(@Param("customerId") Long customerId);

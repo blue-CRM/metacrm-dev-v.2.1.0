@@ -15,6 +15,7 @@ public class RevokeListRowDto {
   private String status;
   private String prevStatus;
   private String centerName;
+  private Long centerId;
   private String source;
   private String content;
   

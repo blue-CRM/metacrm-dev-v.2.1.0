@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.blue.auth.mapper.SalesPartitionMapper">
+
+    <select id="findPartitions" resultType="com.blue.auth.dto.SalesPartitionDto">
+        SELECT
+        partition_id   AS partitionId,
+        partition_type AS partitionType,
+        segment,
+        name,
+        color,
+        updated_by     AS updatedBy,
+        created_at     AS createdAt,
+        updated_at     AS updatedAt
+        FROM sales_partitions
+        <where>
+            <if test="partitionType != null and partitionType != ''">
+                partition_type = #{partitionType}
+            </if>
+
+            <if test="keyword != null and keyword != ''">
+                <if test="partitionType != null and partitionType != ''">
+                    AND
+                </if>
+                (
+                partition_type LIKE CONCAT('%', #{keyword}, '%')
+                OR name LIKE CONCAT('%', #{keyword}, '%')
+                OR CAST(segment AS CHAR) LIKE CONCAT('%', #{keyword}, '%')
+                OR color LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+        ORDER BY
+        CASE partition_type
+        WHEN 'BRANCH' THEN 1
+        WHEN 'TEAM' THEN 2
+        WHEN 'PERSON' THEN 3
+        ELSE 9
+        END,
+        segment ASC,
+        partition_id ASC
+    </select>
+
+    <select id="existsPartitionTypeAndSegment" resultType="boolean">
+        SELECT EXISTS (
+        SELECT 1
+        FROM sales_partitions
+        WHERE partition_type = #{partitionType}
+        AND segment = #{segment}
+        <if test="partitionId != null">
+            AND partition_id != #{partitionId}
+        </if>
+        LIMIT 1
+        )
+    </select>
+
+    <insert id="insertPartition"
+            parameterType="com.blue.auth.dto.SalesPartitionDto"
+            useGeneratedKeys="true"
+            keyProperty="partitionId">
+        INSERT INTO sales_partitions (
+            partition_type,
+            segment,
+            name,
+            color,
+            updated_by
+        ) VALUES (
+                     #{partitionType},
+                     #{segment},
+                     #{name},
+                     #{color},
+                     #{updatedBy}
+                 )
+    </insert>
+
+    <update id="updatePartition"
+            parameterType="com.blue.auth.dto.SalesPartitionDto">
+        UPDATE sales_partitions
+        SET partition_type = #{partitionType},
+            segment        = #{segment},
+            name           = #{name},
+            color          = #{color},
+            updated_by     = #{updatedBy},
+            updated_at     = NOW()
+        WHERE partition_id = #{partitionId}
+    </update>
+
+    <delete id="deletePartition">
+        DELETE FROM sales_partitions
+        WHERE partition_id = #{partitionId}
+    </delete>
+
+</mapper>

@@ -12,7 +12,8 @@
             u.expert_id  AS expertId,
             u.user_email AS email,
             u.can_allocate AS canAllocate,
-            u.manager_phone_access AS visible
+            u.manager_phone_access AS visible,
+            u.is_super   AS isSuper
         FROM users u
         WHERE u.user_email = #{email}
         LIMIT 1
@@ -72,11 +73,18 @@
         </choose>
     </sql>
 
+    <sql id="LIST_FILTER_CENTER">
+        <if test="filterCenterId != null">
+            AND u.center_id = #{filterCenterId}
+        </if>
+    </sql>
+
     <!-- HQ 목록: 프로가 있는 건 + '회수'가 아닌 건 -->
     <select id="findListForHq" resultType="com.blue.customer.revoke.dto.RevokeListRowDto">
         SELECT
         c.customer_id         AS id,
         c.customer_name       AS name,
+        u.center_id AS centerId,
 
         CASE WHEN #{visible} = 'Y'
         THEN c.customer_phone
@@ -107,6 +115,7 @@
             AND c.customer_division = #{division}
         </if>
         <include refid="LIST_FILTERS_COMMON"/>
+        <include refid="LIST_FILTER_CENTER"/>
         <include refid="ORDER_DEFAULT"/>
         LIMIT #{size} OFFSET #{offset}
     </select>
@@ -122,6 +131,7 @@
         <if test="division != null and division != ''">
             AND c.customer_division = #{division}
         </if>
+        <include refid="LIST_FILTER_CENTER"/>
         <include refid="LIST_FILTERS_COMMON"/>
     </select>
 
@@ -131,6 +141,7 @@
         c.customer_id         AS id,
         c.customer_name       AS name,
         c.customer_phone      AS phone,
+        u.center_id AS centerId,
 
         CASE
         WHEN c.customer_status != '없음' THEN u.user_name
@@ -176,6 +187,7 @@
         SELECT
         c.customer_id         AS id,
         c.customer_name       AS name,
+        u.center_id AS centerId,
 
         CASE WHEN #{visible} = 'Y'
         THEN c.customer_phone
@@ -212,6 +224,7 @@
         )
 
         <include refid="LIST_FILTERS_COMMON"/>
+        <include refid="LIST_FILTER_CENTER"/>
         <include refid="ORDER_DEFAULT"/>
         LIMIT #{size} OFFSET #{offset}
     </select>
@@ -235,6 +248,7 @@
         )
 
         <include refid="LIST_FILTERS_COMMON"/>
+        <include refid="LIST_FILTER_CENTER"/>
     </select>
 
     <!-- EXPERT 목록 -->
@@ -242,6 +256,7 @@
         SELECT
         c.customer_id         AS id,
         c.customer_name       AS name,
+        u.center_id AS centerId,
 
         CASE WHEN #{visible} = 'Y'
         THEN c.customer_phone
@@ -272,6 +287,7 @@
         AND TRIM(me.expert_name) = TRIM(c.customer_source)
 
         <include refid="LIST_FILTERS_COMMON"/>
+        <include refid="LIST_FILTER_CENTER"/>
         <include refid="ORDER_DEFAULT"/>
         LIMIT #{size} OFFSET #{offset}
     </select>
@@ -285,6 +301,7 @@
         AND c.user_id IS NOT NULL
         AND TRIM(me.expert_name) = TRIM(c.customer_source)
         <include refid="LIST_FILTERS_COMMON"/>
+        <include refid="LIST_FILTER_CENTER"/>
     </select>
 
     <!-- 회수 잠금(HQ): 프로 있음 + '회수'가 아님 -->
@@ -417,4 +434,50 @@
 <!--        </foreach>-->
 <!--    </delete>-->
 
+    <select id="findRevokeTeamsForHq" resultType="com.blue.customer.center.dto.CenterSimpleDto">
+        SELECT DISTINCT
+            ctr.center_id   AS centerId,
+            ctr.center_name AS centerName
+        FROM customers c
+                 JOIN users u   ON u.user_id = c.user_id
+                 JOIN centers ctr ON ctr.center_id = u.center_id
+        WHERE c.customer_status != '회수'
+          AND c.user_id IS NOT NULL
+        ORDER BY ctr.center_name
+    </select>
+
+    <select id="findRevokeTeamsForCenterHead" resultType="com.blue.customer.center.dto.CenterSimpleDto">
+        SELECT DISTINCT
+            ctr.center_id   AS centerId,
+            ctr.center_name AS centerName
+        FROM customers c
+                 JOIN users u   ON u.user_id = c.user_id
+                 JOIN centers ctr ON ctr.center_id = u.center_id
+        WHERE c.customer_status != '회수'
+          AND c.user_id IS NOT NULL
+          AND EXISTS (
+            SELECT 1
+            FROM users ux
+                     JOIN experts e ON e.expert_id = ux.expert_id
+            WHERE ux.center_id = #{centerId}
+              AND ux.user_role IN ('CENTERHEAD','EXPERT')
+              AND ux.expert_id IS NOT NULL
+              AND TRIM(e.expert_name) = TRIM(c.customer_source)
+        )
+        ORDER BY ctr.center_name
+    </select>
+
+    <select id="findRevokeTeamsForExpert" resultType="com.blue.customer.center.dto.CenterSimpleDto">
+        SELECT DISTINCT
+            ctr.center_id   AS centerId,
+            ctr.center_name AS centerName
+        FROM customers c
+                 JOIN users u   ON u.user_id = c.user_id
+                 JOIN centers ctr ON ctr.center_id = u.center_id
+                 JOIN experts me ON me.expert_id = #{expertId}
+        WHERE c.customer_status != '회수'
+          AND c.user_id IS NOT NULL
+          AND TRIM(me.expert_name) = TRIM(c.customer_source)
+        ORDER BY ctr.center_name
+    </select>
 </mapper>

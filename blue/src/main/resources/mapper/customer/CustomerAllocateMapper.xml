@@ -12,7 +12,8 @@
             u.user_email AS email,
             u.manager_phone_access AS visible,
             u.can_allocate AS canAllocate,
-            u.expert_id    AS expertId
+            u.expert_id    AS expertId,
+            u.is_super     AS isSuper
         FROM users u
         WHERE u.user_email = #{email}
         LIMIT 1
@@ -640,5 +641,21 @@
         </foreach>
         AND cur.customer_id IS NULL
     </delete>
+
+    <!-- 모달에서 : 슈퍼계정 전용 전문가 DB 집계 표 출력 -->
+    <select id="findExpertDailySummary"
+            resultType="com.blue.customer.allocate.dto.AllocateExpertDailySummaryRowDto">
+        SELECT
+        DATE_FORMAT(c.customer_created_at, '%Y-%m-%d') AS statDate,
+        COALESCE(c.customer_source, '미분류') AS expertName,
+        COUNT(*) AS count
+        FROM customers c
+        WHERE c.customer_id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        GROUP BY DATE(c.customer_created_at), COALESCE(c.customer_source, '미분류')
+        ORDER BY DATE(c.customer_created_at) DESC, expertName ASC
+    </select>
 
 </mapper>

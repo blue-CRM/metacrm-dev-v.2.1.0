@@ -876,6 +876,12 @@
         WHERE customer_id = #{customerId}
     </update>
 
+    <update id="updateCustomerName">
+        UPDATE customers
+        SET customer_name = #{name}
+        WHERE customer_id = #{customerId}
+    </update>
+
     <!-- 현재 상태값 조회 -->
     <select id="selectStatusOnly" resultType="string">
         SELECT customer_status

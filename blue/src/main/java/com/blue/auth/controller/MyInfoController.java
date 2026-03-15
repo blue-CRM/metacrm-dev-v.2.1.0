@@ -22,6 +22,7 @@ public class MyInfoController {
   private final OrgAdminService orgAdminService;
   private final ExpertAdminService expertAdminService;
   private final MeetingRoomService meetingRoomService;
+  private final SalesPartitionService salesPartitionService;
   
   // 내 정보 조회
   @GetMapping
@@ -298,6 +299,47 @@ public class MyInfoController {
   @DeleteMapping("/meeting-rooms/{roomId}/hard-delete")
   public void hardDelete(Authentication auth, @PathVariable long roomId) {
     meetingRoomService.hardDelete(auth.getName(), roomId);
+  }
+  
+  // ============================
+  //   매출 파티션 관리
+  // ============================
+  
+  @GetMapping("/sales-partitions")
+  public ResponseEntity<List<SalesPartitionDto>> listSalesPartitions(
+      @RequestParam(value = "partitionType", required = false) String partitionType,
+      @RequestParam(value = "keyword", required = false) String keyword,
+      Authentication auth
+  ) {
+    String email = auth.getName();
+    return ResponseEntity.ok(
+        salesPartitionService.getPartitions(email, partitionType, keyword)
+    );
+  }
+  
+  @PostMapping("/sales-partitions")
+  public ResponseEntity<Void> addSalesPartition(@RequestBody SalesPartitionDto body,
+                                                Authentication auth) {
+    String email = auth.getName();
+    salesPartitionService.createPartition(email, body);
+    return ResponseEntity.ok().build();
+  }
+  
+  @PutMapping("/sales-partitions/{partitionId}")
+  public ResponseEntity<Void> updateSalesPartition(@PathVariable Long partitionId,
+                                                   @RequestBody SalesPartitionDto body,
+                                                   Authentication auth) {
+    String email = auth.getName();
+    salesPartitionService.updatePartition(email, partitionId, body);
+    return ResponseEntity.ok().build();
+  }
+  
+  @DeleteMapping("/sales-partitions/{partitionId}")
+  public ResponseEntity<Void> deleteSalesPartition(@PathVariable Long partitionId,
+                                                   Authentication auth) {
+    String email = auth.getName();
+    salesPartitionService.deletePartition(email, partitionId);
+    return ResponseEntity.ok().build();
   }
   
 }

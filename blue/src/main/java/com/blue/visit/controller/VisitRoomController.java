@@ -1,7 +1,6 @@
 package com.blue.visit.controller;
 
 import com.blue.auth.dto.MeetingRoomDto;
-import com.blue.auth.service.MeetingRoomService;
 import com.blue.visit.dto.*;
 import com.blue.visit.service.VisitScheduleService;
 import lombok.RequiredArgsConstructor;

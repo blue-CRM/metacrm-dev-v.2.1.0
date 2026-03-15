@@ -32,6 +32,7 @@
               @badgeUpdate="onBadgeUpdate"
               @DateUpdate="onDateUpdate"
               @salesUpdate="onSalesUpdate"
+              @textUpdate="onTextUpdate"
               @visitSchedule="onVisitSchedule"
               @buttonClick="onTableButtonClick"
               @changePage="changePage"
@@ -129,9 +130,9 @@ import { globalFilters } from "@/composables/globalFilters.js";
 import axios from "@/plugins/axios.js"
 
 const auth = useAuthStore();
-const role = auth.grants.role;
-const isManager = computed(() => role === 'MANAGER');
-const memoReadOnly = computed(() => ['CENTERHEAD', 'EXPERT'].includes(role))
+const role = computed(() => auth.grants.role)
+const isManager = computed(() => role.value === 'MANAGER');
+const memoReadOnly = computed(() => ['CENTERHEAD', 'EXPERT'].includes(role.value))
 const mineOnly = ref(false);
 
 const currentPageTitle = ref("전체 고객DB관리");
@@ -215,7 +216,7 @@ const {
 
 // 본사, 센터장, 전문가는 '관리자형 뷰' (구분 칼럼 O, 매출 칼럼 O)
 const isAdminView = computed(() => {
-  return ['SUPERADMIN', 'CENTERHEAD', 'EXPERT'].includes(role);
+  return ['SUPERADMIN', 'CENTERHEAD', 'EXPERT'].includes(role.value);
 });
 
 // 로딩 오버레이 설정
@@ -259,6 +260,10 @@ function isSalesEditable(row) {
   return row.origin !== 'DUPLICATE' && ['자연풀', '카피'].includes(row.status);
 }
 
+function isNameEditable(row) {
+  return role.value === 'SUPERADMIN' && row.origin !== 'DUPLICATE';
+}
+
 /* =============================
    SUPERADMIN 전용 컬럼
 ============================= */
@@ -268,7 +273,7 @@ const adminColumns = [
   { key: "division", label: "구분", type: "badge", options: ["최초", "중복", "유효"] },
   { key: "",  label: "",   type: "text", ellipsis: { width: 5 } },
   // { key: "category", label: "카테고리", type: "badge", options: ["주식", "코인"] },
-  { key: "name", label: "이름", type: "text" },
+  { key: "name", label: "이름", type: "text", textEditable: isNameEditable },
   { key: "phone", label: "전화번호", type: "text", ellipsis: { width: 150 } },
   { key: "source", label: "DB출처", type: "text", ellipsis: { width: 100 } },
   { key: "content", label: "내용", type: "text", ellipsis: { width: 150 } },
@@ -412,6 +417,45 @@ async function onSalesUpdate(row, key, newValue) {
   }
 }
 
+// 고객 이름 변경
+async function onTextUpdate(row, key, newValue) {
+  if (key !== 'name') return;
+
+  if (role.value !== 'SUPERADMIN') {
+    alert('권한이 없습니다.');
+    return;
+  }
+
+  if (row.origin === 'DUPLICATE') {
+    alert('중복 DB는 이름 수정이 불가합니다.');
+    return;
+  }
+
+  const nextName = (newValue ?? '').trim();
+  if (!nextName) {
+    alert('이름을 입력해주세요.');
+    return;
+  }
+
+  try {
+    await axios.patch(`/api/work/db/all/update/${row.id}`, {
+      field: key,
+      value: nextName
+    });
+
+    row.name = nextName;
+  } catch (err) {
+    console.error("이름 수정 실패", err);
+
+    const msg =
+        err?.response?.data?.message
+        || err?.response?.data
+        || '이름 수정 중 오류가 발생했습니다.';
+
+    alert(msg);
+  }
+}
+
 // 메모 아이콘 클릭 -> 모달 오픈
 function onTableButtonClick(row, key) {
   if (key !== 'memo') return;
@@ -455,7 +499,7 @@ const adminSelects = computed(() => {
   const base = [divisionOptions, statusOptions, prevStatusOptions];
 
   // 전문가(EXPERT)가 아닐 때만 '전문가 선택' 드롭박스 추가
-  if (role !== 'EXPERT') {
+  if (role.value !== 'EXPERT') {
     base.push(expertOptions.value); // 2:전문가
   }
 
@@ -639,7 +683,7 @@ onMounted(async () => {
   }
 
   // 전문가 권한이 아닐 때만 전문가 리스트 API 호출
-  if (role !== 'EXPERT') {
+  if (role.value !== 'EXPERT') {
     try {
       // 전문가 리스트 조회
       const {data} = await axios.get('/api/work/db/experts');

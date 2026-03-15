@@ -42,16 +42,18 @@
           <!-- 부모에서 넘겨준 버튼 리스트 -->
           <template v-for="(btn, idx) in buttons" :key="'btn-' + idx">
             <button
-                @click="$emit('buttonClick', btn)"
+                :disabled="isDisabled(btn)"
+                @click="!isDisabled(btn) && $emit('buttonClick', btn)"
                 :aria-pressed="active && active.includes(btn) ? 'true' : 'false'"
                 :data-state="active && active.includes(btn) ? 'on' : 'off'"
                 :class="[
-                   // 기존 디자인 그대로
-                  'w-30 h-11 px-3 py-1 rounded-lg border border-gray-200 text-sm font-medium ' +
-                  'text-gray-500 hover:bg-gray-100 ' +
-                  'dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800',
-                  // 활성(토글됨)일 때 hover와 동일한 배경 유지
-                  active && active.includes(btn) ? 'bg-gray-100 dark:bg-gray-800' : ''
+                  'w-30 h-11 px-3 py-1 rounded-lg border text-sm font-medium transition-colors',
+                  isDisabled(btn)
+                    ? 'border-gray-200 bg-gray-50 text-gray-300 dark:border-gray-700 dark:bg-gray-900/40 dark:text-gray-600'
+                    : 'border-gray-200 text-gray-500 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800',
+                  active && active.includes(btn) && !isDisabled(btn)
+                    ? 'bg-gray-100 dark:bg-gray-800'
+                    : ''
                 ]"
             >
               {{ btn }}
@@ -95,10 +97,16 @@ interface Props {
   desc?: string
   selects?: string[][] // select option 문자열 배열들의 배열
   buttons?: string[] // 버튼 문자열 배열
+  disabledButtons?: string[] // 비활성 버튼 배열
   active?: string[] // 버튼 문자열 토글 가시화 (프론트 디자인)
   showRefresh?: boolean // 새로고침 아이콘 표시 여부
   refreshing?: boolean // 새로고침 중(스피너)
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+defineEmits(['changeSize', 'selectChange', 'buttonClick', 'refresh'])
+
+function isDisabled(btn: string) {
+  return props.disabledButtons?.includes(btn) ?? false
+}
 </script>
