@@ -20,9 +20,9 @@ import lombok.Data;
  */
 @Data
 public class UpdateFieldDto {
-  /** 예: "reservation" | "status" */
+  /** 예: "reservation" | "status" | "name" */
   private String field;
   
-  /** 값. reservation: "YYYY-MM-DD HH:mm", status: 상태 문자열 */
+  /** 값. reservation: "YYYY-MM-DD HH:mm", status: 상태 문자열, name: 고객명 */
   private String value;
 }

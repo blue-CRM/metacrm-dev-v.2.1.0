@@ -7,11 +7,12 @@ const policy = {
     SUPERADMIN: [
         // 사이드바
         'menu.dashboard',    // 대시보드
-        'menu.db.all',       // 전체 DB
-        'menu.db.center',    // 센터별 DB
-        'menu.db.allocate',  // DB분할하기
-        'menu.db.revoke',    // DB회수하기
-        'menu.db.duplicate', // 중복 DB
+        'menu.sales',        // 매출현황
+        'menu.db.allocate',  // DB분배
+        'menu.db.center',    // 센터DB
+        'menu.db.all',       // 전체DB
+        'menu.db.duplicate', // 중복DB
+        'menu.db.revoke',    // DB회수
         'menu.info',         // 소속정보
         'menu.calendar',     // 내방일정
         'menu.user',         // 직원관리
@@ -20,10 +21,11 @@ const policy = {
     MANAGER: [
         // 사이드바
         'menu.dashboard',    // 대시보드
-        'menu.db.all',       // 전체 DB
-        'menu.db.allocate',  // DB분할하기
-        'menu.db.revoke',    // DB회수하기
-        'menu.db.duplicate', // 중복 DB
+        'menu.sales',        // 매출현황
+        'menu.db.allocate',  // DB분배
+        'menu.db.all',       // 전체DB
+        'menu.db.duplicate', // 중복DB
+        'menu.db.revoke',    // DB회수
         'menu.info',         // 소속정보
         'menu.calendar',     // 내방일정
     ],
@@ -31,26 +33,29 @@ const policy = {
     STAFF: [
         // 사이드바
         'menu.dashboard',    // 대시보드
-        'menu.db.all',       // 전체 DB
-        'menu.db.duplicate', // 중복 DB
+        'menu.sales',        // 매출현황
+        'menu.db.all',       // 전체DB
+        'menu.db.duplicate', // 중복DB
         'menu.info',         // 소속정보
         'menu.calendar',     // 내방일정
     ],
     // 센터장
     CENTERHEAD: [
         'menu.dashboard',    // 대시보드
-        'menu.db.center',    // 센터별 DB
-        'menu.db.all',       // 전체 DB
-        'menu.db.duplicate', // 중복 DB
+        'menu.sales',        // 매출현황
+        'menu.db.center',    // 센터DB
+        'menu.db.all',       // 전체DB
+        'menu.db.duplicate', // 중복DB
         'menu.info',         // 소속정보
         'menu.calendar',     // 내방일정
     ],
     // 전문가
     EXPERT: [
         'menu.dashboard',    // 대시보드
-        'menu.db.center',    // 센터별 DB
-        'menu.db.all',       // 전체 DB
-        'menu.db.duplicate', // 중복 DB
+        'menu.sales',        // 매출현황
+        'menu.db.center',    // 센터DB
+        'menu.db.all',       // 전체DB
+        'menu.db.duplicate', // 중복DB
         'menu.info',         // 소속정보
         'menu.calendar',     // 내방일정
     ],

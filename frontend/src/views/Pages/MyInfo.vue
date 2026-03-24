@@ -529,7 +529,7 @@
               <div class="col-span-2 mt-4">
                 <div
                     class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800
-                         max-h-85 overflow-auto spin-dark"
+                         max-h-100 overflow-auto spin-dark"
                 >
                   <!-- 로딩 -->
                   <div
@@ -843,7 +843,7 @@
               <div class="col-span-2 mt-4">
                 <div
                     class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800
-                           max-h-60 overflow-auto spin-dark"
+                           max-h-100 overflow-auto spin-dark"
                 >
                   <div v-if="branchesLoading" class="p-4 text-sm text-gray-500 dark:text-gray-400">
                     불러오는 중…
@@ -1063,90 +1063,9 @@
                           type="button"
                           class="h-11 w-14 rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-white dark:bg-gray-800"
                           :style="{ backgroundColor: newCenterColor }"
-                          @click="toggleColorPopover"
+                          @click="toggleColorPopover($event, 'NEW_CENTER')"
                           ref="colorBtnRef"
                       />
-
-                      <Teleport to="body">
-                        <div v-if="colorOpen" class="fixed inset-0 z-[3000]" @mousedown="onBackdropDown">
-                          <!-- 실제 팝오버 -->
-                          <div
-                              ref="colorPopoverRef"
-                              class="absolute w-80 rounded-xl border border-gray-200 dark:border-gray-700
-                                      bg-white dark:bg-gray-900 p-3 shadow-lg"
-                              :style="colorPopoverStyle"
-                              @mousedown.stop
-                          >
-                            <!-- 헤더 -->
-                            <div class="flex items-center justify-end mb-2">
-                            </div>
-
-                            <!-- 컬러 선택 + 미리보기 -->
-                            <div class="flex gap-3 items-start">
-                              <!-- 왼쪽: 컬러 피커 -->
-                              <input
-                                  type="color"
-                                  v-model="colorDraft"
-                                  class="h-10 w-27 rounded-md border p-1
-                                         border-gray-200 dark:border-gray-700
-                                         bg-white dark:bg-gray-800"
-                              />
-
-                              <!-- 오른쪽: 미리보기 배지 -->
-                              <div class="flex-1 flex items-center justify-center gap-2">
-                                <span
-                                    class="inline-flex items-center h-10 rounded-full border px-4 text-sm font-medium"
-                                    :style="centerBadgeStyle(colorDraft)"
-                                >
-                                  미리보기
-                                </span>
-
-                                <div
-                                    class="inline-flex items-center justify-center h-10 px-3 rounded-lg border
-                                           text-xs tabular-nums text-gray-600 dark:text-gray-300
-                                           border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
-                                >
-                                  {{ colorDraft }}
-                                </div>
-                              </div>
-                            </div>
-
-                            <!-- 프리셋 -->
-                            <div class="ml-2 mt-4 grid grid-cols-5 gap-1">
-                              <button
-                                  v-for="c in CENTER_COLOR_PRESETS"
-                                  :key="c"
-                                  type="button"
-                                  class="h-8 w-8 rounded-md ring-1 ring-black/10 dark:ring-white/10"
-                                  :class="colorDraft === c ? 'outline outline-2 outline-brand-500' : ''"
-                                  :style="{ backgroundColor: c }"
-                                  @click="colorDraft = c"
-                              />
-                            </div>
-
-                            <!-- 하단 버튼 -->
-                            <div class="mt-4 flex justify-end gap-2">
-                              <button
-                                  type="button"
-                                  class="h-9 px-4 rounded-lg text-sm
-                                       bg-gray-200 text-gray-800 hover:bg-gray-300
-                                       dark:bg-gray-700 dark:text-gray-100"
-                                  @click="cancelColor"
-                              >
-                                취소
-                              </button>
-                              <button
-                                  type="button"
-                                  class="h-9 px-4 rounded-lg text-sm text-white
-                                          bg-brand-500 hover:bg-brand-600"
-                                  @click="confirmColor"
-                              >
-                                확인
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </Teleport>
                     </div>
                   </div>
 
@@ -1169,7 +1088,7 @@
               <div class="col-span-2 mt-4">
                 <div
                     class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800
-                           max-h-60 overflow-auto spin-dark"
+                           max-h-100 overflow-auto spin-dark"
                 >
                   <div v-if="centersLoading" class="p-4 text-sm text-gray-500 dark:text-gray-400">
                     불러오는 중…
@@ -1223,7 +1142,7 @@
                                 type="button"
                                 class="h-11 w-14 rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-white dark:bg-gray-800"
                                 :style="{ backgroundColor: (editingCenter.centerColor || '#4B5563') }"
-                                @click.stop="toggleColorPopover($event, 'EDIT')"
+                                @click.stop="toggleColorPopover($event, 'EDIT_CENTER')"
                             />
 
                             <!-- HEX 표시 -->
@@ -1344,6 +1263,332 @@
                 </div>
               </div>
 
+              <!-- ===== 매출 파티션 관리 ===== -->
+              <div class="col-span-2">
+                <hr class="my-6 border-gray-200 dark:border-gray-700" />
+              </div>
+
+              <div class="col-span-2">
+                <div class="flex items-center justify-between">
+                  <h3 class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    매출 파티션 관리
+                  </h3>
+                  <div class="flex gap-2">
+                    <button
+                        v-if="!partitionsEditing"
+                        type="button"
+                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                        @click="partitionsEditing = true"
+                    >
+                      수정
+                    </button>
+                    <button
+                        v-else
+                        type="button"
+                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                        @click="onPartitionsCancel"
+                    >
+                      취소
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 검색 -->
+              <div class="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">
+                검색
+              </div>
+              <div class="col-start-2">
+                <div class="flex gap-2 w-full">
+                  <div class="relative flex-1">
+                    <input
+                        v-model="partitionSearchInput"
+                        type="text"
+                        placeholder="지점 / 팀 / 개인 / 구간명 검색"
+                        @keyup.enter="applyPartitionSearch"
+                        class="h-10 w-full rounded-lg border px-3 pr-8 bg-white text-gray-800
+                             focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+                             dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                    />
+                    <button
+                        v-if="partitionSearchInput"
+                        type="button"
+                        class="absolute inset-y-0 right-4 my-auto text-xs text-gray-400 hover:text-gray-600
+                             dark:text-gray-500 dark:hover:text-gray-300"
+                        @click="clearPartitionSearch"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <button
+                      type="button"
+                      class="h-10 px-4 rounded-lg bg-brand-500 text-xs sm:text-sm font-medium text-white
+                           hover:bg-brand-600"
+                      @click="applyPartitionSearch"
+                  >
+                    검색
+                  </button>
+                </div>
+              </div>
+
+              <!-- 신규 파티션 -->
+              <div v-if="partitionsEditing" class="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">
+                신규 파티션
+              </div>
+              <div v-if="partitionsEditing" class="col-start-2">
+                <div class="flex flex-col gap-2">
+                  <!-- 1줄: 구분 -->
+                  <select
+                      v-model="newPartitionType"
+                      class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
+               focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+               dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                  >
+                    <option
+                        v-for="opt in SALES_PARTITION_TYPES"
+                        :key="opt.value"
+                        :value="opt.value"
+                    >
+                      {{ opt.label }}
+                    </option>
+                  </select>
+
+                  <!-- 2줄: 구간값 + 메모 + 색상 -->
+                  <div class="flex items-center gap-2">
+                    <input
+                        v-model.number="newPartitionSegment"
+                        type="number"
+                        min="1"
+                        step="1"
+                        placeholder="예) 100000"
+                        class="h-11 w-32 shrink-0 rounded-lg border px-3 bg-white text-gray-800
+                 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+                 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                    />
+
+                    <input
+                        v-model="newPartitionName"
+                        placeholder="메모 (예: 10만불 이하)"
+                        class="h-11 min-w-0 flex-1 rounded-lg border px-3 bg-white text-gray-800
+                 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+                 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                    />
+
+                    <button
+                        type="button"
+                        class="h-11 w-14 shrink-0 rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-white dark:bg-gray-800"
+                        :style="{ backgroundColor: newPartitionColor }"
+                        @click="toggleColorPopover($event, 'NEW_PARTITION')"
+                    />
+                  </div>
+
+                  <!-- 3줄: 추가 버튼 -->
+                  <button
+                      type="button"
+                      class="h-11 w-full rounded-lg bg-brand-500 px-4 text-sm font-medium text-white hover:bg-brand-600 disabled:opacity-50"
+                      :disabled="!canAddPartition"
+                      @click="addPartition"
+                  >
+                    추가
+                  </button>
+                </div>
+                <p v-if="partitionFormError" class="text-xs text-error-500">
+                  {{ partitionFormError }}
+                </p>
+              </div>
+
+              <!-- 파티션 목록 -->
+              <div class="col-span-2 mt-4">
+                <div
+                    class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800
+                           max-h-100 overflow-auto spin-dark"
+                >
+                  <div v-if="partitionsLoading" class="p-4 text-sm text-gray-500 dark:text-gray-400">
+                    불러오는 중…
+                  </div>
+                  <div v-else-if="!partitions || partitions.length === 0" class="p-4 text-sm text-gray-500 dark:text-gray-400">
+                    등록된 파티션이 없습니다.
+                  </div>
+                  <div v-else-if="filteredPartitions.length === 0" class="p-4 text-sm text-gray-500 dark:text-gray-400">
+                    검색 결과가 없습니다.
+                  </div>
+
+                  <table v-else class="min-w-full table-fixed text-sm">
+                    <thead
+                        class="sticky top-0 z-10 bg-white dark:bg-gray-900
+                             shadow-[0_1px_0_0_rgba(229,231,235,0.7)]
+                             dark:shadow-[0_1px_0_0_rgba(31,41,55,0.8)]"
+                    >
+                    <tr class="border-b border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
+                      <th class="w-10 px-3 py-2 text-center whitespace-nowrap">번호</th>
+                      <th class="w-20 px-3 py-2 text-center whitespace-nowrap">구분</th>
+                      <th class="w-28 px-3 py-2 text-right whitespace-nowrap">구간값</th>
+                      <th class="px-3 py-2 text-left whitespace-nowrap">구간명</th>
+                      <th class="w-28 px-3 py-2 text-left whitespace-nowrap">색상</th>
+                      <th class="w-28 px-3 py-2 text-right whitespace-nowrap">수정일</th>
+                      <th class="w-24 px-3 py-2 text-center whitespace-nowrap">관리</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr
+                        v-for="(row, idx) in filteredPartitions"
+                        :key="row.partitionId ?? idx"
+                        :class="[
+                          'border-b border-gray-100 dark:border-gray-800',
+                          idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800/60'
+                        ]"
+                    >
+                      <td class="px-3 py-3 text-center text-xs text-gray-400 whitespace-nowrap">
+                        {{ idx + 1 }}
+                      </td>
+
+                      <td class="px-3 py-3 text-center">
+                        <template v-if="editingPartitionId === row.partitionId">
+                          <select
+                              v-model="editingPartition.partitionType"
+                              class="h-9 w-full rounded-md border border-gray-300 px-2 text-xs
+                                   bg-white text-gray-800
+                                   focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
+                                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                          >
+                            <option v-for="opt in SALES_PARTITION_TYPES" :key="opt.value" :value="opt.value">
+                              {{ opt.label }}
+                            </option>
+                          </select>
+                        </template>
+                        <template v-else>
+                          <span class="text-xs text-gray-600 dark:text-gray-300">
+                            {{ partitionTypeLabel(row.partitionType) }}
+                          </span>
+                        </template>
+                      </td>
+
+                      <td class="px-3 py-3 text-right">
+                        <template v-if="editingPartitionId === row.partitionId">
+                          <input
+                              v-model.number="editingPartition.segment"
+                              type="number"
+                              min="1"
+                              step="1"
+                              class="w-full rounded-md border border-gray-200 px-2 py-1 text-xs
+                                   bg-white text-gray-800
+                                   focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
+                                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                          />
+                        </template>
+                        <template v-else>
+                          <span class="text-xs text-gray-600 dark:text-gray-300">
+                            {{ formatSegmentDollar(row.segment) }}
+                          </span>
+                        </template>
+                      </td>
+
+                      <td class="px-3 py-3">
+                        <template v-if="editingPartitionId === row.partitionId">
+                          <input
+                              v-model="editingPartition.name"
+                              class="w-full rounded-md border border-gray-200 px-2 py-1 text-xs
+                                   bg-white text-gray-800
+                                   focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
+                                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                              placeholder="구간명"
+                          />
+                        </template>
+                        <template v-else>
+                          <span class="text-sm text-gray-800 dark:text-gray-200">
+                            {{ row.name }}
+                          </span>
+                        </template>
+                      </td>
+
+                      <td class="px-3 py-3">
+                        <template v-if="editingPartitionId === row.partitionId">
+                          <div class="flex items-center gap-2">
+                            <button
+                                type="button"
+                                class="h-11 w-14 rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-white dark:bg-gray-800"
+                                :style="{ backgroundColor: (editingPartition.color || '#9CA3AF') }"
+                                @click.stop="toggleColorPopover($event, 'EDIT_PARTITION')"
+                            />
+                            <div
+                                class="inline-flex items-center justify-center h-10 px-3 rounded-lg border
+                                       text-xs tabular-nums text-gray-600 dark:text-gray-300
+                                       border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
+                            >
+                              {{ editingPartition.color || '미지정' }}
+                            </div>
+                          </div>
+                        </template>
+                        <template v-else>
+                          <span
+                              class="inline-flex items-center rounded-full border px-3 py-1 text-xs"
+                              :style="centerBadgeStyle(row.color)"
+                          >
+                            {{ row.color }}
+                          </span>
+                        </template>
+                      </td>
+
+                      <td class="px-3 py-3 text-right text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                        <template v-if="row.updatedAt || row.createdAt">
+                          <span class="block">{{ splitDateTime(row.updatedAt || row.createdAt)[0] }}</span>
+                          <span class="block">{{ splitDateTime(row.updatedAt || row.createdAt)[1] }}</span>
+                        </template>
+                        <span v-else>-</span>
+                      </td>
+
+                      <td class="px-3 py-3 text-center whitespace-nowrap">
+                        <template v-if="editingPartitionId === row.partitionId">
+                          <button
+                              type="button"
+                              class="mr-1 px-2 py-1 text-xs rounded-md border border-brand-500
+                                     bg-brand-500 text-white hover:bg-brand-600 disabled:opacity-50"
+                              @click="savePartitionRow(row)"
+                          >
+                            저장
+                          </button>
+                          <button
+                              type="button"
+                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-gray-700
+                                     bg-white text-gray-700 hover:bg-gray-50
+                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-gray-700"
+                              @click="cancelPartitionEdit"
+                          >
+                            취소
+                          </button>
+                        </template>
+                        <template v-else>
+                          <button
+                              type="button"
+                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-gray-700
+                                     bg-white text-gray-700 hover:bg-gray-50
+                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-gray-700
+                                     disabled:opacity-50"
+                              :disabled="!partitionsEditing"
+                              @click="startPartitionEdit(row)"
+                          >
+                            수정
+                          </button>
+                          <button
+                              type="button"
+                              class="ml-1 px-2 py-1 text-xs rounded-md border border-red-200 dark:border-red-700
+                                     bg-white text-red-600 hover:bg-red-50
+                                     dark:bg-transparent dark:text-red-400 dark:hover:bg-red-900/40
+                                     disabled:opacity-50"
+                              :disabled="!partitionsEditing"
+                              @click="deletePartition(row.partitionId)"
+                          >
+                            삭제
+                          </button>
+                        </template>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
               <!-- ===== 전문가 관리 ===== -->
               <div class="col-span-2">
                 <hr class="my-6 border-gray-200 dark:border-gray-700" />
@@ -1443,7 +1688,7 @@
               <div class="col-span-2 mt-4">
                 <div
                     class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800
-                         max-h-60 overflow-auto spin-dark"
+                         max-h-100 overflow-auto spin-dark"
                 >
                   <div v-if="expertsLoading" class="p-4 text-sm text-gray-500 dark:text-gray-400">
                     불러오는 중…
@@ -1671,7 +1916,7 @@
 
               <!-- 목록 -->
               <div class="col-span-2 mt-4">
-                <div class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800 max-h-60 overflow-auto spin-dark">
+                <div class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800 max-h-100 overflow-auto spin-dark">
                   <div v-if="roomsLoading" class="p-4 text-sm text-gray-500 dark:text-gray-400">불러오는 중…</div>
 
                   <div v-else-if="!rooms || rooms.length === 0" class="p-4 text-sm text-gray-500 dark:text-gray-400">
@@ -1933,6 +2178,88 @@
     </transition>
   </Teleport>
 
+  <!-- 컬러 피커 (메모 모달과 동일하게 body로 텔레포트) -->
+  <Teleport to="body">
+    <div v-if="colorOpen" class="fixed inset-0 z-[3000]" @mousedown="onBackdropDown">
+      <!-- 실제 팝오버 -->
+      <div
+          ref="colorPopoverRef"
+          class="absolute w-80 rounded-xl border border-gray-200 dark:border-gray-700
+                                      bg-white dark:bg-gray-900 p-3 shadow-lg"
+          :style="colorPopoverStyle"
+          @mousedown.stop
+      >
+        <!-- 헤더 -->
+        <div class="flex items-center justify-end mb-2">
+        </div>
+
+        <!-- 컬러 선택 + 미리보기 -->
+        <div class="flex gap-3 items-start">
+          <!-- 왼쪽: 컬러 피커 -->
+          <input
+              type="color"
+              v-model="colorDraft"
+              class="h-10 w-27 rounded-md border p-1
+                                         border-gray-200 dark:border-gray-700
+                                         bg-white dark:bg-gray-800"
+          />
+
+          <!-- 오른쪽: 미리보기 배지 -->
+          <div class="flex-1 flex items-center justify-center gap-2">
+                                <span
+                                    class="inline-flex items-center h-10 rounded-full border px-4 text-sm font-medium"
+                                    :style="centerBadgeStyle(colorDraft)"
+                                >
+                                  미리보기
+                                </span>
+
+            <div
+                class="inline-flex items-center justify-center h-10 px-3 rounded-lg border
+                                           text-xs tabular-nums text-gray-600 dark:text-gray-300
+                                           border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
+            >
+              {{ colorDraft }}
+            </div>
+          </div>
+        </div>
+
+        <!-- 프리셋 -->
+        <div class="ml-2 mt-4 grid grid-cols-5 gap-1">
+          <button
+              v-for="c in CENTER_COLOR_PRESETS"
+              :key="c"
+              type="button"
+              class="h-8 w-8 rounded-md ring-1 ring-black/10 dark:ring-white/10"
+              :class="colorDraft === c ? 'outline outline-2 outline-brand-500' : ''"
+              :style="{ backgroundColor: c }"
+              @click="colorDraft = c"
+          />
+        </div>
+
+        <!-- 하단 버튼 -->
+        <div class="mt-4 flex justify-end gap-2">
+          <button
+              type="button"
+              class="h-9 px-4 rounded-lg text-sm
+                                       bg-gray-200 text-gray-800 hover:bg-gray-300
+                                       dark:bg-gray-700 dark:text-gray-100"
+              @click="cancelColor"
+          >
+            취소
+          </button>
+          <button
+              type="button"
+              class="h-9 px-4 rounded-lg text-sm text-white
+                                          bg-brand-500 hover:bg-brand-600"
+              @click="confirmColor"
+          >
+            확인
+          </button>
+        </div>
+      </div>
+    </div>
+  </Teleport>
+
 </template>
 
 <script setup>
@@ -1998,9 +2325,6 @@ function onPwCancel() {
 
 onMounted(async () => {
   await loadMe()
-
-  // 스프레드시트 설정 초기 로드
-  await loadSheetConfig()
 })
 
 /* 서버에서 내 정보 로드 */
@@ -2011,7 +2335,7 @@ async function loadMe() {
     email.value = data.userEmail
     phone.value = data.userPhone
 
-    console.log(data)
+    // console.log(data)
     if (data.grants.role === 'SUPERADMIN') roleLabel.value = '관리자'
     else if (data.grants.role === 'MANAGER') roleLabel.value = '팀장'
     else if (data.grants.role === 'STAFF') roleLabel.value = '프로'
@@ -2020,7 +2344,7 @@ async function loadMe() {
     else roleLabel.value = '-'
 
     orgLabel.value   = data.centerName || '미할당'
-    isSuperEmail.value = !!data.grants.isSuper
+    isSuperEmail.value = data.grants.isSuper
 
     phoneInput.value = phone.value || ''
   } catch (_) {
@@ -2461,7 +2785,7 @@ const colorOrigin = ref(newCenterColor.value)  // 팝업 열기 전 원본
 const editColorPopoverOpen = ref(false)
 const editColorPopoverStyle = ref({})
 
-const colorMode = ref('NEW');
+const colorMode = ref('NEW_CENTER');
 const colorOpen = ref(false)
 const colorBtnRef = ref(null)
 const colorPopoverRef = ref(null)
@@ -2505,28 +2829,36 @@ function placeColorPopover() {
 
 // 팀색상 모달 열기
 const currentTargetEl = ref(null);
-async function toggleColorPopover(event, mode = 'NEW') {
-  colorMode.value = mode;
+async function toggleColorPopover(event, mode = 'NEW_CENTER') {
+  colorMode.value = mode
+  currentTargetEl.value = event?.currentTarget || colorBtnRef.value
 
-  currentTargetEl.value = event?.currentTarget || colorBtnRef.value;
-  if (!colorOpen.value) {
-    // 열 때: 모드에 따라 초기색상 설정
-    const currentVal = (mode === 'EDIT') ? editingCenter.value.centerColor : newCenterColor.value;
-    colorOrigin.value = currentVal || '#4B5563';
-    colorDraft.value = currentVal || '#4B5563';
+  let currentVal = '#4B5563'
 
-    colorOpen.value = true;
-    await nextTick();
+  switch (mode) {
+    case 'EDIT_CENTER':
+      currentVal = editingCenter.value.centerColor || '#4B5563'
+      break
+    case 'NEW_PARTITION':
+      currentVal = newPartitionColor.value || '#9CA3AF'
+      break
+    case 'EDIT_PARTITION':
+      currentVal = editingPartition.value.color || '#9CA3AF'
+      break
+    default:
+      currentVal = newCenterColor.value || '#4B5563'
+      break
+  }
 
-    // 버튼 위치 계산 (event가 있으면 해당 버튼 기준으로 위치 잡기)
-    const btn = event?.currentTarget || colorBtnRef.value;
-    if (btn) {
-      const r = btn.getBoundingClientRect();
-      // ... (기존 placeColorPopover 로직을 여기에 넣거나 호출)
-      placeColorWithTarget(r);
-    }
-  } else {
-    cancelColor();
+  colorOrigin.value = currentVal
+  colorDraft.value = currentVal
+
+  colorOpen.value = true
+  await nextTick()
+
+  const btn = currentTargetEl.value
+  if (btn) {
+    placeColorWithTarget(btn.getBoundingClientRect())
   }
 }
 
@@ -2550,12 +2882,22 @@ function placeColorWithTarget(r) {
 }
 
 function confirmColor() {
-  if (colorMode.value === 'EDIT') {
-    editingCenter.value.centerColor = colorDraft.value;
-  } else {
-    newCenterColor.value = colorDraft.value;
+  switch (colorMode.value) {
+    case 'EDIT_CENTER':
+      editingCenter.value.centerColor = colorDraft.value
+      break
+    case 'NEW_PARTITION':
+      newPartitionColor.value = colorDraft.value
+      break
+    case 'EDIT_PARTITION':
+      editingPartition.value.color = colorDraft.value
+      break
+    default:
+      newCenterColor.value = colorDraft.value
+      break
   }
-  colorOpen.value = false;
+
+  colorOpen.value = false
 }
 
 function cancelColor() {
@@ -2570,7 +2912,12 @@ function onBackdropDown() {
 // 스크롤/리사이즈 시 재배치 or 닫기
 function onWindowChange() {
   if (!colorOpen.value) return
-  placeColorPopover()
+  const btn = currentTargetEl.value
+  if (!btn || !document.body.contains(btn)) {
+    cancelColor()
+    return
+  }
+  placeColorWithTarget(btn.getBoundingClientRect())
 }
 
 onMounted(() => {
@@ -2707,7 +3054,11 @@ function startCenterEdit(c) {
 
 function cancelCenterEdit() {
   editingCenterId.value = null
-  editingCenter.value = { centerName: '', branchId: null }
+  editingCenter.value = {
+    centerName: '',
+    branchId: null,
+    centerColor: null,
+  }
 }
 
 async function saveCenterRow(c) {
@@ -2765,10 +3116,244 @@ function onCentersCancel() {
   centersEditing.value = false
   newCenterName.value = ''
   newCenterBranchId.value = ''
+  newCenterColor.value = CENTER_COLOR_PRESETS[0]
   cancelCenterEdit()
+  cancelColor()
 }
 
-/* ----- 전문가(Experts) ----- */
+/* ----- 매출 파티션 관리 ----- */
+const SALES_PARTITION_TYPES = [
+  { value: 'BRANCH', label: '지점' },
+  { value: 'TEAM', label: '팀' },
+  { value: 'PERSON', label: '개인' },
+]
+
+const partitions = ref([])
+const partitionsLoading = ref(false)
+const partitionsEditing = ref(false)
+
+const partitionSearchInput = ref('')
+const partitionSearch = ref('')
+
+const newPartitionType = ref('BRANCH')
+const newPartitionSegment = ref(null)
+const newPartitionName = ref('')
+const newPartitionColor = ref('#9CA3AF')
+const partitionFormError = ref('')
+
+const editingPartitionId = ref(null)
+const editingPartition = ref({
+  partitionType: 'BRANCH',
+  segment: null,
+  name: '',
+  color: '#9CA3AF',
+})
+
+const filteredPartitions = computed(() => {
+  const list = partitions.value || []
+  const q = (partitionSearch.value || '').trim().toLowerCase()
+  if (!q) return list
+
+  return list.filter(row => {
+    const type = String(partitionTypeLabel(row.partitionType) || '').toLowerCase()
+    const segment = String(row.segment ?? '').toLowerCase()
+    const name = String(row.name || '').toLowerCase()
+    const color = String(row.color || '').toLowerCase()
+
+    return (
+        type.includes(q) ||
+        segment.includes(q) ||
+        name.includes(q) ||
+        color.includes(q)
+    )
+  })
+})
+
+const canAddPartition = computed(() => {
+  const seg = Number(newPartitionSegment.value)
+  const name = (newPartitionName.value || '').trim()
+  return (
+      partitionsEditing.value &&
+      ['BRANCH', 'TEAM', 'PERSON'].includes(newPartitionType.value) &&
+      Number.isInteger(seg) &&
+      seg >= 1 &&
+      !!name &&
+      !partitionFormError.value
+  )
+})
+
+function partitionTypeLabel(type) {
+  return SALES_PARTITION_TYPES.find(v => v.value === type)?.label || type
+}
+
+function formatSegmentDollar(segment) {
+  const n = Number(segment)
+  if (!Number.isFinite(n)) return '-'
+  return `$${n.toLocaleString()} 이하`
+}
+
+function validatePartitionPayload(payload) {
+  const type = String(payload.partitionType || '').trim().toUpperCase()
+  const seg = Number(payload.segment)
+  const name = String(payload.name || '').trim()
+  const color = normalizeHex6(payload.color)
+
+  if (!['BRANCH', 'TEAM', 'PERSON'].includes(type)) return '구분을 선택하세요.'
+  if (!Number.isInteger(seg) || seg < 1) return '구간값은 1 이상의 정수여야 합니다.'
+  if (!name) return '구간명을 입력하세요.'
+  if (name.length > 50) return '구간명은 50자 이하로 입력하세요.'
+  if (!color) return '색상을 선택하세요.'
+  return ''
+}
+
+watch([newPartitionType, newPartitionSegment, newPartitionName, newPartitionColor], () => {
+  partitionFormError.value = validatePartitionPayload({
+    partitionType: newPartitionType.value,
+    segment: newPartitionSegment.value,
+    name: newPartitionName.value,
+    color: newPartitionColor.value,
+  })
+})
+
+async function fetchSalesPartitions() {
+  try {
+    partitionsLoading.value = true
+    const { data } = await axios.get('/api/me/sales-partitions', {
+      withCredentials: true,
+    })
+    partitions.value = Array.isArray(data) ? data : []
+  } catch (e) {
+    alert(e?.response?.data || '매출 파티션 목록을 불러오지 못했습니다.')
+  } finally {
+    partitionsLoading.value = false
+  }
+}
+
+async function applyPartitionSearch() {
+  partitionSearch.value = (partitionSearchInput.value || '').trim()
+}
+
+async function clearPartitionSearch() {
+  partitionSearchInput.value = ''
+  partitionSearch.value = ''
+}
+
+async function addPartition() {
+  const payload = {
+    partitionType: newPartitionType.value,
+    segment: Number(newPartitionSegment.value),
+    name: (newPartitionName.value || '').trim(),
+    color: normalizeHex6(newPartitionColor.value),
+  }
+
+  const err = validatePartitionPayload(payload)
+  if (err) {
+    alert(err)
+    return
+  }
+
+  try {
+    await axios.post('/api/me/sales-partitions', payload, { withCredentials: true })
+
+    newPartitionType.value = 'BRANCH'
+    newPartitionSegment.value = null
+    newPartitionName.value = ''
+    newPartitionColor.value = '#9CA3AF'
+    partitionFormError.value = ''
+
+    await fetchSalesPartitions(partitionSearch.value)
+  } catch (e) {
+    const s = e?.response?.status
+    if (s === 409) alert(e?.response?.data || '같은 구분에 동일한 구간값이 이미 존재합니다.')
+    else if (s === 403) alert('접근 권한이 없습니다.')
+    else alert(e?.response?.data || '매출 파티션 추가에 실패했습니다.')
+  }
+}
+
+function startPartitionEdit(row) {
+  if (!partitionsEditing.value) return
+
+  editingPartitionId.value = row.partitionId
+  editingPartition.value = {
+    partitionType: row.partitionType || 'BRANCH',
+    segment: row.segment ?? null,
+    name: row.name || '',
+    color: normalizeHex6(row.color) || '#9CA3AF',
+  }
+}
+
+function cancelPartitionEdit() {
+  editingPartitionId.value = null
+  editingPartition.value = {
+    partitionType: 'BRANCH',
+    segment: null,
+    name: '',
+    color: '#9CA3AF',
+  }
+  cancelColor()
+}
+
+async function savePartitionRow(row) {
+  const payload = {
+    partitionType: editingPartition.value.partitionType,
+    segment: Number(editingPartition.value.segment),
+    name: (editingPartition.value.name || '').trim(),
+    color: normalizeHex6(editingPartition.value.color),
+  }
+
+  const err = validatePartitionPayload(payload)
+  if (err) {
+    alert(err)
+    return
+  }
+
+  try {
+    await axios.put(`/api/me/sales-partitions/${row.partitionId}`, payload, {
+      withCredentials: true,
+    })
+    cancelPartitionEdit()
+    await fetchSalesPartitions(partitionSearch.value)
+  } catch (e) {
+    const s = e?.response?.status
+    if (s === 409) alert(e?.response?.data || '같은 구분에 동일한 구간값이 이미 존재합니다.')
+    else if (s === 404) alert(e?.response?.data || '존재하지 않는 파티션입니다.')
+    else if (s === 403) alert('접근 권한이 없습니다.')
+    else alert(e?.response?.data || '매출 파티션 수정에 실패했습니다.')
+  }
+}
+
+async function deletePartition(partitionId) {
+  const id = Number(partitionId)
+  if (!Number.isFinite(id)) {
+    alert('잘못된 partitionId 입니다.')
+    return
+  }
+
+  if (!confirm('해당 매출 파티션을 삭제하시겠습니까?')) return
+
+  try {
+    await axios.delete(`/api/me/sales-partitions/${id}`, { withCredentials: true })
+    await fetchSalesPartitions(partitionSearch.value)
+  } catch (e) {
+    const s = e?.response?.status
+    if (s === 404) alert(e?.response?.data || '존재하지 않는 파티션입니다.')
+    else if (s === 403) alert('접근 권한이 없습니다.')
+    else alert(e?.response?.data || '매출 파티션 삭제에 실패했습니다.')
+  }
+}
+
+function onPartitionsCancel() {
+  partitionsEditing.value = false
+  newPartitionType.value = 'BRANCH'
+  newPartitionSegment.value = null
+  newPartitionName.value = ''
+  newPartitionColor.value = '#9CA3AF'
+  partitionFormError.value = ''
+  cancelPartitionEdit()
+  cancelColor()
+}
+
+/* ----- 전문가(Experts) 관리 ----- */
 
 // 목록 & 상태
 const experts = ref([])
@@ -3143,9 +3728,11 @@ const candidate = ref(null) // { userId, userName, userEmail, userRole, centerNa
 
 const roleHuman = (role) =>
     role === 'SUPERADMIN' ? '관리자'
-        : role === 'MANAGER'  ? '팀장'
-        : role === 'STAFF'    ? '프로'
-        : role
+      : role === 'MANAGER' ? '팀장'
+      : role === 'STAFF' ? '프로'
+      : role === 'CENTERHEAD' ? '센터장'
+      : role === 'EXPERT' ? '전문가'
+      : role || '-'
 
 async function lookupDelegate() {
   candidate.value = null
@@ -3465,6 +4052,7 @@ watch(
         loadSheetConfig(),
         fetchBranches(branchSearch.value),
         fetchCenters(centerSearch.value),
+        fetchSalesPartitions(partitionSearch.value),
         fetchExperts(expertSearch.value),
         fetchIpWhitelist(),
         fetchRooms(''),

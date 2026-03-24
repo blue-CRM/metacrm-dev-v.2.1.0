@@ -65,28 +65,65 @@
 
             <!-- 텍스트 -->
             <template v-else-if="col.type === 'text'">
-              <!-- 셀 전체 클릭/호버 영역(배경 X) -->
+              <!-- 이름 인라인 수정 -->
+              <div
+                  v-if="isTextEditable(col, row)"
+                  class="relative h-9 min-w-[6rem]"
+              >
+                <span
+                    v-if="!(editState.row === rowIndex && editState.col === col.key)"
+                    class="absolute inset-0 flex items-center text-theme-sm leading-5
+                           text-gray-500 dark:text-gray-400
+                           cursor-pointer transition-colors
+                           hover:text-blue-600 dark:hover:text-blue-400"
+                    @click.stop="startEdit(rowIndex, col.key, row[col.key])"
+                >
+                  {{ row[col.key] ?? '' }}
+                </span>
+
+                <div
+                    v-else
+                    class="text-edit-wrapper absolute inset-0 z-10 flex items-center"
+                    @mousedown.stop
+                    @click.stop
+                >
+                  <input
+                      :ref="el => setFocusInput(rowIndex, col.key, el)"
+                      v-model="editValue"
+                      type="text"
+                      class="w-full h-full min-w-0 px-2 text-xs border border-blue-500 rounded outline-none
+                           focus:ring-1 focus:ring-blue-500
+                           dark:bg-gray-800 dark:text-white dark:border-blue-400"
+                      @mousedown.stop
+                      @click.stop
+                      @blur="updateText(row, col.key)"
+                      @keyup.enter="$event.target.blur()"
+                      @keyup.esc="cancelEdit()"
+                  />
+                </div>
+              </div>
+
+              <!-- 일반 텍스트 -->
               <button
+                  v-else
                   class="block w-full -mx-2 -my-1 px-2 py-1 rounded focus:outline-none"
                   @click="toggleExpand(row, rowIndex, col.key)"
               >
-                <!-- 회색 박스 = 텍스트 영역 -->
                 <span
                     :class="isExpanded(row, rowIndex, col.key)
                     ? 'block rounded text-gray-500 text-theme-sm dark:text-gray-400 text-left leading-tight whitespace-pre-wrap break-words overflow-auto'
                     : 'block rounded text-gray-500 text-theme-sm dark:text-gray-400 text-left leading-tight truncate whitespace-nowrap overflow-hidden'"
-                                :style="(() => {
-                    const pref = ellipsisPx(col)
-                    // 'maxWidth'가 아니라 'width'를 줘서 배경 폭=텍스트 폭으로 고정
-                    const base = { width: `${pref}px` }
-                    return isExpanded(row, rowIndex, col.key)
-                      ? { ...base, maxHeight: '6.75rem', lineHeight: '1.25rem', paddingRight: '0.25rem' }
-                      : base
-                  })()"
+                    :style="(() => {
+                      const pref = ellipsisPx(col)
+                      const base = { width: `${pref}px` }
+                      return isExpanded(row, rowIndex, col.key)
+                        ? { ...base, maxHeight: '6.75rem', lineHeight: '1.25rem', paddingRight: '0.25rem' }
+                        : base
+                    })()"
                 >
                   {{ col.key === 'staff'
-                                ? (row[col.key]?.toString().trim() || '')
-                                : (row[col.key] ?? '') }}
+                    ? (row[col.key]?.toString().trim() || '')
+                    : (row[col.key] ?? '') }}
                 </span>
               </button>
             </template>
@@ -320,7 +357,16 @@ const props = defineProps({
   pageSize: { type: Number, default: null },
   loading: { type: Boolean, default: false }
 })
-const emit = defineEmits(["rowSelect", "badgeUpdate", "buttonClick", "changePage", "DateUpdate", "salesUpdate", "visitSchedule"])
+const emit = defineEmits([
+  "rowSelect",
+  "badgeUpdate",
+  "buttonClick",
+  "changePage",
+  "DateUpdate",
+  "salesUpdate",
+  "textUpdate",
+  "visitSchedule"
+])
 
 // 옵션이 함수인 경우 row를 인자로 실행, 배열인 경우 그대로 반환
 function getOptions(col, row) {
@@ -328,6 +374,14 @@ function getOptions(col, row) {
     return col.options(row) || []
   }
   return col.options || []
+}
+
+// 텍스트 변경 여부 확인하는 함수
+function isTextEditable(col, row) {
+  if (typeof col.textEditable === 'function') {
+    return col.textEditable(row)
+  }
+  return !!col.textEditable
 }
 
 // 행번호 계산 함수
@@ -466,6 +520,19 @@ function updateMoney(row, key) {
 
   // 3. 편집 모드 종료
   cancelEdit();
+}
+
+// 이름 변경 함수
+function updateText(row, key) {
+  const val = (editValue.value ?? '').toString().trim()
+
+  if (!val) {
+    cancelEdit()
+    return
+  }
+
+  emit("textUpdate", row, key, val)
+  cancelEdit()
 }
 
 // 입력창 자동 포커스용
@@ -683,7 +750,8 @@ function onDocMouseDown(e) {
       t?.closest?.("select") ||
       t?.closest?.(".editable-badge") ||
       t?.closest?.(".fp-clear-btn") ||
-      t?.closest?.(".money-edit-wrapper")
+      t?.closest?.(".money-edit-wrapper") ||
+      t?.closest?.(".text-edit-wrapper")
   ) return
   cancelEdit()
 }

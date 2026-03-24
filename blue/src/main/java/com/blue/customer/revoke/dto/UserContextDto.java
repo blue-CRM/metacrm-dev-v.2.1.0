@@ -13,4 +13,5 @@ public class UserContextDto {
   private String email;
   private String visible;
   private Boolean canAllocate;
+  private String isSuper;
 }

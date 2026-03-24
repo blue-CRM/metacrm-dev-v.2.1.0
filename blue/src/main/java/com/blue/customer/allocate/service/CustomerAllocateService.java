@@ -341,4 +341,19 @@ public class CustomerAllocateService {
     }
     return mapper.deleteHistorySafely(logIds);
   }
+  
+  // 모달에서 : 슈퍼계정 전용 전문가 DB 집계 표 출력
+  public List<AllocateExpertDailySummaryRowDto> getExpertDailySummary(String callerEmail, List<Long> customerIds) {
+    UserContextDto me = mapper.findUserContextByEmail(callerEmail);
+    
+    if (me == null || !"SUPERADMIN".equals(me.getRole()) || !"Y".equals(me.getIsSuper())) {
+      throw new AuthException("권한이 없습니다.", HttpStatus.GONE);
+    }
+    
+    if (customerIds == null || customerIds.isEmpty()) {
+      return Collections.emptyList();
+    }
+    
+    return mapper.findExpertDailySummary(customerIds);
+  }
 }
