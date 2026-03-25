@@ -1,4 +1,4 @@
-# Blue CRM — 2차 개발
+# Blue CRM meta 백업 레파지토리
 
 > 콜(전화) 운영·영업 조직을 위한 CRM. Spring Boot 3 + Vue 3, MySQL 8, Redis 기반. 본 문서는 **2차 개발용 레포** 기본 안내입니다.
 
