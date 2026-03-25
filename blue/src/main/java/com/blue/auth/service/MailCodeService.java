@@ -34,7 +34,7 @@ public class MailCodeService {
       // Redis에 "auth:code:이메일" / "code:연장여부" / TTL 형태로 저장 (TTL 후 자동 삭제)
       redisTemplate.opsForValue().set("auth:code:" + email, code + ":0", CODE_TTL, TimeUnit.SECONDS);
       
-      String subject = "[마크CRM] 이메일 인증번호 안내";
+      String subject = "[메타CRM] 이메일 인증번호 안내";
       String html = buildVerifyHtml(code, (int)(CODE_TTL / 60));
       
       // 요청일시 치환 (KST)
@@ -68,7 +68,7 @@ public class MailCodeService {
           <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%%" style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 8px 24px rgba(16,24,40,0.06);">
               <tr>
                 <td style="padding:28px 28px 12px;text-align:center;">
-                  <img src="cid:logo" alt="MARK CRM" style="display:block;margin:0 auto 10px;height:70px;width:auto;">
+                  <img src="cid:logo" alt="META CRM" style="display:block;margin:0 auto 10px;height:70px;width:auto;">
                   <span style="display:inline-block;margin-top:2px;padding:6px 12px;border-radius:999px;
                                background:rgba(37,99,235,0.08);color:%1$s;
                                font-family:Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,Arial,sans-serif;
@@ -137,7 +137,7 @@ public class MailCodeService {
             <!-- 푸터 -->
             <tr>
               <td style="padding:18px 12px 28px;text-align:center;">
-                <div style="font-family:Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,Arial,sans-serif;font-size:11px;color:#94A3B8;">© 마크CRM. All rights reserved.</div>
+                <div style="font-family:Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,Arial,sans-serif;font-size:11px;color:#94A3B8;">© 메타CRM. All rights reserved.</div>
               </td>
             </tr>
           </table>

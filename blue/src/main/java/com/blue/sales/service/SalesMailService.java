@@ -148,7 +148,7 @@
 //      <!-- Header -->
 //      <tr>
 //        <td style="padding:28px 28px 12px;text-align:center;">
-//          <img src="cid:logo" alt="MARK CRM" style="display:block;margin:0 auto 10px;height:70px;width:auto;">
+//          <img src="cid:logo" alt="META CRM" style="display:block;margin:0 auto 10px;height:70px;width:auto;">
 //          <span style="display:inline-block;margin-top:2px;padding:6px 12px;border-radius:999px;
 //                       background:rgba(37,99,235,0.10);color:%4$s;
 //                       font-family:Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,Arial,sans-serif;
@@ -197,7 +197,7 @@
 //       <td align="center" style="padding:18px 12px 28px;text-align:center;">
 //         <div style="font-family:Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,Arial,sans-serif;
 //                     font-size:11px;color:#94A3B8;">
-//           © 마크CRM. All rights reserved.
+//           © 메타CRM. All rights reserved.
 //         </div>
 //       </td>
 //     </tr>
@@ -328,7 +328,7 @@
 //
 //      <tr>
 //        <td style="padding:28px 28px 12px;text-align:center;">
-//          <img src="cid:logo" alt="MARK CRM" style="display:block;margin:0 auto 10px;height:70px;width:auto;">
+//          <img src="cid:logo" alt="META CRM" style="display:block;margin:0 auto 10px;height:70px;width:auto;">
 //          <span style="display:inline-block;margin-top:2px;padding:6px 12px;border-radius:999px;
 //                       background:rgba(37,99,235,0.10);color:%4$s;
 //                       font-family:Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,Arial,sans-serif;
@@ -366,7 +366,7 @@
 //       <td align="center" style="padding:18px 12px 28px;text-align:center;">
 //         <div style="font-family:Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,Arial,sans-serif;
 //                     font-size:11px;color:#94A3B8;">
-//           © 마크CRM. All rights reserved.
+//           © 메타CRM. All rights reserved.
 //         </div>
 //       </td>
 //     </tr>
@@ -618,7 +618,7 @@ public class SalesMailService {
       <!-- Header -->
       <tr>
         <td align="center" style="padding:28px 28px 12px;text-align:center;">
-          <img src="cid:logo" alt="MARK CRM" style="display:block;margin:0 auto 10px;height:70px;width:auto;">
+          <img src="cid:logo" alt="META CRM" style="display:block;margin:0 auto 10px;height:70px;width:auto;">
           <span style="display:inline-block;margin-top:2px;padding:6px 12px;border-radius:999px;
                        background:rgba(37,99,235,0.10);color:%4$s;
                        font-family:Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,Arial,sans-serif;
@@ -668,7 +668,7 @@ public class SalesMailService {
           <div style="font-family:Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,Arial,sans-serif;
                       font-size:11px;line-height:16px;mso-line-height-rule:exactly;
                       color:#94A3B8;">
-            © 마크CRM. All rights reserved.
+            © 메타CRM. All rights reserved.
           </div>
         </td>
       </tr>

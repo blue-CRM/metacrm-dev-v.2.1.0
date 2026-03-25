@@ -28,7 +28,7 @@ public class InfoService {
   }
   
   // 회사명 상수
-  private static final String COMPANY_NAME = "마크CRM";
+  private static final String COMPANY_NAME = "메타CRM";
   
   /**
    * 조직도 트리 + 현재 사용자

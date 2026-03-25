@@ -1,6 +1,6 @@
 <template>
   <AdminLayout>
-    <PageBreadcrumb pageTitle="마크CRM 조직도" />
+    <PageBreadcrumb pageTitle="메타CRM 조직도" />
 
     <div class="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-0
                 dark:border-gray-800 dark:bg-white/[0.03]">
@@ -101,13 +101,13 @@ import { globalFilters } from "@/composables/globalFilters.js" // 헤더 검색 
 const treeData    = ref([])
 const currentUser = ref(null)
 
-/** 펼침 제어: Set<string> (예: "HQ:마크CRM", "GROUP:본사", "CENTER:센터A") */
-const expandKeys  = ref(new Set(["HQ:마크CRM"])) // 기본: 본사만 열기
+/** 펼침 제어: Set<string> (예: "HQ:메타CRM", "GROUP:본사", "CENTER:센터A") */
+const expandKeys  = ref(new Set(["HQ:메타CRM"])) // 기본: 본사만 열기
 
 const nodeKey = (n) => {
   if (n.userId) return `U:${n.userId}`
 
-  if (n.userRole === "HQ") return "HQ:마크CRM"
+  if (n.userRole === "HQ") return "HQ:메타CRM"
 
   // 지점 노드 (GROUP)
   if (n.userRole === "GROUP") return `B:${n.branchId ?? n.userName}`
@@ -141,7 +141,7 @@ async function loadTree({ restoreExpandedKeys = null, focusUserId = null } = {})
     if (currentUser.value?.userId) {
       forceOpenPathToUserId(currentUser.value.userId, { exclusive: true })
     } else {
-      expandKeys.value = new Set(["HQ:마크CRM"])
+      expandKeys.value = new Set(["HQ:메타CRM"])
     }
     didInitExpand.value = true
   }
@@ -200,7 +200,7 @@ function applySearch(term) {
   }
   walk(treeData.value)
 
-  // if (matches.length === 0) { expandKeys.value = new Set(["HQ:마크CRM"]); return }
+  // if (matches.length === 0) { expandKeys.value = new Set(["HQ:메타CRM"]); return }
   if (matches.length === 0) return // 매칭 없으면 현 상태 유지
 
   const open = new Set()

@@ -35,7 +35,7 @@
     <p
         class="absolute text-sm text-center text-gray-500 -translate-x-1/2 bottom-6 left-1/2 dark:text-gray-400"
     >
-      &copy; {{ currentYear }} - 마크CRM
+      &copy; {{ currentYear }} - 메타CRM
     </p>
   </div>
 </template>

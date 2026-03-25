@@ -32,11 +32,11 @@ public class AsyncMailService {
           java.nio.charset.StandardCharsets.UTF_8.name()
       );
       
-      helper.setFrom(new InternetAddress("no-reply@markcrm.co.kr", "마크CRM", java.nio.charset.StandardCharsets.UTF_8.name()));
+      helper.setFrom(new InternetAddress("no-reply@metacrm.co.kr", "메타CRM", java.nio.charset.StandardCharsets.UTF_8.name()));
       helper.setTo(to);
       helper.setValidateAddresses(true);
       helper.setSubject(subject);
-      helper.setReplyTo("support@markcrm.co.kr", "마크CRM 고객센터");
+      helper.setReplyTo("support@metacrm.co.kr", "메타CRM 고객센터");
       
       String plain = (plainTextFallback == null || plainTextFallback.isBlank())
           ? "인증 메일 안내: HTML이 보이지 않으면 앱/웹에서 인증 번호를 입력해 주세요."
@@ -76,11 +76,11 @@ public class AsyncMailService {
           StandardCharsets.UTF_8.name()
       );
       
-      helper.setFrom(new InternetAddress("no-reply@markcrm.co.kr", "마크CRM", StandardCharsets.UTF_8.name()));
+      helper.setFrom(new InternetAddress("no-reply@metacrm.co.kr", "메타CRM", StandardCharsets.UTF_8.name()));
       helper.setTo(to);
       helper.setValidateAddresses(true);
       helper.setSubject(subject);
-      helper.setReplyTo("support@markcrm.co.kr", "마크CRM 고객센터");
+      helper.setReplyTo("support@metacrm.co.kr", "메타CRM 고객센터");
       
       String plain = (plainTextFallback == null || plainTextFallback.isBlank())
           ? "첨부된 이미지를 확인해 주세요."

@@ -5,14 +5,14 @@
     <div v-if="isSuperAdmin">
       <!-- KPI -->
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
-        <KpiCardCompact title="마크CRM 총 직원 수" :value="kpi.users" delta="11.0%" trend="up">
+        <KpiCardCompact title="메타CRM 총 직원 수" :value="kpi.users" delta="11.0%" trend="up">
           <template #icon>
             <UserGroupIcon class="w-6 h-6 fill-gray-800 dark:fill-white/90" />
           </template>
         </KpiCardCompact>
 
         <!-- 팀 수 -->
-        <KpiCardCompact title="마크CRM 지점 수 / 팀 수"
+        <KpiCardCompact title="메타CRM 지점 수 / 팀 수"
                         :value="`${kpi.branches.toLocaleString()} / ${kpi.teams.toLocaleString()}`"
                         delta="9.1%" trend="down">
           <template #icon>
@@ -313,13 +313,13 @@
       <div
           class="col-span-12 xl:col-span-4 space-y-4 xl:space-y-0 xl:grid xl:grid-rows-[1fr_1fr] xl:gap-4 xl:h-full xl:min-h-0"
       >
-        <KpiCardCompact title="마크CRM 총 직원 수" :value="kpi.users" delta="11.0%" trend="up">
+        <KpiCardCompact title="메타CRM 총 직원 수" :value="kpi.users" delta="11.0%" trend="up">
           <template #icon>
             <UserGroupIcon class="w-6 h-6 fill-gray-800 dark:fill-white/90" />
           </template>
         </KpiCardCompact>
 
-        <KpiCardCompact title="마크CRM 총 팀 수" :value="kpi.teams" delta="9.1%" trend="down">
+        <KpiCardCompact title="메타CRM 총 팀 수" :value="kpi.teams" delta="9.1%" trend="down">
           <template #icon>
             <HomeIcon class="w-6 h-6 fill-gray-800 dark:fill-white/90" />
           </template>

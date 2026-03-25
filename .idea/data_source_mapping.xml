@@ -2,7 +2,6 @@
 <project version="4">
   <component name="DataSourcePerFileMappings">
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/85272a8d-e488-4056-a607-83fac5a5dc6d/v4.sql" value="85272a8d-e488-4056-a607-83fac5a5dc6d" />
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/87fd03ae-e4b5-4cf0-8638-7035339189f7/demo.sql" value="87fd03ae-e4b5-4cf0-8638-7035339189f7" />
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/d2fd5641-80c7-4a79-8d29-8ab388940f05/markcrm.sql" value="d2fd5641-80c7-4a79-8d29-8ab388940f05" />
   </component>
 </project>

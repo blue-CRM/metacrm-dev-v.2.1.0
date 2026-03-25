@@ -123,7 +123,7 @@ const emit = defineEmits(['toggle','edit'])
 const isTitle = (n) => ['HQ','GROUP','CENTER'].includes(n.userRole)
 const keyOf = (n) => {
   if (n.userId) return `U:${n.userId}`
-  if (n.userRole === "HQ") return "HQ:마크CRM"
+  if (n.userRole === "HQ") return "HQ:메타CRM"
   if (n.userRole === "GROUP") return `B:${n.branchId ?? n.userName}`   // 지점
   if (n.userRole === "CENTER") return `C:${n.centerId ?? n.userName}`  // 팀
   return `${n.userRole}:${n.userName}`
