@@ -103,6 +103,7 @@
         ctr.center_name       AS centerName,
         c.customer_source     AS source,
         c.customer_content    AS content,
+        c.customer_memo       AS memo,
         c.customer_created_at AS createdAt
         FROM customers c
         LEFT JOIN users   u   ON u.user_id   = c.user_id
@@ -155,6 +156,7 @@
         (SELECT center_name FROM centers WHERE center_id = u.center_id) AS centerName,
         c.customer_source     AS source,
         c.customer_content    AS content,
+        c.customer_memo       AS memo,
         c.customer_created_at AS createdAt
         FROM customers c
         JOIN users u ON u.user_id = c.user_id
@@ -206,6 +208,7 @@
         (SELECT center_name FROM centers WHERE center_id = u.center_id) AS centerName,
         c.customer_source     AS source,
         c.customer_content    AS content,
+        c.customer_memo       AS memo,
         c.customer_created_at AS createdAt
         FROM customers c
         JOIN users u ON u.user_id = c.user_id
@@ -275,6 +278,7 @@
         (SELECT center_name FROM centers WHERE center_id = u.center_id) AS centerName,
         c.customer_source     AS source,
         c.customer_content    AS content,
+        c.customer_memo       AS memo,
         c.customer_created_at AS createdAt
         FROM customers c
         JOIN users u ON u.user_id = c.user_id

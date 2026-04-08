@@ -18,6 +18,7 @@ public class RevokeListRowDto {
   private Long centerId;
   private String source;
   private String content;
+  private String memo;
   
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime createdAt;
