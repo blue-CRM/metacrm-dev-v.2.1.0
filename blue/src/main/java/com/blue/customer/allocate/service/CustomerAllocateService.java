@@ -34,6 +34,9 @@ public class CustomerAllocateService {
     
     switch (me.getRole()) {
       case "SUPERADMIN" -> {
+        if (!"Y".equals(me.getCanAllocate())) {
+          return new PagedResponse<>(Collections.emptyList(), 0, 0);
+        }
         // HQ 리스트는 "담당 프로 없음 AND 상태 ∈ {없음, 회수}"가 XML에서 강제됨
         items = mapper.findListForHq(offset, size, keyword, dateFrom, dateTo, category, division, prevStatus, sort, me.getVisible());
         total = mapper.countListForHq(keyword, dateFrom, dateTo, category, division, prevStatus, me.getVisible());
@@ -70,6 +73,9 @@ public class CustomerAllocateService {
     UserContextDto me = mapper.findUserContextByEmail(callerEmail);
     if (me == null || !"SUPERADMIN".equals(me.getRole())) {
       throw new AuthException("권한이 없습니다.", HttpStatus.GONE);
+    }
+    if (!"Y".equals(me.getCanAllocate())) {
+      throw new AuthException("분배 권한이 없습니다.", HttpStatus.GONE);
     }
     if (req.getCustomerIds() == null || req.getCustomerIds().isEmpty()) {
       return new AllocateResult(0, 0);

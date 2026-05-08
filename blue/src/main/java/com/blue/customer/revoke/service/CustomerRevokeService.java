@@ -43,6 +43,9 @@ public class CustomerRevokeService {
     
     switch (me.getRole()) {
       case "SUPERADMIN" -> {
+        if (!Boolean.TRUE.equals(me.getCanAllocate())) {
+          return new PagedResponse<>(Collections.emptyList(), 0, 0);
+        }
         items = mapper.findListForHq(offset, size, keyword, dateFrom, dateTo, category, division, status, prevStatus, sort, me.getVisible(), filterCenterId);
         total = mapper.countListForHq(keyword, dateFrom, dateTo, category, division, status, prevStatus, me.getVisible(), filterCenterId);
       }
@@ -51,10 +54,16 @@ public class CustomerRevokeService {
         total = mapper.countListForManager(keyword, dateFrom, dateTo, category, status, prevStatus, me.getCenterId(), me.getVisible(), me.getUserId());
       }
       case "CENTERHEAD" -> {
+        if (!Boolean.TRUE.equals(me.getCanAllocate())) {
+          return new PagedResponse<>(Collections.emptyList(), 0, 0);
+        }
         items = mapper.findListForCenterHead(offset, size, keyword, dateFrom, dateTo, category, status, prevStatus, sort, me.getCenterId(), me.getVisible(), me.getUserId(), filterCenterId);
         total = mapper.countListForCenterHead(keyword, dateFrom, dateTo, category, status, prevStatus, me.getCenterId(), me.getVisible(), me.getUserId(), filterCenterId);
       }
       case "EXPERT" -> {
+        if (!Boolean.TRUE.equals(me.getCanAllocate())) {
+          return new PagedResponse<>(Collections.emptyList(), 0, 0);
+        }
         items = mapper.findListForExpert(offset, size, keyword, dateFrom, dateTo, category, status, prevStatus, sort, me.getExpertId(), me.getVisible(), filterCenterId);
         total = mapper.countListForExpert(keyword, dateFrom, dateTo, category, status, prevStatus, me.getExpertId(), me.getVisible(), filterCenterId);
       }
@@ -70,6 +79,9 @@ public class CustomerRevokeService {
     UserContextDto me = mapper.findUserContextByEmail(callerEmail);
     if (me == null || !"SUPERADMIN".equals(me.getRole())) {
       throw new AuthException("본사만 수행할 수 있습니다.",HttpStatus.GONE);
+    }
+    if (!Boolean.TRUE.equals(me.getCanAllocate())) {
+      throw new AuthException("분배 권한이 없습니다.",HttpStatus.GONE);
     }
     if (req.getCustomerIds() == null || req.getCustomerIds().isEmpty()) {
       return new RevokeResult(0, 0);
@@ -135,6 +147,9 @@ public class CustomerRevokeService {
     if (me == null || !"CENTERHEAD".equals(me.getRole())) {
       throw new AuthException("센터장만 수행할 수 있습니다.",HttpStatus.GONE);
     }
+    if (!Boolean.TRUE.equals(me.getCanAllocate())) {
+      throw new AuthException("분배 권한이 없습니다.",HttpStatus.GONE);
+    }
     if (req.getCustomerIds() == null || req.getCustomerIds().isEmpty()) {
       return new RevokeResult(0, 0);
     }
@@ -166,6 +181,9 @@ public class CustomerRevokeService {
     UserContextDto me = mapper.findUserContextByEmail(callerEmail);
     if (me == null || !"EXPERT".equals(me.getRole())) {
       throw new AuthException("전문가만 수행할 수 있습니다.",HttpStatus.GONE);
+    }
+    if (!Boolean.TRUE.equals(me.getCanAllocate())) {
+      throw new AuthException("분배 권한이 없습니다.",HttpStatus.GONE);
     }
     if (req.getCustomerIds() == null || req.getCustomerIds().isEmpty()) {
       return new RevokeResult(0, 0);

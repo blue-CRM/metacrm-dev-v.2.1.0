@@ -93,10 +93,12 @@ public class UserService {
       }
     }
     
-    // 3-2) 분배권한: 대상이 센터장/전문가인 경우만 허용
+    // 3-2) 분배권한: 대상이 관리자/센터장/전문가인 경우만 허용
     if ("allocate".equals(field)) {
-      if (!"CENTERHEAD".equals(targetRole) && !"EXPERT".equals(targetRole)) {
-        throw new AuthException("센터장/전문가의 분배권한만 변경할 수 있습니다.",HttpStatus.GONE);
+      if (!"SUPERADMIN".equals(targetRole)
+          && !"CENTERHEAD".equals(targetRole)
+          && !"EXPERT".equals(targetRole)) {
+        throw new AuthException("관리자/센터장/전문가의 분배권한만 변경할 수 있습니다.",HttpStatus.GONE);
       }
     }
     
@@ -258,6 +260,7 @@ public class UserService {
     if (oldIsTeam && "SUPERADMIN".equals(newRole)) {
       userMapper.updateUserField(userId, "center", "본사"); // center_id = 1
       userMapper.updateUserField(userId, "visible", "N");// manager_phone_access = '차단'
+      userMapper.updateUserField(userId, "allocate", "N");// 분배권한 차단 (슈퍼계정이 사후 부여)
     }
 
      /* =========================
@@ -291,10 +294,10 @@ public class UserService {
     
     // B-4) 센터장/전문가 -> 본사
     if (oldIsCenterRole && "SUPERADMIN".equals(newRole)) {
-      // 소속 본사, 가시권한 공개, 분배권한 허용, 전문가 배지 제거
+      // 소속 본사, 가시권한 차단, 분배권한 차단(슈퍼계정이 사후 부여), 전문가 배지 제거
       userMapper.updateUserField(userId, "center", "본사");
       userMapper.updateUserField(userId, "visible", "N");
-      userMapper.updateUserField(userId, "allocate", "Y");
+      userMapper.updateUserField(userId, "allocate", "N");
       userMapper.updateUserField(userId, "expert", null);
     }
     

@@ -280,8 +280,11 @@ const columns = computed(() => {
         key: "allocate",
         label: "분배권한",
         type: "badge",
-        // super가 볼 때만 노출, 그리고 "행의 권한이 센터장 혹은 전문가"인 경우에만 편집 허용 (자기 자신은 수정 불가)
-        editable: (row) => isSuper.value && (row.type === "센터장" || row.type === "전문가") && row.email !== auth.email,
+        // super가 볼 때만 노출, 그리고 "행의 권한이 관리자/센터장/전문가"인 경우에만 편집 허용 (자기 자신은 수정 불가)
+        editable: (row) =>
+            isSuper.value &&
+            ["관리자", "센터장", "전문가"].includes(row.type) &&
+            row.email !== auth.email,
         options: ["허용", "차단"]
       },
       { key: "",  label: "",   type: "text", ellipsis: { width: 20 } },
@@ -455,8 +458,8 @@ async function onBadgeUpdate(row, key, newValue) {
   }
 
   // 분배권한 가드
-  if (key === "allocate" && !(row.type === "센터장" || row.type === "전문가")) {
-    alert("'센터장' 또는 '전문가'의 분배권한만 수정가능합니다.");
+  if (key === "allocate" && !["관리자", "센터장", "전문가"].includes(row.type)) {
+    alert("'관리자', '센터장' 또는 '전문가'의 분배권한만 수정가능합니다.");
     await fetchData();
     return;
   }

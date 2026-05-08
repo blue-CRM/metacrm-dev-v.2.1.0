@@ -325,7 +325,7 @@ public class AuthService {
     if ("SUPERADMIN".equals(request.getRole())) { // 본사관리자
       user.setCenterId(1L); // 본사
       user.setManagerPhoneAccess("N"); // 가시권한 X
-      user.setCanAllocate("Y"); // 분배권한 O
+      user.setCanAllocate("N"); // 분배권한 X (슈퍼계정이 사후 부여)
     }
     else if ("CENTERHEAD".equals(request.getRole())
         || "EXPERT".equals(request.getRole())) { // 센터장, 전문가일 경우
