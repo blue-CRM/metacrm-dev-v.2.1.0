@@ -1,3 +1,6 @@
 keys/*.json
 keys/
 backup/
+
+# IntelliJ build output
+out/
