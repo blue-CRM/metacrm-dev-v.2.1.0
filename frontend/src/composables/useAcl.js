@@ -8,11 +8,10 @@ const policy = {
         // 사이드바
         'menu.dashboard',    // 대시보드
         'menu.sales',        // 매출현황
-        'menu.db.allocate',  // DB분배
+        // 'menu.db.allocate', 'menu.db.revoke'는 perms.allocate에 의해 동적 부여
         'menu.db.center',    // 센터DB
         'menu.db.all',       // 전체DB
         'menu.db.duplicate', // 중복DB
-        'menu.db.revoke',    // DB회수
         'menu.info',         // 소속정보
         'menu.calendar',     // 내방일정
         'menu.user',         // 직원관리
