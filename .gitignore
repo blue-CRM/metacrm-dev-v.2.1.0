@@ -7,3 +7,6 @@ out/
 
 # 로컬 실행 로그
 *_run.log
+
+# IntelliJ IDE 설정 (운영 DB 접속정보 등 포함 — 추적 제외)
+.idea/
