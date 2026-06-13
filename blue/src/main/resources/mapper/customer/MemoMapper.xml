@@ -3,24 +3,16 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.blue.customer.common.memo.mapper.MemoMapper">
 
-    <!-- 로그인 사용자 컨텍스트 -->
-    <select id="findUserContextByEmail" resultType="com.blue.customer.all.dto.UserContextDto">
-        SELECT u.user_id      AS userId,
-               u.user_email   AS email,
-               u.user_role    AS role,
-               u.center_id    AS centerId
+    <!-- 로그인 사용자 컨텍스트 (is_super 포함) -->
+    <select id="findUserContextByEmail" resultType="com.blue.customer.common.memo.dto.UserContextDto">
+        SELECT u.user_id    AS userId,
+               u.user_email AS email,
+               u.user_role  AS role,
+               u.center_id  AS centerId,
+               u.is_super   AS isSuper
         FROM users u
         WHERE u.user_email = #{email}
         LIMIT 1
-    </select>
-
-    <!-- 과거 이력 확인 -->
-    <select id="selectPastStaffByPhone" parameterType="string" resultType="string">
-        SELECT u.user_name AS label
-        FROM customer_past_users cpu
-                 JOIN users u ON u.user_id = cpu.user_id
-        WHERE cpu.customer_phone = #{phone}
-        ORDER BY cpu.past_user_id DESC
     </select>
 
     <!-- customers 테이블 존재 여부 (중복DB 제외 보장) -->
@@ -50,50 +42,106 @@
         LIMIT 1
     </select>
 
-    <!-- 모달 상세 조회용 (필요한 필드만) -->
-    <select id="selectCustomerMemoBlock" resultType="com.blue.customer.common.memo.dto.MemoDetailDto">
+    <!-- 창 헤더: 이름/전화/상태/약속시각/담당프로/(내방)회의실명.
+         내방 회의실명은 표(CustomerAllMapper reservation CASE)와 동일한 서브쿼리 재사용. -->
+    <select id="selectMemoHeader" resultType="com.blue.customer.common.memo.dto.MemoDetailDto">
         SELECT
             c.customer_id           AS customerId,
-            c.customer_created_at   AS createdAt,
             c.customer_name         AS name,
             c.customer_phone        AS phone,
-            c.customer_category     AS category,
-            u.user_name             AS staff,
-            c.customer_memo         AS memo,
             c.customer_status       AS status,
             c.customer_promise_time AS promiseTime,
-            c.customer_tradingview_id     AS tradingviewId,
-            c.customer_telegram_nickname  AS telegramNickname,
-            c.customer_free_room          AS freeRoom,
-            c.customer_signal_room        AS signalRoom,
-            c.customer_exchange_joined    AS exchangeJoined,
-            c.customer_tradingview_joined AS tradingviewJoined,
-            c.customer_indicator_flag     AS indicatorFlag
+            u.user_name             AS staff,
+            (
+                SELECT mr.room_name
+                FROM visit_schedule vs
+                         JOIN meeting_rooms mr ON mr.room_id = vs.room_id
+                WHERE vs.customer_id = c.customer_id
+                ORDER BY vs.updated_at DESC, vs.visit_id DESC
+                LIMIT 1
+            )                       AS visitRoom
         FROM customers c
                  LEFT JOIN users u ON u.user_id = c.user_id
         WHERE c.customer_id = #{customerId}
         LIMIT 1
     </select>
 
-    <!-- 업데이트: null이면 null로, 빈문자열은 null로 처리하고 싶으면 서비스에서 null로 정규화 -->
-    <update id="updateCustomerMemoBlock">
-        UPDATE customers
-        SET customer_memo               = #{memo},
-            customer_status             = #{status},
-            <if test="status == '내방'">
-                customer_promise_time = NULL,
-            </if>
-            <if test="status == '재콜'">
-                customer_promise_time = #{promiseTime,jdbcType=TIMESTAMP},
-            </if>
-            customer_tradingview_id     = #{tradingviewId},
-            customer_telegram_nickname  = #{telegramNickname},
-            customer_free_room          = #{freeRoom},
-            customer_signal_room        = #{signalRoom},
-            customer_exchange_joined    = #{exchangeJoined},
-            customer_tradingview_joined = #{tradingviewJoined},
-            customer_indicator_flag     = #{indicatorFlag}
-        WHERE customer_id = #{customerId}
+    <!-- 채팅 목록 (삭제 제외, 시간순). author_user_id 로 users LEFT JOIN → USER 만 authorName -->
+    <select id="selectChatsByCustomer" resultType="com.blue.customer.common.memo.dto.MemoChatDto">
+        SELECT
+            mc.chat_id        AS chatId,
+            mc.customer_id    AS customerId,
+            mc.author_user_id AS authorUserId,
+            u.user_name       AS authorName,
+            mc.chat_type      AS chatType,
+            mc.content        AS content,
+            mc.created_at     AS createdAt,
+            mc.updated_at     AS updatedAt,
+            mc.is_deleted     AS isDeleted
+        FROM memo_chats mc
+                 LEFT JOIN users u ON u.user_id = mc.author_user_id
+        WHERE mc.customer_id = #{customerId}
+          AND mc.is_deleted = 0
+        ORDER BY mc.created_at ASC, mc.chat_id ASC
+    </select>
+
+    <!-- 단건 조회 (작성/수정 후 응답용) -->
+    <select id="selectChatById" resultType="com.blue.customer.common.memo.dto.MemoChatDto">
+        SELECT
+            mc.chat_id        AS chatId,
+            mc.customer_id    AS customerId,
+            mc.author_user_id AS authorUserId,
+            u.user_name       AS authorName,
+            mc.chat_type      AS chatType,
+            mc.content        AS content,
+            mc.created_at     AS createdAt,
+            mc.updated_at     AS updatedAt,
+            mc.is_deleted     AS isDeleted
+        FROM memo_chats mc
+                 LEFT JOIN users u ON u.user_id = mc.author_user_id
+        WHERE mc.chat_id = #{chatId}
+        LIMIT 1
+    </select>
+
+    <!-- 권한 검증용 메타 -->
+    <select id="selectChatMeta" resultType="com.blue.customer.common.memo.dto.MemoChatDto">
+        SELECT
+            mc.chat_id        AS chatId,
+            mc.customer_id    AS customerId,
+            mc.author_user_id AS authorUserId,
+            mc.chat_type      AS chatType,
+            mc.is_deleted     AS isDeleted
+        FROM memo_chats mc
+        WHERE mc.chat_id = #{chatId}
+        LIMIT 1
+    </select>
+
+    <!-- 채팅 INSERT (created_at 은 DB 기본값 CURRENT_TIMESTAMP) -->
+    <insert id="insertChat"
+            parameterType="com.blue.customer.common.memo.dto.MemoChatDto"
+            useGeneratedKeys="true" keyProperty="chatId" keyColumn="chat_id">
+        INSERT INTO memo_chats (customer_id, author_user_id, chat_type, content)
+        VALUES (#{customerId}, #{authorUserId}, #{chatType}, #{content})
+    </insert>
+
+    <!-- 내용 수정 -->
+    <update id="updateChatContent">
+        UPDATE memo_chats
+        SET content    = #{content},
+            updated_at = NOW(),
+            updated_by = #{updatedBy}
+        WHERE chat_id = #{chatId}
+          AND is_deleted = 0
+    </update>
+
+    <!-- 소프트 삭제 -->
+    <update id="softDeleteChat">
+        UPDATE memo_chats
+        SET is_deleted = 1,
+            deleted_by = #{deletedBy},
+            deleted_at = NOW()
+        WHERE chat_id = #{chatId}
+          AND is_deleted = 0
     </update>
 
 </mapper>

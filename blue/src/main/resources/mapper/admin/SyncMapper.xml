@@ -46,7 +46,7 @@
 
     <insert id="insertCustomerMinimal"
             parameterType="com.blue.customer.common.sheets.dto.CustomerUpsertDto"
-            useGeneratedKeys="true">
+            useGeneratedKeys="true" keyProperty="customerId" keyColumn="customer_id">
         INSERT INTO customers (
             customer_created_at, customer_name, customer_phone,
             customer_memo, customer_content, customer_source,

@@ -330,7 +330,7 @@ public class AuthService {
     else if ("CENTERHEAD".equals(request.getRole())
         || "EXPERT".equals(request.getRole())) { // 센터장, 전문가일 경우
       user.setManagerPhoneAccess("N"); // 가시권한 X
-      user.setCanAllocate("Y"); // 분배권한 X
+      user.setCanAllocate("Y"); // 분배권한 O (센터장/전문가 기본 보유, 슈퍼가 사후 'N' 토글 가능)
       user.setCenterId(null); // 팀 미할당
     }
     else if ("MANAGER".equals(request.getRole())) { // 팀장

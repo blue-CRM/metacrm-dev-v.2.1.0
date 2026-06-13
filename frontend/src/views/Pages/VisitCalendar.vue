@@ -531,6 +531,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } 
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import PageBreadcrumb from '@/components/common/PageBreadcrumb.vue'
 import axios from '@/plugins/axios.js'
+import { broadcastCustomerUpdated } from '@/composables/useMemoWindow.js'
 import { useAuthStore } from "@/stores/auth.js";
 import { useRoute } from 'vue-router'
 import {RefreshIcon} from "@/icons";
@@ -1739,6 +1740,8 @@ async function saveEvent() {
     else await axios.post(`/api/work/visit/schedules`, payload)
 
     await loadSchedules()
+    // 내방 약속시간/회의실 변경 → 그 고객 메모 팝업 헤더 갱신(같은 브라우저)
+    if (payload.customerId != null) broadcastCustomerUpdated(payload.customerId)
     closeModal()
   } catch (e: any) {
     console.error(e)
@@ -1759,6 +1762,8 @@ async function deleteEvent(id: string | null) {
   try {
     await axios.delete(`/api/work/visit/schedules/${id}`)
     await loadSchedules()
+    // 내방 일정 삭제 → 헤더 약속칩 갱신(일정없음)
+    if (ev.customerId != null) broadcastCustomerUpdated(ev.customerId)
     if (editingEventId.value === id) closeModal()
   } catch (e: any) {
     console.error(e)

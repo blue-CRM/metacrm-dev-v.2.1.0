@@ -90,15 +90,6 @@
           @refresh="fetchData"
         />
 
-        <Teleport to="body">
-          <Memo
-              v-if="memoOpen"
-              :row="memoRow"
-              :read-only="true"
-              @close="closeMemo"
-          />
-        </Teleport>
-
       </div>
     </div>
   </AdminLayout>
@@ -141,7 +132,7 @@ import PsnsTable from '@/components/tables/basic-tables/PsnsTable.vue'
 import AllocateModal from '@/components/ui/AllocateModal.vue'
 import AllocateExpertDailySummary from "@/components/ui/AllocateExpertDailySummary.vue";
 import ResetModal from '@/components/ui/ResetModal.vue'
-import Memo from '@/components/ui/MEMO.vue'
+import { openMemoWindow, broadcastCustomerUpdated } from '@/composables/useMemoWindow.js'
 import { EyeIcon } from '@heroicons/vue/24/outline'
 import { ClipboardDocumentListIcon } from "@heroicons/vue/24/outline";
 import { useAuthStore } from '@/stores/auth.js'
@@ -302,16 +293,10 @@ async function toggleSort() {
 }
 
 // ===== 메모 모달 관련 =====
-const memoOpen = ref(false)
-const memoRow = ref(null)
-
-function openMemo(row) {
-  memoRow.value = row
-  memoOpen.value = true
-}
-function closeMemo() {
-  memoOpen.value = false
-  memoRow.value = null
+// 분배 화면 메모는 읽기전용 → 별도 창을 view 모드(?view=1)로 연다
+function openMemo(row: any) {
+  // ⚠️ 클릭 핸들러에서 동기 호출(팝업 차단 회피)
+  openMemoWindow(row.customer_id || row.id, { view: true })
 }
 
 // ===== 모달 열기/닫기 =====
@@ -422,6 +407,9 @@ async function onConfirmAllocate(payload: {
 
     // 페이지 검사하며 새로고침
     await refetchAndClamp()
+
+    // 분배된 고객의 메모 팝업(열려있다면) 담당자·권한 즉시 갱신(같은 브라우저)
+    ids.forEach((id:any) => broadcastCustomerUpdated(id))
   }).catch((e:any) => {
     console.error(e)
     alert(e?.response?.data || '분배 중 오류가 발생했습니다.')

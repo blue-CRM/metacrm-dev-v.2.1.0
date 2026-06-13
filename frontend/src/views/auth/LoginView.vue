@@ -18,7 +18,7 @@
                     Sign In
                   </h1>
                   <p class="text-sm text-gray-500 dark:text-gray-400">
-                    이메일 인증 후 비밀번호를 입력하세요
+                    {{ REQUIRE_EMAIL_VERIFY ? '이메일 인증 후 비밀번호를 입력하세요' : '이메일과 비밀번호를 입력하세요' }}
                   </p>
                 </div>
               </div>
@@ -184,7 +184,7 @@ import ThemeToggler from "@/components/common/ThemeToggler.vue";
 import { useIdleRefresh } from '@/composables/useIdleRefresh.js'
 
 // 임시로 인증 우회할 때 false
-const REQUIRE_EMAIL_VERIFY = true
+const REQUIRE_EMAIL_VERIFY = false
 const canSignIn = computed(() => !REQUIRE_EMAIL_VERIFY || verified.value)
 
 // 줌 비율 적용 시작

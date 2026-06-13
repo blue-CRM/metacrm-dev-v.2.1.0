@@ -5,6 +5,7 @@ import com.blue.customer.common.sheets.dto.CustomerUpsertDto;
 import com.blue.customer.common.sheets.dto.DuplicateUpsertDto;
 import com.blue.customer.common.sheets.dto.GsheetSourceDto;
 import com.blue.customer.common.sheets.mapper.SyncMapper;
+import com.blue.customer.common.memo.service.MemoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -25,6 +26,7 @@ public class SheetsSyncService {
   private final GoogleSheetsClient sheetsClient;
   private final SyncMapper mapper;
   private final StringRedisTemplate redis;
+  private final MemoService memoService;
   
   // ===== 운영 파라미터 =====
   private static final int BATCH_SIZE = 200;
@@ -446,7 +448,11 @@ public class SheetsSyncService {
         row.setCustomerDivision(existed ? "유효" : "최초");
         row.setCustomerStatus("없음");
         row.setCustomerCategory(row.getCustomerCategory());
-        mapper.insertCustomerMinimal(row);
+        mapper.insertCustomerMinimal(row); // useGeneratedKeys → row.customerId 채워짐
+
+        // [메모 채팅화] 신규 고객 최초 SYSTEM 채팅(종목명) = customer_memo 와 동일 내용.
+        // ⚠️ 전환기 이중기록: customer_memo 도 그대로 둠(Revoke/Center 텍스트 셀 유지). 같은 TX.
+        memoService.addSystemChat(row.getCustomerId(), row.getCustomerMemo());
         n++;
       }
     }

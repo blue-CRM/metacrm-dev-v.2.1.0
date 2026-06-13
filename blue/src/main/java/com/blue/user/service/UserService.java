@@ -260,54 +260,68 @@ public class UserService {
     if (oldIsTeam && "SUPERADMIN".equals(newRole)) {
       userMapper.updateUserField(userId, "center", "본사"); // center_id = 1
       userMapper.updateUserField(userId, "visible", "N");// manager_phone_access = '차단'
-      userMapper.updateUserField(userId, "allocate", "N");// 분배권한 차단 (슈퍼계정이 사후 부여)
+      // 분배권한은 아래 B-6에서 역할 기본값('N', 슈퍼가 사후 부여)으로 일원화
     }
 
      /* =========================
      B. 팀/센터/전문가/본사 규칙
      ========================= */
-    
+
     // B-1) 팀장/팀원 -> 센터장/전문가
     if (oldIsTeam && newIsCenterRole) {
-      // 센터 미배정
+      // 센터 미배정 + 가시권한 차단
       userMapper.updateUserField(userId, "center", null);
-      // 가시권한/분배권한 차단
       userMapper.updateUserField(userId, "visible", "N");
-      userMapper.updateUserField(userId, "allocate", "N");
     }
-    
+
     // B-2) 센터장 -> 전문가
     if ("CENTERHEAD".equals(oldRole) && "EXPERT".equals(newRole)) {
       userMapper.updateUserField(userId, "visible", "N");
-      userMapper.updateUserField(userId, "allocate", "N");
       // 전문가 전환 시 배지는 '미지정'부터 시작
       userMapper.updateUserField(userId, "expert", null);
     }
-    
+
     // B-3) 전문가 -> 센터장 (센터장 1명 가드는 updateUserField에서 이미 체크)
     if ("EXPERT".equals(oldRole) && "CENTERHEAD".equals(newRole)) {
       userMapper.updateUserField(userId, "visible", "N");
-      userMapper.updateUserField(userId, "allocate", "N");
       // 센터장이 되면 전문가 배지 제거
       userMapper.updateUserField(userId, "expert", null);
     }
-    
+
     // B-4) 센터장/전문가 -> 본사
     if (oldIsCenterRole && "SUPERADMIN".equals(newRole)) {
-      // 소속 본사, 가시권한 차단, 분배권한 차단(슈퍼계정이 사후 부여), 전문가 배지 제거
+      // 소속 본사, 가시권한 차단, 전문가 배지 제거 (분배권한은 B-6에서 'N')
       userMapper.updateUserField(userId, "center", "본사");
       userMapper.updateUserField(userId, "visible", "N");
-      userMapper.updateUserField(userId, "allocate", "N");
       userMapper.updateUserField(userId, "expert", null);
     }
-    
+
     // B-5) 본사 -> 센터장/전문가
     if ("SUPERADMIN".equals(oldRole) && newIsCenterRole) {
-      // 소속 미배정, 가시/분배 차단, 전문가 배지 제거
+      // 소속 미배정, 가시권한 차단, 전문가 배지 제거 (분배권한은 B-6에서 'Y')
       userMapper.updateUserField(userId, "center", null);
       userMapper.updateUserField(userId, "visible", "N");
-      userMapper.updateUserField(userId, "allocate", "N");
       userMapper.updateUserField(userId, "expert", null);
+    }
+
+    /* =========================
+     B-6. 분배권한(can_allocate) 표준화 — 역할 기본값으로 일원화
+       역할이 실제로 바뀌면, 새 역할의 '기본 분배권한'으로 동기화한다.
+       · MANAGER(팀장)·CENTERHEAD(센터장)·EXPERT(전문가) = 'Y'
+         - MANAGER: 분배 메뉴가 역할 기반(useAcl base)으로 상시 노출 + 수동토글 불가 → 항상 'Y'
+         - CENTERHEAD/EXPERT: 기본 분배권한 보유(가입 기본값과 동일). 슈퍼가 이후 수동 'N' 토글 가능
+       · STAFF(프로)      = 'N' (수동토글 불가)
+       · SUPERADMIN(관리자) = 'N' (슈퍼계정이 사후에 수동 'Y' 부여)
+       ※ 교정된 버그 2건:
+         (1) '→팀장/프로' 전환에서 allocate 미갱신 → STAFF→MANAGER 승급 시 'N' 잔존(회원관리 표시 불일치)
+         (2) '→센터장/전문가' 전환에서 의도와 달리 'N'으로 강등(센터장/전문가는 기본 'Y'여야 함)
+     ========================= */
+    if (!oldRole.equals(newRole)) {
+      if ("MANAGER".equals(newRole) || "CENTERHEAD".equals(newRole) || "EXPERT".equals(newRole)) {
+        userMapper.updateUserField(userId, "allocate", "Y");
+      } else if ("STAFF".equals(newRole) || "SUPERADMIN".equals(newRole)) {
+        userMapper.updateUserField(userId, "allocate", "N");
+      }
     }
 
     /* =========================

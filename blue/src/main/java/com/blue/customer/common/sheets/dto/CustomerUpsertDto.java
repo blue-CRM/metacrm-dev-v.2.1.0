@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class CustomerUpsertDto {
+  private Long customerId;                  // INSERT 후 생성된 PK(useGeneratedKeys로 채워짐) — 최초 SYSTEM 채팅 부착용
   private LocalDateTime customerCreatedAt;  // A열
   private String customerName;              // C열
   private String customerPhone;             // D열

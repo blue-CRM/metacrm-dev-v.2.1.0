@@ -28,7 +28,11 @@
               :page-size="size"
               :loading="busy"
               @changePage="changePage"
-          />
+          >
+            <template #expand-memo="{ row }">
+              <MemoCellChats :customer-id="row.id" />
+            </template>
+          </PsnsTable>
         </ComponentCard>
 
       </div>
@@ -69,6 +73,7 @@ import PageBreadcrumb from "@/components/common/PageBreadcrumb.vue";
 import AdminLayout from "@/components/layout/AdminLayout.vue";
 import ComponentCard from "@/components/common/ComponentCard.vue";
 import PsnsTable from "@/components/tables/basic-tables/PsnsTable.vue";
+import MemoCellChats from "@/components/memo/MemoCellChats.vue";
 import { useTableQuery } from "@/composables/useTableQuery.js";
 import { globalFilters } from "@/composables/globalFilters.js";
 import api from "@/plugins/axios.js";

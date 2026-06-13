@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
@@ -158,6 +159,7 @@ public class CustomerCenterService {
   /* =========================
      엑셀 다운로드
   ========================= */
+  @Transactional(readOnly = true) // SET SESSION group_concat_max_len + GROUP_CONCAT 가 같은 커넥션을 쓰도록
   public ResponseEntity<byte[]> exportExcel(
       String callerEmail,
       String keyword, String dateFrom, String dateTo,
@@ -214,7 +216,20 @@ public class CustomerCenterService {
     if ("N".equalsIgnoreCase(me.getVisible())) {
       data.forEach(r -> r.setPhone(maskPhone(r.getPhone())));
     }
-    
+
+    // 메모 셀 = 그 고객 전체 채팅 합치기(STATUS 포함). 목록 미리보기(최신1건)와 별개.
+    java.util.Map<Long, String> fullMemo = new java.util.HashMap<>();
+    List<Long> ids = data.stream()
+        .map(CenterDbRowDto::getId)
+        .filter(java.util.Objects::nonNull)
+        .toList();
+    if (!ids.isEmpty()) {
+      mapper.setGroupConcatMaxLen(); // 기본 1024 → 상향(같은 TX/커넥션)
+      for (var e : mapper.selectMemoExport(ids)) {
+        fullMemo.put(e.getCustomerId(), e.getMemo());
+      }
+    }
+
     try (Workbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
       Sheet sh = wb.createSheet("센터DB");
       
@@ -234,7 +249,8 @@ public class CustomerCenterService {
         rr.createCell(2).setCellValue(nz(row.getPhone()));
         rr.createCell(3).setCellValue(nz(row.getCenterName()));
         rr.createCell(4).setCellValue(nz(row.getSource()));
-        rr.createCell(5).setCellValue(nz(row.getMemo()));
+        // 전체 채팅 합본(없으면 목록 미리보기 메모로 폴백) + POI 셀 32,767자 가드
+        rr.createCell(5).setCellValue(cellSafe(fullMemo.getOrDefault(row.getId(), row.getMemo())));
       }
       
       wb.write(out);
@@ -258,6 +274,13 @@ public class CustomerCenterService {
   }
   
   private String nz(String s) { return s == null ? "" : s; }
+
+  /** POI 셀 한도(32,767자) 가드 — 넘으면 자른다(엑셀 생성 예외 방지) */
+  private String cellSafe(String s) {
+    if (s == null) return "";
+    final int MAX = 32_767;
+    return s.length() > MAX ? s.substring(0, MAX) : s;
+  }
   
   private String maskPhone(String phone) {
     if (phone == null) return null;

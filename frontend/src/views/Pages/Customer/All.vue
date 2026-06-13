@@ -73,16 +73,6 @@
           />
         </ComponentCard>
 
-        <Teleport to="body">
-          <Memo
-              v-if="memoOpen"
-              :row="memoRow"
-              :readOnly="memoReadOnly"
-              @close="closeMemo"
-              @saved="onMemoSaved"
-          />
-        </Teleport>
-
       </div>
     </div>
   </AdminLayout>
@@ -123,7 +113,7 @@ import PageBreadcrumb from "@/components/common/PageBreadcrumb.vue";
 import AdminLayout from "@/components/layout/AdminLayout.vue";
 import ComponentCard from "@/components/common/ComponentCard.vue";
 import PsnsTable from "@/components/tables/basic-tables/PsnsTable.vue";
-import Memo from "@/components/ui/MEMO.vue";
+import { openMemoWindow, broadcastCustomerUpdated } from "@/composables/useMemoWindow.js";
 import { EyeIcon } from "@heroicons/vue/24/outline";
 import { useTableQuery } from "@/composables/useTableQuery.js";
 import { globalFilters } from "@/composables/globalFilters.js";
@@ -132,15 +122,12 @@ import axios from "@/plugins/axios.js"
 const auth = useAuthStore();
 const role = computed(() => auth.grants.role)
 const isManager = computed(() => role.value === 'MANAGER');
-const memoReadOnly = computed(() => ['CENTERHEAD', 'EXPERT'].includes(role.value))
 const mineOnly = ref(false);
 
 const currentPageTitle = ref("전체 고객DB관리");
 const tableKey = ref(0); // 선택 초기화 강제 리렌더용
 const tableRef = ref(null); // PsnsTable 메서드 접근
 const selectedRows = ref([]); // 선택된 행 캐시
-const memoOpen = ref(false); // 메모 모달 상태
-const memoRow = ref(null); // 메모 모달에 넘길 행
 const isRefreshing = ref(false); // 새로고침 스피너/비활성
 
 // 수동 새로고침
@@ -336,6 +323,7 @@ function onBadgeUpdate(row, key, newValue) {
       if (newValue === '내방') {
         row.reservation = null;
       }
+      broadcastCustomerUpdated(row.id); // 열린 메모 팝업 헤더 즉시 갱신(같은 브라우저)
     }).catch(err => {
       const msg =
           err?.response?.data?.message
@@ -361,6 +349,7 @@ async function onDateUpdate(row, key, newValue) {
       field: key,       // "reservation"
       value: newValue   // 날짜 값
     })
+    broadcastCustomerUpdated(row.id); // 재콜 약속시간 변경 → 메모 팝업 헤더 갱신
     // console.log("예약일 저장 성공:", row.name, newValue)
   } catch (err) {
     console.error("예약일 저장 실패", err)
@@ -444,6 +433,7 @@ async function onTextUpdate(row, key, newValue) {
     });
 
     row.name = nextName;
+    broadcastCustomerUpdated(row.id); // 이름 변경 → 메모 팝업 헤더 갱신
   } catch (err) {
     console.error("이름 수정 실패", err);
 
@@ -456,21 +446,15 @@ async function onTextUpdate(row, key, newValue) {
   }
 }
 
-// 메모 아이콘 클릭 -> 모달 오픈
+// 메모 아이콘 클릭 -> 별도 창 오픈 (쓰기권한은 창 내부서 판정)
 function onTableButtonClick(row, key) {
   if (key !== 'memo') return;
   if (row.origin === 'DUPLICATE') {
     alert('중복 DB는 메모 수정이 불가합니다.');
     return;
   }
-
-  memoRow.value = row;
-  memoOpen.value = true;
-}
-
-function closeMemo() {
-  memoOpen.value = false;
-  memoRow.value = null;
+  // ⚠️ 클릭 핸들러에서 동기 호출(팝업 차단 회피)
+  openMemoWindow(row.id);
 }
 
 /* =============================
@@ -633,27 +617,6 @@ async function onCommonButtonClick(btn) {
 
   } finally {
     uiLoading.value = false;
-  }
-}
-
-// 모달 갱신
-function onMemoSaved(patch) {
-  const arr = items.value ?? [];
-  const idx = arr.findIndex(r => r.id === patch.id);
-  if (idx !== -1) {
-    const cur = arr[idx];
-    const next = { ...cur };
-
-    if ('status' in patch) next.status = patch.status;
-    if ('reservation' in patch) next.reservation = patch.reservation;
-    if ('initialPrice' in patch) next.initialPrice = patch.initialPrice;
-    if ('upsellPrice' in patch) next.upsellPrice = patch.upsellPrice;
-
-    arr.splice(idx, 1, next);
-  } else {
-    // 현재 페이지에 행이 없을 때만 안전 재조회 (페이지 유지)
-    const curPage = page.value;
-    fetchData().then(() => { if (page.value !== curPage) changePage(curPage); });
   }
 }
 

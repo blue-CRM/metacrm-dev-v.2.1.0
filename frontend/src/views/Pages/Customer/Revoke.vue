@@ -28,7 +28,11 @@
               :loading="busy"
               @rowSelect="onRowSelect"
               @changePage="changePage"
-          />
+          >
+            <template #expand-memo="{ row }">
+              <MemoCellChats :customer-id="row.id" />
+            </template>
+          </PsnsTable>
         </ComponentCard>
 
         <!-- MANAGER (팀장) -->
@@ -59,7 +63,11 @@
               :loading="busy"
               @rowSelect="onRowSelect"
               @changePage="changePage"
-          />
+          >
+            <template #expand-memo="{ row }">
+              <MemoCellChats :customer-id="row.id" />
+            </template>
+          </PsnsTable>
         </ComponentCard>
 
         <!-- STAFF 접근 시 경고 안내를 노출하려면 주석 해제
@@ -121,11 +129,13 @@ import AdminLayout from '@/components/layout/AdminLayout.vue'
 import PageBreadcrumb from '@/components/common/PageBreadcrumb.vue'
 import ComponentCard from '@/components/common/ComponentCard.vue'
 import PsnsTable from '@/components/tables/basic-tables/PsnsTable.vue'
+import MemoCellChats from '@/components/memo/MemoCellChats.vue'
 import AllocateModal from '@/components/ui/AllocateModal.vue'
 import { useAuthStore } from '@/stores/auth.js'
 import { useTableQuery } from '@/composables/useTableQuery.js'
 import { globalFilters } from '@/composables/globalFilters.js'
 import axios from '@/plugins/axios.js'
+import { broadcastCustomerUpdated } from '@/composables/useMemoWindow.js'
 
 /** 권한/페이지 타이틀 */
 const auth = useAuthStore()
@@ -409,6 +419,8 @@ async function onConfirmTransfer(payload: {
     selectedRows.value = []
     tableRef.value?.clearSelection?.()
     await refetchAndClamp()
+    // 이관된 고객 메모 팝업 담당자·상태·권한 갱신(같은 브라우저)
+    ids.forEach((id) => broadcastCustomerUpdated(id))
   }).catch((e: any) => {
     console.error(e)
     alert(e?.response?.data || '이관 중 오류가 발생했습니다.')
@@ -496,6 +508,8 @@ async function onConfirmRevoke(ids: number[]) {
 
       // 페이지 검사 후 새로고침
       await refetchAndClamp()
+      // 회수된 고객 메모 팝업 상태(→회수)·담당자·권한 갱신
+      ids.forEach((id) => broadcastCustomerUpdated(id))
     } catch (e: any) {
       console.error(e)
       alert(e?.response?.data || '회수 중 오류가 발생했습니다.')
@@ -514,6 +528,8 @@ async function onConfirmRevokeByMgr(ids: number[]) {
 
       // 페이지 검사 후 새로고침
       await refetchAndClamp()
+      // 회수된 고객 메모 팝업 갱신
+      ids.forEach((id) => broadcastCustomerUpdated(id))
     } catch (e: any) {
       console.error(e)
       alert(e?.response?.data || '회수 중 오류가 발생했습니다.')

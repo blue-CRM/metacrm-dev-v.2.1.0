@@ -77,7 +77,6 @@
                     OR t.phone   LIKE CONCAT('%', #{keyword}, '%')
                     OR t.source  LIKE CONCAT('%', #{keyword}, '%')
                     OR t.content LIKE CONCAT('%', #{keyword}, '%')
-                    OR t.memo    LIKE CONCAT('%', #{keyword}, '%')
                     )
                 </otherwise>
             </choose>
@@ -140,7 +139,6 @@
                     OR t.phone   LIKE CONCAT('%', #{keyword}, '%')
                     OR t.source  LIKE CONCAT('%', #{keyword}, '%')
                     OR t.content LIKE CONCAT('%', #{keyword}, '%')
-                    OR t.memo    LIKE CONCAT('%', #{keyword}, '%')
                     )
                 </otherwise>
             </choose>
@@ -271,7 +269,9 @@
         c.customer_phone       AS phone,
         c.customer_source      AS source,
         c.customer_content     AS content,
-        c.customer_memo        AS memo,
+        (SELECT mc.content FROM memo_chats mc
+            WHERE mc.customer_id = c.customer_id AND mc.is_deleted = 0 AND mc.chat_type &lt;&gt; 'STATUS'
+            ORDER BY mc.created_at DESC, mc.chat_id DESC LIMIT 1) AS memo,
 
         c.customer_status       AS status,
         c.customer_promise_time AS promiseAt,
@@ -426,7 +426,9 @@
         c.customer_phone      AS phone,
         c.customer_source     AS source,
         c.customer_content    AS content,
-        c.customer_memo       AS memo,
+        (SELECT mc.content FROM memo_chats mc
+            WHERE mc.customer_id = c.customer_id AND mc.is_deleted = 0 AND mc.chat_type &lt;&gt; 'STATUS'
+            ORDER BY mc.created_at DESC, mc.chat_id DESC LIMIT 1) AS memo,
 
         c.customer_status       AS status,
         c.customer_promise_time AS promiseAt,
@@ -581,7 +583,9 @@
         c.customer_phone       AS phone,
         c.customer_source      AS source,
         c.customer_content     AS content,
-        c.customer_memo        AS memo,
+        (SELECT mc.content FROM memo_chats mc
+            WHERE mc.customer_id = c.customer_id AND mc.is_deleted = 0 AND mc.chat_type &lt;&gt; 'STATUS'
+            ORDER BY mc.created_at DESC, mc.chat_id DESC LIMIT 1) AS memo,
 
         c.customer_status       AS status,
         c.customer_promise_time AS promiseAt,
@@ -686,6 +690,25 @@
         ) t
         WHERE 1=1
         <include refid="CENTER_DB_FILTERS_EXPERT"/>
+    </select>
+
+    <!-- ===== 엑셀 export: 메모 = 전체 채팅 합치기 ===== -->
+    <update id="setGroupConcatMaxLen">
+        SET SESSION group_concat_max_len = 1000000
+    </update>
+
+    <select id="selectMemoExport" resultType="com.blue.customer.center.dto.CenterMemoExportDto">
+        SELECT
+            mc.customer_id AS customerId,
+            GROUP_CONCAT(
+                mc.content
+                ORDER BY mc.created_at, mc.chat_id SEPARATOR '\n'
+            ) AS memo
+        FROM memo_chats mc
+        WHERE mc.is_deleted = 0
+          AND mc.customer_id IN
+          <foreach item="id" collection="ids" open="(" separator="," close=")">#{id}</foreach>
+        GROUP BY mc.customer_id
     </select>
 
 </mapper>

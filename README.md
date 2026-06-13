@@ -78,6 +78,12 @@ CREATE DATABASE bluecrm CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 ```
 * DB 스키마는 부록A 참고
 
+### 1-1) 테스트 계정 & E2E
+
+* 로컬 dev DB(`meta26`)의 **공용 테스트 계정 9개**(박건희·팀장2·프로2·센터장2·전문가2) 로그인 비번은 모두 **`test`** (해시 생성기 `sample/PasswordHashTest.java`가 `encode("test")`).
+  * ⚠️ 유저 로그인 비번은 DB에 BCrypt 해시로 저장 → **역산 불가**. `application-*.properties`의 `myblue1234`는 **DB 접속 비번**(별개).
+* 역할별 로그인→작업→로그아웃→전환 형태의 **유저 E2E 테스트 시나리오**는 `MEMO_CHAT_E2E.md`(실제 계정·고객 id 기반) 참조.
+
 ### 2) 백엔드 설정
 
 `backend/src/main/resources/application-local.yml` (예시)
@@ -221,6 +227,10 @@ spring.data.redis.timeout=6000
   * 빈 문자열은 `null` 정규화, 정수 플래그는 null→0
   * 권한: SUPER=전체, MANAGER=자기 센터 보유건, STAFF=본인 보유건
   * 중복DB는 수정 불가 (에러 메시지 주의)
+
+> 🚧 **개편 진행 중 — 메모 채팅화**: `customers.customer_memo`(단일 TEXT)를 시간순 채팅(`memo_chats` 테이블, 카톡식)으로 전환 중.
+> 단계: **1차** DB 구축 + 타이핑/읽기, **2차** 상태변경 자동채팅(DB 트리거) + 같은 브라우저 실시간 + `customer_memo` 컬럼 DROP, **3차** WebSocket 실시간.
+> 설계서 `MEMO_CHAT_PLAN.md` · 유저 E2E 테스트 시나리오 `MEMO_CHAT_E2E.md` 참조.
 
 ---
 
@@ -589,3 +599,45 @@ INSERT INTO gsheet_sources (
 ) VALUES
     (1, '~~~', 'Sheet1', 1, now());
 ```
+
+---
+
+## 부록 B. 현재 구현 로직 (코드 검증본, 2026-06-03)
+
+> 실제 코드를 정밀 대조해 정리한 "지금 동작하는" 로직. 메모 채팅화 등 신규 작업의 평가 기준.
+
+### B.1 인증 · 권한 · 역할
+- **Security**(`global/config/SecurityConfig`): 공개 `=/actuator/health, /api/auth/**, /api/mail/**`. 인증필요 `=/api/ping, /api/common/**, /api/work/**, /api/info/**, /api/sheets/**`. URL 역할제한 `=/api/super/**(SUPERADMIN), /api/admin/**(MANAGER), /api/staff/**(STAFF), /api/lead/**(SUPERADMIN·MANAGER)`. **그 외 `/api/work/**` 는 역할 무관 authenticated만 — 역할 격리는 서비스/쿼리 계층에서 수행.**
+- **JWT 필터**(`global/security/JwtAuthenticationFilter`): 토큰 검증 후 `user_approved='Y'` DB 재확인. 차단계정 → 410 + `X-Blocked:true`. 만료 → 401 + `X-Token-Expired:1` + `WWW-Authenticate`. claim: `sub(email), role, name, isSuper`.
+- **역할 5종**: SUPERADMIN(관리자, `is_super='Y'`=총관리자), MANAGER(팀장), STAFF(프로), CENTERHEAD(센터장), EXPERT(전문가). 조직: [[부록 없음 — 메모리 project-blue-org-model 참조]] 본사지점=센터(센터장+전문가+SUPER), 외부지점=팀(팀장+프로). centers 테이블이 팀·센터 겸용.
+
+### B.2 고객 생애주기 (`customers`)
+- **status 집합**: 없음/신규/재콜/내방/내방취소/회수/가망/자연풀/카피/거절/기타/결번/부재1~5.
+- **status 변경 위치(전수)**: ①`CustomerAllService.updateField`(case status, ~181줄: `updateCustomerStatus`) ②분배 `CustomerAllocateMapper`(`updateStatusToNew`→신규, `updateStatusToNone`→없음) ③회수 `updateToRevoked`(→회수, user_id=NULL) / `updateToManagerPool`(→없음, user_id=팀장) ④시트 신규삽입(→없음). **메모 모달의 상태변경은 `updateMemo`(별도 경로).**
+- **division 규칙**(시트 동기화): 30일 내 동일 전화 본체 있으면 → `customers_duplicate`(중복). 없으면 → 본체, `existsAnyBaseCustomer`면 '유효' 아니면 '최초'. 신규 본체 기본값: status='없음', user_id=NULL.
+- **`customer_prev_status`**: 회수(`updateToRevoked`/`updateToManagerPool`) 시에만 백업 — `CASE WHEN status IN('없음','신규','회수') THEN 유지 ELSE 현재상태`. **복원 메커니즘 없음.** 분배 시 `prev_status='내방'`이면 배정 후에도 '내방' 유지(그 외 '신규').
+
+### B.3 권한 판정 SQL (역할별 접근 범위) — `CustomerAllMapper`/`MemoMapper`
+- MANAGER: `customerOwnedByCenter` = 고객 담당자의 `users.center_id == me.centerId`(팀).
+- STAFF: `customerOwnedByUser` = 고객 `user_id == me.userId`.
+- CENTERHEAD: `customerAccessibleForCenterHead` = `TRIM(experts.expert_name)==TRIM(customer_source)` (자기 센터 소속 전문가들).
+- EXPERT: `customerAccessibleForExpert` = `TRIM(내 expert_name)==TRIM(customer_source)`.
+- 전화 마스킹: 목록 조회에서 SUPER/CENTERHEAD/EXPERT는 `manager_phone_access='N'`이면 앞3·뒤4만. MANAGER/STAFF 목록은 마스킹 미적용. (메모 상세는 현재 마스킹 안 함)
+
+### B.4 전체 / 분배 / 회수 / 시트
+- **전체**(`/api/work/db`): 역할별 findAllForX. SUPER/CENTERHEAD/EXPERT는 `customers ∪ customers_duplicate(display=1)`. MANAGER/STAFF는 본인/팀 + `status!='없음'`. `AllDbRowDto.memo`는 화면표시 + 키워드검색(ADMIN_FILTERS `t.memo`, CUSTOMER_ONLY_FILTERS `c.customer_memo`) 양용. `updateField` 분기 = reservation/status/name **3종뿐**(메모·division 없음). 매출 `POST /api/work/db/sales` → `sales_logs` INSERT + `customers.initial_price/upsell_price` UPDATE.
+- **분배**(`/api/work/allocate/*`): hq/manager/experthead. 단일 `targetUserId`에만 분배(대량 customerId 지원하나 **여러 프로 랜덤분배는 미구현**). FOR UPDATE 잠금 → 과거이력 → `updateOwner` → status(신규 또는 팀장풀'없음') → `alloc_logs`(is_final_assign: 확정1/팀장풀0).
+- **회수**(`/api/work/revoke/*`): hq/manager/centerhead/expert. **대량(List ids)**, FOR UPDATE, 담당자 스냅샷, `updateToRevoked|updateToManagerPool`, `alloc_logs`. 목록 페이지네이션(LIMIT/OFFSET). memo 컬럼 포함.
+- **시트**(`SheetsSyncService`): 증분 커서(완전행만 연속 처리), 30일 분기(`insertCustomerMinimal`/`insertDuplicateMinimal`), Redis 락(job 30s/auto 분당1/manual 1s debounce·59/min), 유지보수 00~01시. memo = `"시청한 종목명 : {F|X}\n선택한 항목 : {B|X}"`. 동일이벤트(`existsCustomerEvent`) 스킵.
+
+### B.5 메모 현재 구현 (`customer/common/memo`)
+- `GET /api/work/db/memo/{id}`(getMemo): 권한 — SUPER·CENTERHEAD·EXPERT 무제한, MANAGER 팀, STAFF 본인. + 전화로 과거담당 이력.
+- `PATCH /api/work/db/memo/{id}`(updateMemo): 권한 — SUPER/MANAGER/STAFF만. **CENTERHEAD·EXPERT는 switch default로 떨어져 거부(=수정 불가, 조회만).** `customer_memo`+상태+예약+트뷰/텔레그램/플래그를 한 UPDATE로 저장.
+- 컨텍스트 `all/dto/UserContextDto`엔 userId/role/centerId/email/visible/expertId만(이름·is_super 없음). revoke-DTO엔 isSuper 있음.
+
+### B.6 프런트 아키텍처
+- **가드**(`router/index.js beforeEach`): accessToken 없으면 `auth.initialize()`(쿠키 refresh). `meta.requiresAuth` + `meta.role` 배열 체크(`meta.perms`는 가드서 미검사). `main.js`는 pinia→router→mount만(initialize는 가드서).
+- **레이아웃**: 페이지가 직접 `AdminLayout`(사이드바+헤더) 또는 `FullScreenLayout`(빈 슬롯)으로 감쌈. 메뉴 노출은 `composables/useAcl.js` policy(역할별 menu 키) + `perms.allocate`로 분배/회수 메뉴 동적.
+- **PsnsTable**: 컬럼 type = text/badge/iconButton/date/money/createdAt. 셀확장 `toggleExpand`(텍스트 전용). 이벤트 badgeUpdate/salesUpdate/DateUpdate/textUpdate/buttonClick/rowSelect/visitSchedule/changePage.
+- **메모 사용처**: All.vue(편집, `memoReadOnly=CENTERHEAD·EXPERT`), Allocate.vue(`:read-only=true`), Center.vue·Revoke.vue는 `<Memo>` 미사용(Revoke는 memo 텍스트 컬럼 표시). MEMO.vue: 메모+상태+재콜시간+트뷰+텔레그램+체크박스5 PATCH /memo, 매출 POST /sales.
+- **auth store**: `grants{role,isSuper,perms}`. axios: 요청에 Bearer 주입, 401 refresh single-flight(`refreshPromise`), X-Blocked→logout.

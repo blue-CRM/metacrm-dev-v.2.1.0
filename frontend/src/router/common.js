@@ -2,6 +2,12 @@ export default [
     { path: '/login', component: () => import('@/views/auth/LoginView.vue') },
     { path: '/signup', component: () => import('@/views/auth/SignupView.vue') },
     { path: '/find-password', component: () => import('@/views/auth/FindPassword.vue') },
+    // 메모 채팅 별도 창 (모든 역할 조회 가능, 쓰기 권한은 창 내부서 판정)
+    {
+        path: '/memo/:customerId',
+        component: () => import('@/views/Pages/Customer/MemoWindowPage.vue'),
+        meta: { requiresAuth: true, role: ['SUPERADMIN','MANAGER','STAFF','CENTERHEAD','EXPERT'] }
+    },
     // 로그인이 필요한 페이지
     // 대시보드
     {

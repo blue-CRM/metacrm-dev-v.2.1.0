@@ -103,29 +103,39 @@
                 </div>
               </div>
 
-              <!-- 일반 텍스트 -->
-              <button
-                  v-else
-                  class="block w-full -mx-2 -my-1 px-2 py-1 rounded focus:outline-none"
-                  @click="toggleExpand(row, rowIndex, col.key)"
-              >
-                <span
-                    :class="isExpanded(row, rowIndex, col.key)
-                    ? 'block rounded text-gray-500 text-theme-sm dark:text-gray-400 text-left leading-tight whitespace-pre-wrap break-words overflow-auto'
-                    : 'block rounded text-gray-500 text-theme-sm dark:text-gray-400 text-left leading-tight truncate whitespace-nowrap overflow-hidden'"
-                    :style="(() => {
-                      const pref = ellipsisPx(col)
-                      const base = { width: `${pref}px` }
-                      return isExpanded(row, rowIndex, col.key)
-                        ? { ...base, maxHeight: '6.75rem', lineHeight: '1.25rem', paddingRight: '0.25rem' }
-                        : base
-                    })()"
+              <!-- 일반 텍스트 / 커스텀 펼침 -->
+              <template v-else>
+                <!-- 커스텀 펼침 슬롯(부모가 expand-{col.key} 제공 시: 예 메모=전체 채팅). 다시 클릭하면 접힘 -->
+                <div
+                    v-if="isExpanded(row, rowIndex, col.key) && $slots['expand-' + col.key]"
+                    @click="toggleExpand(row, rowIndex, col.key)"
                 >
-                  {{ col.key === 'staff'
-                    ? (row[col.key]?.toString().trim() || '')
-                    : (row[col.key] ?? '') }}
-                </span>
-              </button>
+                  <slot :name="'expand-' + col.key" :row="row" />
+                </div>
+                <!-- 기본 텍스트 토글 -->
+                <button
+                    v-else
+                    class="block w-full -mx-2 -my-1 px-2 py-1 rounded focus:outline-none"
+                    @click="toggleExpand(row, rowIndex, col.key)"
+                >
+                  <span
+                      :class="isExpanded(row, rowIndex, col.key)
+                      ? 'block rounded text-gray-500 text-theme-sm dark:text-gray-400 text-left leading-tight whitespace-pre-wrap break-words overflow-auto'
+                      : 'block rounded text-gray-500 text-theme-sm dark:text-gray-400 text-left leading-tight truncate whitespace-nowrap overflow-hidden'"
+                      :style="(() => {
+                        const pref = ellipsisPx(col)
+                        const base = { width: `${pref}px` }
+                        return isExpanded(row, rowIndex, col.key)
+                          ? { ...base, maxHeight: '6.75rem', lineHeight: '1.25rem', paddingRight: '0.25rem' }
+                          : base
+                      })()"
+                  >
+                    {{ col.key === 'staff'
+                      ? (row[col.key]?.toString().trim() || '')
+                      : (row[col.key] ?? '') }}
+                  </span>
+                </button>
+              </template>
             </template>
 
             <!-- 배지 -->

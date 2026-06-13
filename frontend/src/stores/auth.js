@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from '@/plugins/axios.js'
 import router from "@/router/index.js";
+import { broadcastMemoLogout } from '@/composables/useMemoWindow.js'
 
 const toBool = (v) => v === 'Y' || v === true
 
@@ -130,6 +131,8 @@ export const useAuthStore = defineStore('auth', {
             } catch (err) {
                 console.warn('로그아웃 요청 실패:', err)
             } finally {
+                // 열려 있는 메모 팝업들 닫기(같은 브라우저)
+                broadcastMemoLogout()
                 this.clearUser()
                 await router.push('/login')
             }

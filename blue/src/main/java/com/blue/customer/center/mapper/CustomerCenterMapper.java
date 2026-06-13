@@ -96,4 +96,12 @@ public interface CustomerCenterMapper {
                      @Param("centerId") Long centerId,
                      @Param("visible") String visible,
                      @Param("myExpertId") Long myExpertId);
+
+  /* ===== 엑셀 export: 메모=전체 채팅 합치기 ===== */
+
+  /** GROUP_CONCAT 길이 제한 상향(기본 1024 → 길면 잘림). exportExcel @Transactional 안에서 호출(같은 커넥션). */
+  void setGroupConcatMaxLen();
+
+  /** 주어진 고객들의 전체 채팅(STATUS 포함, is_deleted=0)을 고객별로 한 문자열로 합쳐 반환. */
+  List<com.blue.customer.center.dto.CenterMemoExportDto> selectMemoExport(@Param("ids") List<Long> ids);
 }
