@@ -52,7 +52,8 @@
                     t.name  LIKE CONCAT('%', #{keyword}, '%')
                     OR t.staff LIKE CONCAT('%', #{keyword}, '%')
                     OR t.phone LIKE CONCAT('%', #{keyword}, '%')
-                    OR t.memo  LIKE CONCAT('%', #{keyword}, '%')
+                    OR t.id IN (SELECT mc.customer_id FROM memo_chats mc
+                                WHERE mc.is_deleted = 0 AND MATCH(mc.content) AGAINST(#{keyword} IN BOOLEAN MODE))
                     )
                 </otherwise>
             </choose>
@@ -354,7 +355,8 @@
             AND (c.customer_name LIKE CONCAT('%', #{keyword}, '%')
             OR u.user_name LIKE CONCAT('%', #{keyword}, '%')
             OR  c.customer_phone LIKE CONCAT('%', #{keyword}, '%')
-            OR c.customer_memo LIKE CONCAT('%', #{keyword}, '%') )
+            OR c.customer_id IN (SELECT mc.customer_id FROM memo_chats mc
+                                 WHERE mc.is_deleted = 0 AND MATCH(mc.content) AGAINST(#{keyword} IN BOOLEAN MODE)) )
         </if>
         <if test="dateFrom != null and dateFrom != ''">
             AND c.customer_created_at &gt;= #{dateFrom}

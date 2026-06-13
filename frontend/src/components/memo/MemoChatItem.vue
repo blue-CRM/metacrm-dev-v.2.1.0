@@ -44,15 +44,9 @@
       {{ chat.content }}
     </div>
 
-    <!-- 시간영역: 최초=1줄(created_at) / 수정=2줄(updated_at + "수정됨"). 날짜+시각 함께 표시 -->
+    <!-- 시간영역: 항상 작성시각(createdAt) 표시. 수정시각(updatedAt)은 DB 기록만 하고 UI 미표시 -->
     <div class="flex flex-col items-start leading-tight pb-0.5 shrink-0 select-none">
-      <template v-if="chat.updatedAt">
-        <span class="text-[10px] text-gray-400 dark:text-gray-500 whitespace-nowrap">
-          {{ fmtDateTime(chat.updatedAt) }}
-        </span>
-        <span class="text-[10px] text-gray-400 dark:text-gray-500">수정됨</span>
-      </template>
-      <span v-else class="text-[10px] text-gray-400 dark:text-gray-500 whitespace-nowrap">
+      <span class="text-[10px] text-gray-400 dark:text-gray-500 whitespace-nowrap">
         {{ fmtDateTime(chat.createdAt) }}
       </span>
     </div>

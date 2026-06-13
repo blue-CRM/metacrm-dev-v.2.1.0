@@ -13,7 +13,7 @@
           <span class="font-semibold">
             {{ isSystemType(c.chatType) ? '시스템' : (c.authorName || '—') }}
           </span>
-          <span class="tabular-nums">{{ fmtDateTime(c.updatedAt || c.createdAt) }}{{ c.updatedAt ? ' (수정됨)' : '' }}</span>
+          <span class="tabular-nums">{{ fmtDateTime(c.createdAt) }}</span>
         </div>
         <div class="text-[11px] leading-snug text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words">
           {{ c.content }}

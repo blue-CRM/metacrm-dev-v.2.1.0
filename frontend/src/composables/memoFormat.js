@@ -110,8 +110,8 @@ export function isSystemType(chatType) {
  */
 export function matchDate(chat, dateQuery) {
   if (!dateQuery) return true
-  // 화면 표시(수정됨 날짜)와 검색 기준 일치: 수정시각 우선, 없으면 작성시각
-  const ts = chat.updatedAt || chat.createdAt
+  // UI 전반이 createdAt 기준 → 날짜 검색도 작성시각(createdAt) 기준. 수정시각은 기록만 하고 미표시.
+  const ts = chat.createdAt
   if (!ts) return false
   const d = new Date(ts)
   const m = d.getMonth() + 1
