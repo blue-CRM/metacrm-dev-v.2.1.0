@@ -43,7 +43,7 @@
           <!-- 체크박스 -->
           <td v-if="showCheckbox" class="px-5 py-4 sm:px-6">
             <input type="checkbox"
-                   :checked="selectedRows.includes(rowIndex)" @change="toggleRow(rowIndex)"
+                   :checked="isSelected(row)" @change="toggleRow(row)"
                    :disabled="rowSelectable ? !rowSelectable(row) : false"/>
           </td>
 
@@ -130,9 +130,11 @@
                           : base
                       })()"
                   >
-                    {{ col.key === 'staff'
+                    <!-- col.render 가 있으면 커스텀 HTML(예: 과거 이력 강조), 없으면 기본 텍스트 -->
+                    <span v-if="typeof col.render === 'function'" v-html="col.render(row[col.key], row)"></span>
+                    <template v-else>{{ col.key === 'staff'
                       ? (row[col.key]?.toString().trim() || '')
-                      : (row[col.key] ?? '') }}
+                      : (row[col.key] ?? '') }}</template>
                   </span>
                 </button>
               </template>
@@ -369,6 +371,7 @@ const props = defineProps({
 })
 const emit = defineEmits([
   "rowSelect",
+  "selectionCount",
   "badgeUpdate",
   "buttonClick",
   "changePage",
@@ -429,9 +432,7 @@ watch(
       if (prev && !loading) {
         displayPage.value = props.page
 
-        // 선택/확장/에딧 상태 초기화
-        selectedRows.value = []
-        emitSelected()
+        // 확장/에딧 상태만 초기화 (선택은 id 기반이라 페이지 이동에도 유지)
         expandedCell.value = null
         cancelEdit()
 
@@ -446,37 +447,61 @@ watch(
     }
 )
 
-/* 체크박스 */
-const selectedRows = ref([])
+/* 체크박스 — 행 인덱스가 아니라 고유 id(customer_id) 기반.
+   페이지 이동·보기개수 변경에도 선택이 유지되도록 Set(id) + Map(id→row 캐시)로 관리. */
+const selectedIds = ref(new Set())     // 선택된 id 집합
+const selectedCache = ref(new Map())   // id → row 객체(다른 페이지 선택분도 보관)
+
+function isSelected(row) {
+  return selectedIds.value.has(getRowKey(row))
+}
+// 현재 페이지에서 선택 가능한 행들
+function selectableRows() {
+  return props.data.filter(row => (props.rowSelectable ? props.rowSelectable(row) : true))
+}
 const allSelected = computed(() => {
-  const selectableCount = props.data
-      .filter(row => (props.rowSelectable ? props.rowSelectable(row) : true)).length
-  return selectableCount > 0 && selectedRows.value.length === selectableCount
+  const rows = selectableRows()
+  return rows.length > 0 && rows.every(row => selectedIds.value.has(getRowKey(row)))
 })
+function selectRow(row) {
+  const id = getRowKey(row)
+  selectedIds.value.add(id)
+  selectedCache.value.set(id, row)
+}
+function deselectRow(row) {
+  const id = getRowKey(row)
+  selectedIds.value.delete(id)
+  selectedCache.value.delete(id)
+}
+function commitSelection() {
+  // Set/Map in-place 변경 → 새 참조로 교체해 반응성 트리거
+  selectedIds.value = new Set(selectedIds.value)
+  selectedCache.value = new Map(selectedCache.value)
+  emitSelected()
+}
+function toggleRow(row) {
+  if (selectedIds.value.has(getRowKey(row))) deselectRow(row)
+  else selectRow(row)
+  commitSelection()
+}
 function toggleAll(e) {
-  if (e.target.checked) {
-    selectedRows.value = props.data
-        .map((row, idx) => ({ row, idx }))
-        .filter(({ row }) => (props.rowSelectable ? props.rowSelectable(row) : true))
-        .map(({ idx }) => idx)
-  } else {
-    selectedRows.value = []
-  }
-  emitSelected()
+  const rows = selectableRows()
+  if (e.target.checked) rows.forEach(selectRow)
+  else rows.forEach(deselectRow)
+  commitSelection()
 }
-
-function toggleRow(idx) {
-  if (selectedRows.value.includes(idx)) {
-    selectedRows.value = selectedRows.value.filter(i => i !== idx)
-  } else {
-    selectedRows.value.push(idx)
-  }
-  emitSelected()
-}
-
 function emitSelected() {
-  const rows = selectedRows.value.map(i => props.data[i])
-  emit("rowSelect", rows)
+  emit("rowSelect", [...selectedCache.value.values()])
+  emit("selectionCount", selectedIds.value.size)
+}
+/* 1~N 일괄선택: 부모(툴바)가 서버에서 받은 상위 N개 행을 넘겨 선택 설정(덮어쓰기). */
+function applyBulkSelect(rows) {
+  // 선택 불가 행(rowSelectable=false)은 제외 — 1~N이 disabled 행을 선택하지 않도록
+  const arr = (Array.isArray(rows) ? rows : [])
+      .filter(r => (props.rowSelectable ? props.rowSelectable(r) : true))
+  selectedIds.value = new Set(arr.map(r => getRowKey(r)))
+  selectedCache.value = new Map(arr.map(r => [getRowKey(r), r]))
+  emitSelected()
 }
 
 /* 배지 수정 */
@@ -828,13 +853,17 @@ const visiblePages = computed(() => {
 })
 
 // 선택 해제 메서드
-const selectedRowIds = ref(new Set());
 function clearSelection() {
-  selectedRows.value = [];
-  selectedRowIds.value = new Set();
+  selectedIds.value = new Set();
+  selectedCache.value = new Map();
   emitSelected();
 }
-defineExpose({ clearSelection });
+// 개별 선택 해제 (선택 목록 모달에서 특정 행만 빼기)
+function deselect(row) {
+  deselectRow(row);
+  commitSelection();
+}
+defineExpose({ clearSelection, applyBulkSelect, deselect });
 
 // 스크롤/휠 시 달력 모두 닫기
 const tableScrollHost = ref(null)

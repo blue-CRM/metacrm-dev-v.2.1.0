@@ -6,14 +6,20 @@
         <ComponentCard
             :buttons="['일괄승인']"
             :showRefresh="true"
+            :showBulkSelect="true"
+            :selectionCount="selectionCount"
             :refreshing="isRefreshing"
             @refresh="onRefresh"
+            @bulkSelect="onBulkSelect"
+            @clearSelection="onClearSelection"
+            @openSelection="selectionModalOpen = true"
             @changeSize="val => setSize(val)"
             @buttonClick="onButtonClick">
           <PsnsTable
               ref="tableRef"
               :columns="columns"
               :data="items"
+              :rowKey="'userId'"
               :showCheckbox="true"
               :rowSelectable="isRowSelectable"
               :page="page"
@@ -21,6 +27,7 @@
               :page-size="size"
               :loading="busy"
               @rowSelect="onRowSelect"
+              @selectionCount="onSelectionCount"
               @badgeUpdate="onBadgeUpdate"
               @changePage="changePage"
           />
@@ -56,6 +63,18 @@
     </transition>
   </Teleport>
 
+  <!-- 선택한 대상 보기/개별 해제 모달 -->
+  <SelectedRowsModal
+      v-if="selectionModalOpen"
+      title="선택한 직원"
+      :rows="selectedRows"
+      :columns="selectionColumns"
+      :row-key="'userId'"
+      @deselect="onDeselectRow"
+      @clearAll="onClearSelection"
+      @close="selectionModalOpen = false"
+  />
+
 </template>
 
 <script setup>
@@ -64,6 +83,7 @@ import PageBreadcrumb from "@/components/common/PageBreadcrumb.vue";
 import AdminLayout from "@/components/layout/AdminLayout.vue";
 import ComponentCard from "@/components/common/ComponentCard.vue";
 import PsnsTable from "@/components/tables/basic-tables/PsnsTable.vue";
+import SelectedRowsModal from "@/components/ui/SelectedRowsModal.vue";
 import axios from "@/plugins/axios.js";
 import {useAuthStore} from "@/stores/auth.js";
 
@@ -77,6 +97,7 @@ import { globalFilters } from "@/composables/globalFilters.js";
 const tableRef = ref(null)
 const currentPageTitle = ref("직원관리")
 const selectedRows = ref([])
+const selectionCount = ref(0) // 전체 선택 개수(페이지 무관)
 const isRefreshing = ref(false); // 새로고침 스피너/비활성
 
 async function onRefresh() {
@@ -170,6 +191,7 @@ const {
   changePage,  // 페이지 변경 함수
   setSize,     // 표 사이즈 결정 함수
   fetchData,   // 표 새로고침
+  fetchTopN,   // 상위 N개 행 조회 (1~N 일괄선택용)
   loading: tableLoading,     // 로딩 상태
   error        // 에러 상태
 } = useTableQuery({
@@ -199,6 +221,7 @@ const {
         visible: u.managerPhoneAccess === 'N' ? '차단' : '공개',
         allocate: u.canAllocate === 'Y' ? '허용' : '차단',
         expert: u.expertName || '미지정',
+        createdAt: u.userCreatedAt || '',
       })),
       totalPages: res.data.totalPages,
       totalCount: res.data.totalCount
@@ -345,6 +368,34 @@ function onRowSelect(rows) {
   selectedRows.value = rows
   // console.log("현재 선택된 행들:", rows)
 }
+
+// 1-1. 선택 카운터 (id 기반 전체 선택 개수)
+function onSelectionCount(c) { selectionCount.value = c }
+
+// 1-2. 1~N 일괄선택: 서버에서 상위 N개를 받아 선택 설정(선택 불가 행은 applyBulkSelect에서 제외)
+async function onBulkSelect(n) {
+  if (!Number.isInteger(n) || n < 1) return  // 빈/유효하지 않은 입력 → 기존 선택 보존
+  await runBusy(async () => {
+    const rows = await fetchTopN(n)
+    tableRef.value?.applyBulkSelect(rows)
+  })
+}
+
+// 1-3. 선택 해제
+function onClearSelection() {
+  selectedRows.value = []
+  tableRef.value?.clearSelection?.()
+}
+
+// 1-4. 선택한 대상 보기/개별 해제 모달
+const selectionModalOpen = ref(false)
+const selectionColumns = [
+  { key: 'name', label: '이름' },
+  { key: 'type', label: '구분' },
+  { key: 'email', label: '이메일' },
+  { key: 'createdAt', label: '생성일', type: 'date' },
+]
+function onDeselectRow(row) { tableRef.value?.deselect(row) }
 
 // 2. 버튼 클릭 시 (ComponentCard → User.vue)
 async function onButtonClick(btn) {

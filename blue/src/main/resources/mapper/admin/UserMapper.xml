@@ -40,7 +40,8 @@
         u.manager_phone_access AS managerPhoneAccess,
         u.can_allocate AS canAllocate,
         c.center_name AS centerName,
-        e.expert_name AS expertName
+        e.expert_name AS expertName,
+        DATE_FORMAT(u.user_created_at, '%Y-%m-%d') AS userCreatedAt
         FROM users u
         LEFT JOIN centers c ON u.center_id = c.center_id
         LEFT JOIN experts e ON u.expert_id = e.expert_id

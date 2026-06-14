@@ -11,8 +11,13 @@
             :buttons="adminButtons"
             :active="activeLabels"
             :showRefresh="true"
+            :showBulkSelect="true"
+            :selectionCount="selectionCount"
             :refreshing="isRefreshing"
             @refresh="onRefresh"
+            @bulkSelect="onBulkSelect"
+            @clearSelection="onClearSelection"
+            @openSelection="selectionModalOpen = true"
             @changeSize="setSize"
             @selectChange="onAdminSelectChange"
             @buttonClick="onCommonButtonClick"
@@ -22,6 +27,7 @@
               ref="tableRef"
               :columns="adminColumns"
               :data="items"
+              :rowKey="row => row.origin + '-' + row.id"
               :showCheckbox="true"
               :rowSelectable="isRowSelectable"
               :page="page"
@@ -29,6 +35,7 @@
               :page-size="size"
               :loading="busy"
               @rowSelect="onRowSelect"
+              @selectionCount="onSelectionCount"
               @badgeUpdate="onBadgeUpdate"
               @DateUpdate="onDateUpdate"
               @salesUpdate="onSalesUpdate"
@@ -46,8 +53,13 @@
             :buttons="managerButtons"
             :active="activeLabels"
             :showRefresh="true"
+            :showBulkSelect="true"
+            :selectionCount="selectionCount"
             :refreshing="isRefreshing"
             @refresh="onRefresh"
+            @bulkSelect="onBulkSelect"
+            @clearSelection="onClearSelection"
+            @openSelection="selectionModalOpen = true"
             @changeSize="setSize"
             @selectChange="onManagerStatusSelect"
             @buttonClick="onCommonButtonClick"
@@ -57,6 +69,7 @@
               ref="tableRef"
               :columns="commonColumns"
               :data="items"
+              :rowKey="row => row.origin + '-' + row.id"
               :showCheckbox="true"
               :rowSelectable="isRowSelectable"
               :page="page"
@@ -64,6 +77,7 @@
               :page-size="size"
               :loading="busy"
               @rowSelect="onRowSelect"
+              @selectionCount="onSelectionCount"
               @badgeUpdate="onBadgeUpdate"
               @DateUpdate="onDateUpdate"
               @salesUpdate="onSalesUpdate"
@@ -104,6 +118,18 @@
     </transition>
   </Teleport>
 
+  <!-- 선택한 대상 보기/개별 해제 모달 -->
+  <SelectedRowsModal
+      v-if="selectionModalOpen"
+      title="선택한 고객"
+      :rows="selectedRows"
+      :columns="selectionColumns"
+      :row-key="row => row.origin + '-' + row.id"
+      @deselect="onDeselectRow"
+      @clearAll="onClearSelection"
+      @close="selectionModalOpen = false"
+  />
+
 </template>
 
 <script setup>
@@ -113,6 +139,7 @@ import PageBreadcrumb from "@/components/common/PageBreadcrumb.vue";
 import AdminLayout from "@/components/layout/AdminLayout.vue";
 import ComponentCard from "@/components/common/ComponentCard.vue";
 import PsnsTable from "@/components/tables/basic-tables/PsnsTable.vue";
+import SelectedRowsModal from "@/components/ui/SelectedRowsModal.vue";
 import { openMemoWindow, broadcastCustomerUpdated } from "@/composables/useMemoWindow.js";
 import { EyeIcon } from "@heroicons/vue/24/outline";
 import { useTableQuery } from "@/composables/useTableQuery.js";
@@ -127,7 +154,28 @@ const mineOnly = ref(false);
 const currentPageTitle = ref("전체 고객DB관리");
 const tableKey = ref(0); // 선택 초기화 강제 리렌더용
 const tableRef = ref(null); // PsnsTable 메서드 접근
+
+// 1~N 일괄선택 + 선택 카운터 (id 기반, 페이지 무관)
+const selectionCount = ref(0)
+function onSelectionCount(c) { selectionCount.value = c }
+async function onBulkSelect(n) {
+  if (!Number.isInteger(n) || n < 1) return  // 빈/유효하지 않은 입력 → 기존 선택 보존
+  const rows = await fetchTopN(n)   // 현재 필터/정렬 기준 상위 N개
+  tableRef.value?.applyBulkSelect(rows)
+}
+function onClearSelection() { tableRef.value?.clearSelection() }
 const selectedRows = ref([]); // 선택된 행 캐시
+
+// 선택한 대상 보기/개별 해제 모달
+const selectionModalOpen = ref(false)
+const selectionColumns = [
+  { key: 'name', label: '이름' },
+  { key: 'phone', label: '전화번호' },
+  { key: 'createdAt', label: '생성일', type: 'date' },
+  { key: 'status', label: '상태', type: 'badge' },
+  { key: 'prevStatus', label: '직전상태', type: 'badge' },
+]
+function onDeselectRow(row) { tableRef.value?.deselect(row) }
 const isRefreshing = ref(false); // 새로고침 스피너/비활성
 
 // 수동 새로고침
@@ -167,7 +215,8 @@ const {
   fetchData,
   changePage,
   setSize,
-  setFilter
+  setFilter,
+  fetchTopN
 } = useTableQuery({
   url: "/api/work/db", // 공통 API
   externalFilters: globalFilters,
@@ -217,6 +266,14 @@ async function runBusy(task) {
   uiLoading.value = true
   try { await task() } finally { uiLoading.value = false }
 }
+
+// 헤더 공통 필터(검색어/카테고리/기간) 변경 시 선택 초기화 (맥락이 바뀌므로 — Gmail 등 표준 동작)
+// ※ 상태/직전상태/구분/정렬은 globalFilters가 아니라 내부 setFilter로 처리 → 여기서 감시하지 않음
+watch(
+  () => [globalFilters.keyword, globalFilters.category,
+         globalFilters.dateFrom, globalFilters.dateTo],
+  () => { onClearSelection() }
+)
 
 watch(busy, (v) => {
   if (v) {
@@ -594,6 +651,7 @@ async function onCommonButtonClick(btn) {
     }
 
     // 2) 상태/구분 토글
+    const isMineToggle = btn === "팀 DB 보기";
     if (btn === "상태별 보기") viewOptions.value.status = !viewOptions.value.status;
     if (btn === "과거순 보기") viewOptions.value.oldest = !viewOptions.value.oldest;
     if (btn === "팀 DB 보기") viewOptions.value.mine = !viewOptions.value.mine;
@@ -610,10 +668,13 @@ async function onCommonButtonClick(btn) {
       setFilter("staffUserId", null);
     }
 
-    // 선택 초기화
-    selectedRows.value = [];
-    tableRef.value?.clearSelection?.();
-    tableKey.value++; // 테이블 강제 리렌더
+    // 정렬(상태별/과거순)은 같은 데이터의 순서만 바뀜 → id 기반 선택 유지.
+    // 단 '팀 DB 보기'는 보이는 데이터셋 자체가 바뀌므로 선택 초기화.
+    if (isMineToggle) {
+      selectedRows.value = [];
+      tableRef.value?.clearSelection?.();
+      tableKey.value++; // 테이블 강제 리렌더
+    }
 
   } finally {
     uiLoading.value = false;

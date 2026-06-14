@@ -11,8 +11,13 @@
             :buttons="hqButtons"
             :disabledButtons="hqDisabledButtons"
             :showRefresh="true"
+            :showBulkSelect="true"
+            :selectionCount="selectionCount"
             :refreshing="isRefreshing"
             @refresh="onRefresh"
+            @bulkSelect="onBulkSelect"
+            @clearSelection="onClearSelection"
+            @openSelection="selectionModalOpen = true"
             @changeSize="setSize"
             @selectChange="onSelectChange"
             @buttonClick="onHqButton"
@@ -27,6 +32,7 @@
               :page-size="size"
               :loading="busy"
               @rowSelect="onRowSelect"
+              @selectionCount="onSelectionCount"
               @changePage="changePage"
           >
             <template #expand-memo="{ row }">
@@ -46,8 +52,13 @@
                    ]"
             :buttons="mgrButtons"
             :showRefresh="true"
+            :showBulkSelect="true"
+            :selectionCount="selectionCount"
             :refreshing="isRefreshing"
             @refresh="onRefresh"
+            @bulkSelect="onBulkSelect"
+            @clearSelection="onClearSelection"
+            @openSelection="selectionModalOpen = true"
             @changeSize="setSize"
             @selectChange="onSelectChange"
             @buttonClick="onMgrButton"
@@ -62,6 +73,7 @@
               :page-size="size"
               :loading="busy"
               @rowSelect="onRowSelect"
+              @selectionCount="onSelectionCount"
               @changePage="changePage"
           >
             <template #expand-memo="{ row }">
@@ -110,7 +122,7 @@
   <AllocateModal
       v-if="transferModal.open"
       mode="HQ"
-      :selected-count="selectedRows.length"
+      :selected-count="selectionCount"
       :exclude-center-ids="excludedCenterIds"
       api-base="/api/work/revoke/transfer"
       title="DB 일괄 이관"
@@ -119,6 +131,17 @@
       manager-personal-label="팀장 개인 이관"
       @close="closeTransferModal"
       @confirm="onConfirmTransfer"
+  />
+
+  <!-- 선택한 대상 보기/개별 해제 모달 -->
+  <SelectedRowsModal
+      v-if="selectionModalOpen"
+      title="선택한 고객"
+      :rows="selectedRows"
+      :columns="selectionColumns"
+      @deselect="onDeselectRow"
+      @clearAll="onClearSelection"
+      @close="selectionModalOpen = false"
   />
 
 </template>
@@ -131,6 +154,7 @@ import ComponentCard from '@/components/common/ComponentCard.vue'
 import PsnsTable from '@/components/tables/basic-tables/PsnsTable.vue'
 import MemoCellChats from '@/components/memo/MemoCellChats.vue'
 import AllocateModal from '@/components/ui/AllocateModal.vue'
+import SelectedRowsModal from '@/components/ui/SelectedRowsModal.vue'
 import { useAuthStore } from '@/stores/auth.js'
 import { useTableQuery } from '@/composables/useTableQuery.js'
 import { globalFilters } from '@/composables/globalFilters.js'
@@ -147,7 +171,7 @@ const canTransfer = computed(() => role.value === 'SUPERADMIN' && isSuper.value)
 
 /** 목록 훅 (공용 필터: 날짜/카테고리/키워드) */
 const {
-  items, page, size, totalPages, fetchData, changePage, setSize, setFilter, loading: tableLoading,
+  items, page, size, totalPages, fetchData, changePage, setSize, setFilter, fetchTopN, loading: tableLoading,
 } = useTableQuery({
   url: '/api/work/revoke/list',
   externalFilters: globalFilters,
@@ -181,6 +205,14 @@ async function runBusy(task) {
   try { await task() } finally { uiLoading.value = false }
 }
 
+// 헤더 공통 필터(검색어/카테고리/기간) 변경 시 선택 초기화 (맥락 변경)
+// ※ 상태/직전상태/팀/정렬은 globalFilters가 아니라 내부 setFilter로 처리 → 여기서 감시하지 않음
+watch(
+  () => [globalFilters.keyword, globalFilters.category,
+         globalFilters.dateFrom, globalFilters.dateTo],
+  () => { onClearSelection() }
+)
+
 watch(busy, (v) => {
   if (v) {
     // 짧은 로딩은 스피너 숨김
@@ -206,6 +238,27 @@ const excludedCenterIds = computed(() => {
   )]
 })
 const onRowSelect = (rows: any[]) => { selectedRows.value = rows }
+
+// 1~N 일괄선택 + 선택 카운터 (id 기반, 페이지 무관)
+const selectionCount = ref(0)
+function onSelectionCount(c: number) { selectionCount.value = c }
+async function onBulkSelect(n: number) {
+  if (!Number.isInteger(n) || n < 1) return  // 빈/유효하지 않은 입력 → 기존 선택 보존
+  const rows = await fetchTopN(n)
+  tableRef.value?.applyBulkSelect(rows)
+}
+function onClearSelection() { tableRef.value?.clearSelection() }
+
+// 선택한 대상 보기/개별 해제 모달
+const selectionModalOpen = ref(false)
+const selectionColumns = [
+  { key: 'name', label: '이름' },
+  { key: 'phone', label: '전화번호' },
+  { key: 'createdAt', label: '생성일', type: 'date' },
+  { key: 'status', label: '상태', type: 'badge' },
+  { key: 'prevStatus', label: '직전상태', type: 'badge' },
+]
+function onDeselectRow(row: any) { tableRef.value?.deselect(row) }
 function needSelection(action: '회수' | '이관' = '회수'): number[] {
   const ids = selectedRows.value.map((r: any) => r.id)
   if (!ids.length) alert(`${action}할 고객을 선택해주세요.`)
@@ -345,9 +398,7 @@ async function toggleSort() {
     // 2. 필터 설정 (백엔드는 'oldest' 값이 오면 과거순, 없으면 최신순으로 처리)
     setFilter('sort', viewOptions.value.oldest ? 'oldest' : null)
 
-    // 3. UX 편의상 선택 초기화 (정렬 바뀌면 선택된 행들의 위치가 섞이므로)
-    selectedRows.value = []
-    tableRef.value?.clearSelection?.()
+    // 정렬은 같은 데이터의 순서만 바뀜 → id 기반 선택은 그대로 유지(초기화 안 함)
   })
 }
 

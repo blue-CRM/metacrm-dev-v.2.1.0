@@ -90,11 +90,21 @@
 
             IFNULL((
                 SELECT GROUP_CONCAT(
-                    u2.user_name
+                    CONCAT(
+                        u2.user_name, '\t',
+                        CASE
+                            WHEN u2.user_role = 'MANAGER'
+                                 AND NOT EXISTS (SELECT 1 FROM customers cc WHERE cc.customer_phone = c.customer_phone AND cc.user_id = cpu.user_id AND cc.customer_status != '없음')
+                                 AND EXISTS     (SELECT 1 FROM customers cc WHERE cc.customer_phone = c.customer_phone AND cc.user_id = cpu.user_id AND cc.customer_status =  '없음')
+                                THEN 'P'
+                            WHEN EXISTS (SELECT 1 FROM customers cc WHERE cc.customer_phone = c.customer_phone AND cc.user_id = cpu.user_id)
+                                THEN 'C'
+                            ELSE ''
+                        END
+                    )
                     ORDER BY cpu.past_user_id
-                    SEPARATOR ', '
+                    SEPARATOR '\n'
                 )
-
                 FROM customer_past_users cpu
                 JOIN users u2 ON u2.user_id = cpu.user_id
                 WHERE cpu.customer_phone = c.customer_phone
@@ -146,7 +156,21 @@
             c.customer_phone        AS phone,
 
             IFNULL((
-            SELECT GROUP_CONCAT(u2.user_name ORDER BY cpu.past_user_id SEPARATOR ', ')
+            SELECT GROUP_CONCAT(
+                CONCAT(
+                    u2.user_name, '\t',
+                    CASE
+                        WHEN u2.user_role = 'MANAGER'
+                             AND NOT EXISTS (SELECT 1 FROM customers cc WHERE cc.customer_phone = c.customer_phone AND cc.user_id = cpu.user_id AND cc.customer_status != '없음')
+                             AND EXISTS     (SELECT 1 FROM customers cc WHERE cc.customer_phone = c.customer_phone AND cc.user_id = cpu.user_id AND cc.customer_status =  '없음')
+                            THEN 'P'
+                        WHEN EXISTS (SELECT 1 FROM customers cc WHERE cc.customer_phone = c.customer_phone AND cc.user_id = cpu.user_id)
+                            THEN 'C'
+                        ELSE ''
+                    END
+                )
+                ORDER BY cpu.past_user_id SEPARATOR '\n'
+            )
             FROM customer_past_users cpu
             JOIN users u2 ON u2.user_id = cpu.user_id
             WHERE cpu.customer_phone = c.customer_phone
@@ -195,9 +219,20 @@
 
         IFNULL((
         SELECT GROUP_CONCAT(
-        u2.user_name
+        CONCAT(
+        u2.user_name, '\t',
+        CASE
+        WHEN u2.user_role = 'MANAGER'
+        AND NOT EXISTS (SELECT 1 FROM customers cc WHERE cc.customer_phone = c.customer_phone AND cc.user_id = cpu.user_id AND cc.customer_status != '없음')
+        AND EXISTS     (SELECT 1 FROM customers cc WHERE cc.customer_phone = c.customer_phone AND cc.user_id = cpu.user_id AND cc.customer_status =  '없음')
+        THEN 'P'
+        WHEN EXISTS (SELECT 1 FROM customers cc WHERE cc.customer_phone = c.customer_phone AND cc.user_id = cpu.user_id)
+        THEN 'C'
+        ELSE ''
+        END
+        )
         ORDER BY cpu.past_user_id
-        SEPARATOR ', '
+        SEPARATOR '\n'
         )
         FROM customer_past_users cpu
         JOIN users u2 ON u2.user_id = cpu.user_id
@@ -267,9 +302,20 @@
 
         IFNULL((
         SELECT GROUP_CONCAT(
-        u2.user_name
+        CONCAT(
+        u2.user_name, '\t',
+        CASE
+        WHEN u2.user_role = 'MANAGER'
+        AND NOT EXISTS (SELECT 1 FROM customers cc WHERE cc.customer_phone = c.customer_phone AND cc.user_id = cpu.user_id AND cc.customer_status != '없음')
+        AND EXISTS     (SELECT 1 FROM customers cc WHERE cc.customer_phone = c.customer_phone AND cc.user_id = cpu.user_id AND cc.customer_status =  '없음')
+        THEN 'P'
+        WHEN EXISTS (SELECT 1 FROM customers cc WHERE cc.customer_phone = c.customer_phone AND cc.user_id = cpu.user_id)
+        THEN 'C'
+        ELSE ''
+        END
+        )
         ORDER BY cpu.past_user_id
-        SEPARATOR ', '
+        SEPARATOR '\n'
         )
         FROM customer_past_users cpu
         JOIN users u2 ON u2.user_id = cpu.user_id

@@ -130,6 +130,31 @@ export function useTableQuery({
         }
     }
 
+    // 상위 N개 행 조회: 현재 필터/정렬 그대로, page=1·size=N. state는 건드리지 않고 items만 반환.
+    // (1~N 일괄선택용 — 목록과 동일 조건의 위에서부터 N개)
+    async function fetchTopN(n) {
+        const num = Number(n)
+        if (!Number.isInteger(num) || num < 1) return []
+        const extern = externalFilters
+            ? {
+                [useExternalKeys.from]:     externalFilters.dateFrom || undefined,
+                [useExternalKeys.to]:       externalFilters.dateTo   || undefined,
+                [useExternalKeys.category]: normalizeCategory(externalFilters.category),
+                [useExternalKeys.keyword]:  externalFilters.keyword?.trim() || undefined
+            }
+            : {}
+        const params = pickDefined({
+            [paramNames.page]: 1,
+            [paramNames.size]: num,
+            ...filters.value,
+            ...extern,
+            ...extraParams()
+        })
+        const res = await axios.get(url, { params })
+        if (typeof mapper === 'function') return mapper(res).items ?? []
+        return res.data?.items ?? []
+    }
+
     // ===== watch: 페이지, 사이즈, 필터, 외부필터 =====
     watch(_page, () => scheduleFetch())
     watch(_size, () => { _page.value = 1; scheduleFetch() })
@@ -185,6 +210,7 @@ export function useTableQuery({
 
         // actions
         fetchData,
+        fetchTopN,
         changePage,
         setSize,
         setFilter,

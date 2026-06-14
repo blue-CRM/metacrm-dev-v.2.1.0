@@ -61,20 +61,51 @@
           </template>
         </div>
 
-        <!-- 오른쪽: 새로고침 -->
-        <button
-            v-if="showRefresh"
-            :disabled="refreshing"
-            @click="$emit('refresh')"
-            title="새로고침"
-            class="ml-auto inline-flex h-9 w-9 items-center justify-center rounded-full
-                 border border-gray-200 bg-white text-gray-600 hover:bg-gray-100
-                 disabled:opacity-60 disabled:cursor-not-allowed
-                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-200
-                 dark:border-gray-700 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-gray-800 dark:focus-visible:ring-blue-900"
-        >
-          <RefreshIcon :class="['h-4 w-4', refreshing ? 'animate-spin' : '']"/>
-        </button>
+        <!-- 오른쪽: 선택 카운터 + 1~N 선택 + 새로고침 -->
+        <div class="ml-auto flex items-center gap-2">
+          <template v-if="showBulkSelect">
+            <span v-if="selectionCount && selectionCount > 0"
+                  class="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
+              <span>
+                <strong class="text-gray-700 dark:text-gray-200">{{ selectionCount }}</strong>명
+                <button type="button" @click="$emit('openSelection')"
+                        title="선택한 대상 보기"
+                        class="underline underline-offset-2 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100">선택됨</button>
+              </span>
+              <button type="button" @click="$emit('clearSelection'); bulkN = null"
+                      class="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 underline">해제</button>
+            </span>
+            <input
+                type="number" min="1"
+                v-model.number="bulkN"
+                @keyup.enter="$emit('bulkSelect', bulkN)"
+                placeholder="N"
+                class="w-16 h-9 border border-gray-200 dark:border-gray-700 rounded-lg px-2
+                       text-sm text-gray-500 dark:text-gray-400 dark:bg-gray-800
+                       focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10"
+            />
+            <button
+                type="button"
+                @click="$emit('bulkSelect', bulkN)"
+                class="h-9 px-3 rounded-lg border border-gray-200 text-sm font-medium text-gray-500
+                       hover:bg-gray-100 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
+            >선택</button>
+          </template>
+
+          <button
+              v-if="showRefresh"
+              :disabled="refreshing"
+              @click="$emit('refresh')"
+              title="새로고침"
+              class="inline-flex h-9 w-9 items-center justify-center rounded-full
+                   border border-gray-200 bg-white text-gray-600 hover:bg-gray-100
+                   disabled:opacity-60 disabled:cursor-not-allowed
+                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-200
+                   dark:border-gray-700 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-gray-800 dark:focus-visible:ring-blue-900"
+          >
+            <RefreshIcon :class="['h-4 w-4', refreshing ? 'animate-spin' : '']"/>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -88,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
+import { defineProps, defineEmits, ref } from 'vue'
 import { RefreshIcon } from '../../icons' // 아이콘
 
 interface Props {
@@ -101,10 +132,14 @@ interface Props {
   active?: string[] // 버튼 문자열 토글 가시화 (프론트 디자인)
   showRefresh?: boolean // 새로고침 아이콘 표시 여부
   refreshing?: boolean // 새로고침 중(스피너)
+  showBulkSelect?: boolean // 1~N 일괄선택 + 카운터 표시
+  selectionCount?: number  // 현재 선택된 행 수
 }
 
 const props = defineProps<Props>()
-defineEmits(['changeSize', 'selectChange', 'buttonClick', 'refresh'])
+defineEmits(['changeSize', 'selectChange', 'buttonClick', 'refresh', 'bulkSelect', 'clearSelection', 'openSelection'])
+
+const bulkN = ref<number | null>(null) // 1~N 선택 입력값
 
 function isDisabled(btn: string) {
   return props.disabledButtons?.includes(btn) ?? false

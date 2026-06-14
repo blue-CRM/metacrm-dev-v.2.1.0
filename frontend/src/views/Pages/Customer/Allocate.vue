@@ -12,8 +12,13 @@
                             '기타', '결번', '재콜', '내방', '내방취소', '가망', '자연풀', '카피', '거절' ]]"
             :buttons="allocatorButtons"
             :showRefresh="true"
+            :showBulkSelect="true"
+            :selectionCount="selectionCount"
             :refreshing="isRefreshing"
             @refresh="onRefresh"
+            @bulkSelect="onBulkSelect"
+            @clearSelection="onClearSelection"
+            @openSelection="selectionModalOpen = true"
             @changeSize="setSize"
             @selectChange="onHqSelectChange"
             @buttonClick="onHqButton"
@@ -28,6 +33,7 @@
               :page-size="size"
               :loading="busy"
               @rowSelect="onRowSelect"
+              @selectionCount="onSelectionCount"
               @buttonClick="onTableButtonClick"
               @changePage="changePage"
           />
@@ -40,8 +46,13 @@
                             '기타', '결번', '재콜', '내방', '내방취소', '가망', '자연풀', '카피', '거절' ]]"
             :buttons="mgrButtons"
             :showRefresh="true"
+            :showBulkSelect="true"
+            :selectionCount="selectionCount"
             :refreshing="isRefreshing"
             @refresh="onRefresh"
+            @bulkSelect="onBulkSelect"
+            @clearSelection="onClearSelection"
+            @openSelection="selectionModalOpen = true"
             @changeSize="setSize"
             @selectChange="onMgrSelectChange"
             @buttonClick="onMgrButton"
@@ -56,6 +67,7 @@
               :page-size="size"
               :loading="busy"
               @rowSelect="onRowSelect"
+              @selectionCount="onSelectionCount"
               @buttonClick="onTableButtonClick"
               @changePage="changePage"
           />
@@ -69,7 +81,7 @@
         <AllocateModal
             v-if="modal.open"
             :mode="modal.mode"
-            :selected-count="selectedRows.length"
+            :selected-count="selectionCount"
             @close="closeModal"
             @confirm="onConfirmAllocate"
         >
@@ -88,6 +100,17 @@
           :customer-id="resetModal.targetId"
           @close="closeResetModal"
           @refresh="fetchData"
+        />
+
+        <!-- 선택한 대상 보기/개별 해제 모달 -->
+        <SelectedRowsModal
+            v-if="selectionModalOpen"
+            title="선택한 고객"
+            :rows="selectedRows"
+            :columns="selectionColumns"
+            @deselect="onDeselectRow"
+            @clearAll="onClearSelection"
+            @close="selectionModalOpen = false"
         />
 
       </div>
@@ -130,6 +153,7 @@ import PageBreadcrumb from '@/components/common/PageBreadcrumb.vue'
 import ComponentCard from '@/components/common/ComponentCard.vue'
 import PsnsTable from '@/components/tables/basic-tables/PsnsTable.vue'
 import AllocateModal from '@/components/ui/AllocateModal.vue'
+import SelectedRowsModal from '@/components/ui/SelectedRowsModal.vue'
 import AllocateExpertDailySummary from "@/components/ui/AllocateExpertDailySummary.vue";
 import ResetModal from '@/components/ui/ResetModal.vue'
 import { openMemoWindow, broadcastCustomerUpdated } from '@/composables/useMemoWindow.js'
@@ -145,7 +169,7 @@ const role = computed(() => auth.grants.role)
 const pageTitle = ref('DB 분배하기')
 
 // ===== 테이블 & 페이징 =====
-const { items, page, size, totalPages, fetchData, changePage, setSize, setFilter, loading: tableLoading } = useTableQuery({
+const { items, page, size, totalPages, fetchData, changePage, setSize, setFilter, fetchTopN, loading: tableLoading } = useTableQuery({
   url: '/api/work/allocate/list',
   externalFilters: globalFilters,
   useExternalKeys: { from: 'dateFrom', to: 'dateTo', category: 'category', keyword: 'keyword', sort: 'sort', prevStatus: 'prevStatus', division: 'division' },
@@ -165,6 +189,14 @@ async function runBusy(task) {
   try { await task() } finally { uiLoading.value = false }
 }
 
+// 헤더 공통 필터(검색어/카테고리/기간) 변경 시 선택 초기화 (맥락 변경)
+// ※ 상태/직전상태/구분/정렬은 globalFilters가 아니라 내부 setFilter로 처리 → 여기서 감시하지 않음
+watch(
+  () => [globalFilters.keyword, globalFilters.category,
+         globalFilters.dateFrom, globalFilters.dateTo],
+  () => { onClearSelection() }
+)
+
 watch(busy, (v) => {
   if (v) {
     // 짧은 로딩은 스피너 숨김
@@ -182,6 +214,66 @@ onUnmounted(() => {
 const tableRef = ref<any>(null)
 const selectedRows = ref<any[]>([])
 const onRowSelect = (rows:any[]) => { selectedRows.value = rows }
+
+// 1~N 일괄선택 + 선택 카운터 (id 기반, 페이지 무관)
+const selectionCount = ref(0)
+function onSelectionCount(c:number) { selectionCount.value = c }
+async function onBulkSelect(n:number) {
+  if (!Number.isInteger(n) || n < 1) return  // 빈/유효하지 않은 입력 → 기존 선택 보존
+  const rows = await fetchTopN(n)
+  tableRef.value?.applyBulkSelect(rows)
+}
+function onClearSelection() { tableRef.value?.clearSelection() }
+
+// 선택한 대상 보기/개별 해제 모달
+const selectionModalOpen = ref(false)
+const selectionColumns = [
+  { key: 'name', label: '이름' },
+  { key: 'phone', label: '전화번호' },
+  { key: 'createdAt', label: '생성일', type: 'date' },
+  { key: 'status', label: '상태', type: 'badge' },
+  { key: 'prevStatus', label: '직전상태', type: 'badge' },
+]
+function onDeselectRow(row:any) { tableRef.value?.deselect(row) }
+
+// '과거 이력' 파싱: 신형 'nameSTATUS'(레코드 구분 ) / 구형 ', ' 둘 다 처리.
+// STATUS: 'C'=현재 담당자, 'P'=팀장풀, ''=과거
+function parsePastStaff(v:any): { name:string, status:string }[] {
+  const s = String(v ?? '')
+  if (!s) return []
+  const RS = '\n', US = '\t'
+  const records = s.includes(RS) ? s.split(RS) : s.split(',')
+  return records.map(r => {
+    const t = r.trim()
+    if (!t) return null
+    if (t.includes(US)) {
+      const [name, status] = t.split(US)
+      return { name: (name ?? '').trim(), status: (status ?? '').trim() }
+    }
+    return { name: t, status: '' }
+  }).filter(Boolean) as { name:string, status:string }[]
+}
+
+// HTML 이스케이프 (이름은 DB값이라 안전 처리)
+function escapeHtml(s:any): string {
+  return String(s).replace(/[&<>"']/g, (c:string) => (
+    { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c] as string
+  ))
+}
+
+// 과거 이력 셀 렌더: 현재 담당자=파랑, 팀장풀=초록, 그 외 과거=회색.
+// PsnsTable 기본 text 렌더 안에서 내용만 교체 → 클릭 시 펼침/접힘 동작은 그대로 유지됨.
+function renderPastStaff(value:any): string {
+  const list = parsePastStaff(value)
+  if (!list.length) return '<span class="text-gray-400 dark:text-gray-500">-</span>'
+  const sep = '<span class="text-gray-400 dark:text-gray-600">, </span>'
+  return list.map(it => {
+    const cls = it.status === 'C' ? 'text-blue-400 dark:text-blue-300'
+              : it.status === 'P' ? 'text-emerald-400 dark:text-emerald-300'
+              : 'text-gray-500 dark:text-gray-400'
+    return `<span class="${cls}">${escapeHtml(it.name)}</span>`
+  }).join(sep)
+}
 
 // ===== 컬럼 (읽기 전용!) =====
 const baseCols = [
@@ -210,14 +302,14 @@ const hqColumns = [
   { key: 'prevStatus', label: '직전상태', type: 'badge', editable: false },
   { key: 'memo',    label: '메모', type: 'iconButton', icon: EyeIcon },
   { key: 'actions', label: '관리', type: 'iconButton', icon: ClipboardDocumentListIcon }, // HQ 전용
-  { key: 'paststaff',     label: '과거 이력', type: 'text', ellipsis: { width: 200 } }, // HQ 전용
+  { key: 'paststaff',     label: '과거 이력', type: 'text', ellipsis: { width: 200 }, render: renderPastStaff }, // HQ 전용
 ]
 
 // 매니저는 과거 이력/구분 X (분배만)
 const mgrColumns = [ ...baseCols,
   { key: 'prevStatus', label: '직전상태', type: 'badge', editable: false },
   { key: 'memo', label: '메모', type: 'iconButton', icon: EyeIcon },
-  { key: 'paststaff', label: '과거 이력', type: 'text', ellipsis: { width: 200 } },
+  { key: 'paststaff', label: '과거 이력', type: 'text', ellipsis: { width: 200 }, render: renderPastStaff },
 ]
 
 // ===== HQ 전용 구분 필터 =====
@@ -286,9 +378,7 @@ async function toggleSort() {
     // 2. 필터 설정 (백엔드는 'oldest' 값이 오면 과거순, 없으면 최신순으로 처리)
     setFilter('sort', viewOptions.value.oldest ? 'oldest' : null)
 
-    // 3. UX 편의상 선택 초기화 (정렬 바뀌면 선택된 행들의 위치가 섞이므로)
-    selectedRows.value = []
-    tableRef.value?.clearSelection?.()
+    // 정렬은 같은 데이터의 순서만 바뀜 → id 기반 선택은 그대로 유지(초기화 안 함)
   })
 }
 
