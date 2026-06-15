@@ -177,7 +177,9 @@
         c.customer_phone        AS phone,
         c.customer_source       AS source,
         c.customer_content      AS content,
-        c.customer_memo         AS memo,
+        (SELECT mc.content FROM memo_chats mc
+            WHERE mc.customer_id = c.customer_id AND mc.is_deleted = 0 AND mc.chat_type &lt;&gt; 'STATUS'
+            ORDER BY mc.created_at DESC, mc.chat_id DESC LIMIT 1) COLLATE utf8mb4_general_ci AS memo,
         c.customer_status       AS status,
         c.customer_prev_status AS prevStatus,
         c.customer_promise_time AS promiseAt,
@@ -446,7 +448,9 @@
         c.customer_phone        AS phone,
         c.customer_source       AS source,
         c.customer_content      AS content,
-        c.customer_memo         AS memo,
+        (SELECT mc.content FROM memo_chats mc
+            WHERE mc.customer_id = c.customer_id AND mc.is_deleted = 0 AND mc.chat_type &lt;&gt; 'STATUS'
+            ORDER BY mc.created_at DESC, mc.chat_id DESC LIMIT 1) COLLATE utf8mb4_general_ci AS memo,
         c.customer_status       AS status,
         c.customer_prev_status AS prevStatus,
         CASE
@@ -502,7 +506,9 @@
         c.customer_phone        AS phone,
         c.customer_source       AS source,
         c.customer_content      AS content,
-        c.customer_memo         AS memo,
+        (SELECT mc.content FROM memo_chats mc
+            WHERE mc.customer_id = c.customer_id AND mc.is_deleted = 0 AND mc.chat_type &lt;&gt; 'STATUS'
+            ORDER BY mc.created_at DESC, mc.chat_id DESC LIMIT 1) COLLATE utf8mb4_general_ci AS memo,
         c.customer_status       AS status,
         c.customer_prev_status AS prevStatus,
         CASE
@@ -564,7 +570,9 @@
         c.customer_phone AS phone,
         c.customer_source AS source,
         c.customer_content AS content,
-        c.customer_memo AS memo,
+        (SELECT mc.content FROM memo_chats mc
+            WHERE mc.customer_id = c.customer_id AND mc.is_deleted = 0 AND mc.chat_type &lt;&gt; 'STATUS'
+            ORDER BY mc.created_at DESC, mc.chat_id DESC LIMIT 1) COLLATE utf8mb4_general_ci AS memo,
         c.customer_status AS status,
         c.customer_prev_status AS prevStatus,
         c.customer_promise_time AS promiseAt,
@@ -703,7 +711,9 @@
         c.customer_phone AS phone,
         c.customer_source AS source,
         c.customer_content AS content,
-        c.customer_memo AS memo,
+        (SELECT mc.content FROM memo_chats mc
+            WHERE mc.customer_id = c.customer_id AND mc.is_deleted = 0 AND mc.chat_type &lt;&gt; 'STATUS'
+            ORDER BY mc.created_at DESC, mc.chat_id DESC LIMIT 1) COLLATE utf8mb4_general_ci AS memo,
         c.customer_status AS status,
         c.customer_prev_status AS prevStatus,
         c.customer_promise_time AS promiseAt,

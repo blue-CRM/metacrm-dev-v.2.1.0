@@ -29,12 +29,12 @@ layer(base);
     --text-title-md--line-height: 44px;
     --text-title-sm: 30px;
     --text-title-sm--line-height: 38px;
-    --text-theme-xl: 20px;
-    --text-theme-xl--line-height: 30px;
-    --text-theme-sm: 14px;
-    --text-theme-sm--line-height: 20px;
-    --text-theme-xs: 12px;
-    --text-theme-xs--line-height: 18px;
+    --text-theme-xl: calc(20px * var(--font-scale, 1));
+    --text-theme-xl--line-height: calc(30px * var(--font-scale, 1));
+    --text-theme-sm: calc(14px * var(--font-scale, 1));
+    --text-theme-sm--line-height: calc(20px * var(--font-scale, 1));
+    --text-theme-xs: calc(12px * var(--font-scale, 1));
+    --text-theme-xs--line-height: calc(18px * var(--font-scale, 1));
 
     --color-current: currentColor;
     --color-transparent: transparent;

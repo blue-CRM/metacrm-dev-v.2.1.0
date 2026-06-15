@@ -238,7 +238,7 @@
         :class="[
           'h-9 px-4 rounded-2xl text-[13px] font-semibold shrink-0 transition',
           draft.trim()
-            ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
+            ? 'bg-blue-500 hover:bg-blue-600 text-white cursor-pointer'
             : 'bg-gray-100 dark:bg-gray-800 text-gray-400 cursor-not-allowed',
         ]"
         @click="submit"

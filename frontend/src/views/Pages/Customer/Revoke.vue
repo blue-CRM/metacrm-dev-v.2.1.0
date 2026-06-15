@@ -34,11 +34,7 @@
               @rowSelect="onRowSelect"
               @selectionCount="onSelectionCount"
               @changePage="changePage"
-          >
-            <template #expand-memo="{ row }">
-              <MemoCellChats :customer-id="row.id" />
-            </template>
-          </PsnsTable>
+          />
         </ComponentCard>
 
         <!-- MANAGER (팀장) -->
@@ -75,11 +71,7 @@
               @rowSelect="onRowSelect"
               @selectionCount="onSelectionCount"
               @changePage="changePage"
-          >
-            <template #expand-memo="{ row }">
-              <MemoCellChats :customer-id="row.id" />
-            </template>
-          </PsnsTable>
+          />
         </ComponentCard>
 
         <!-- STAFF 접근 시 경고 안내를 노출하려면 주석 해제
@@ -152,7 +144,6 @@ import AdminLayout from '@/components/layout/AdminLayout.vue'
 import PageBreadcrumb from '@/components/common/PageBreadcrumb.vue'
 import ComponentCard from '@/components/common/ComponentCard.vue'
 import PsnsTable from '@/components/tables/basic-tables/PsnsTable.vue'
-import MemoCellChats from '@/components/memo/MemoCellChats.vue'
 import AllocateModal from '@/components/ui/AllocateModal.vue'
 import SelectedRowsModal from '@/components/ui/SelectedRowsModal.vue'
 import { useAuthStore } from '@/stores/auth.js'
@@ -274,7 +265,7 @@ const hqColumns = [
   { key: 'phone',     label: '전화번호', type: 'text', ellipsis: { width: 150 } },
   { key: 'source',    label: 'DB출처',   type: 'text' },
   { key: 'content',   label: '내용',     type: 'text', ellipsis: { width: 150 } },
-  { key: 'memo',      label: '메모',     type: 'text', ellipsis: { width: 150 } },
+  { key: 'memo',      label: '메모',     type: 'memoRead', ellipsis: { width: 220 } },
   { key: "status",    label: "상태",     type: "badge" },
   { key: 'prevStatus', label: '직전상태', type: 'badge', hideIfEmpty: true },
   { key: "",  label: "",   type: "text", ellipsis: { width: 10 } },
@@ -294,7 +285,7 @@ const mgrColumns = [
   { key: 'phone',     label: '전화번호', type: 'text', ellipsis: { width: 150 } },
   { key: 'source',    label: 'DB출처',   type: 'text' },
   { key: 'content',   label: '내용',     type: 'text', ellipsis: { width: 150 } },
-  { key: 'memo',      label: '메모',     type: 'text', ellipsis: { width: 150 } },
+  { key: 'memo',      label: '메모',     type: 'memoRead', ellipsis: { width: 220 } },
   { key: "status",    label: "상태",     type: "badge" },
   { key: 'prevStatus', label: '직전상태', type: 'badge', hideIfEmpty: true },
   { key: "",  label: "",   type: "text", ellipsis: { width: 10 } },

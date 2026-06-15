@@ -38,11 +38,8 @@
                          hover:bg-blue-50/60 dark:hover:bg-gray-800/70">
                 <td v-for="(col, ci) in columns"
                     :key="col.key"
-                    class="border-b border-r border-gray-100 dark:border-gray-800 py-2.5 align-middle"
-                    :class="[
-                      col.type === 'badge' ? 'px-5 text-center' : 'px-3',
-                      isCellExpanded(keyOf(row, idx), col.key) ? 'whitespace-normal' : 'whitespace-nowrap'
-                    ]"
+                    class="border-b border-r border-gray-100 dark:border-gray-800 py-2.5 align-middle whitespace-nowrap"
+                    :class="col.type === 'badge' ? 'px-5 text-center' : 'px-3'"
                     :title="String(rawVal(row, col) ?? '')">
                   <!-- 상태/직전상태: 색 배지 (가로 폭 통일 + 가운데 정렬) -->
                   <span v-if="col.type === 'badge' && !isEmpty(row, col)"
@@ -50,16 +47,10 @@
                         :class="statusBadgeColor(rawVal(row, col))">
                     {{ display(row, col) }}
                   </span>
-                  <!-- 텍스트(이름/그 외): 말줄임 + 클릭 시 확장 -->
+                  <!-- 텍스트(이름/그 외): 항상 말줄임. 전체 내용은 hover 툴팁(title)으로 -->
                   <span v-else
-                        @click="toggleCell(keyOf(row, idx), col.key)"
-                        class="block cursor-pointer"
-                        :class="[
-                          ci === 0 ? 'text-sm font-semibold text-gray-800 dark:text-gray-100' : 'text-xs text-gray-500 dark:text-gray-400',
-                          isCellExpanded(keyOf(row, idx), col.key)
-                            ? 'max-w-[18rem] whitespace-normal break-words'
-                            : (ci === 0 ? 'max-w-[12rem]' : 'max-w-[15rem]') + ' truncate'
-                        ]">
+                        class="block truncate"
+                        :class="ci === 0 ? 'max-w-[12rem] text-sm font-semibold text-gray-800 dark:text-gray-100' : 'max-w-[15rem] text-xs text-gray-500 dark:text-gray-400'">
                     {{ display(row, col) }}
                   </span>
                 </td>
@@ -104,7 +95,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
 import { statusBadgeColor } from '@/composables/memoFormat.js'
 
 const props = defineProps({
@@ -114,17 +104,6 @@ const props = defineProps({
   rowKey:  { type: [String, Function], default: 'id' }, // :key 용 (식별은 부모가 행 객체로 처리)
 })
 defineEmits(['close', 'deselect', 'clearAll'])
-
-// 셀 클릭 시 말줄임 ↔ 전체표시 토글 (행키|컬럼키 단위)
-const expanded = ref(new Set())
-function cellId(rowKeyVal, colKey) { return String(rowKeyVal) + '|' + colKey }
-function isCellExpanded(rowKeyVal, colKey) { return expanded.value.has(cellId(rowKeyVal, colKey)) }
-function toggleCell(rowKeyVal, colKey) {
-  const id = cellId(rowKeyVal, colKey)
-  const s = new Set(expanded.value)
-  if (s.has(id)) s.delete(id); else s.add(id)
-  expanded.value = s
-}
 
 function keyOf(row, idx) {
   if (typeof props.rowKey === 'function') return props.rowKey(row, idx)

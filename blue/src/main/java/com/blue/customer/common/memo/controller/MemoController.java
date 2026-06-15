@@ -25,6 +25,13 @@ public class MemoController {
     return ResponseEntity.ok(memoService.getMemo(customerId, auth.getName()));
   }
 
+  /** 읽기전용 셀 펼침 전용: 채팅 목록만(경량). 헤더/권한쓰기/editable 계산 생략 */
+  @GetMapping("/{customerId}/chats")
+  public ResponseEntity<java.util.List<MemoChatDto>> getChats(@PathVariable Long customerId,
+                                                              Authentication auth) {
+    return ResponseEntity.ok(memoService.getChats(customerId, auth.getName()));
+  }
+
   /** 채팅 작성 */
   @PostMapping("/{customerId}/chats")
   public ResponseEntity<MemoChatDto> addChat(@PathVariable Long customerId,

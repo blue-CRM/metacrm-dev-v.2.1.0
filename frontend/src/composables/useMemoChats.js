@@ -1,5 +1,6 @@
 import { ref, reactive } from 'vue'
 import api from '@/plugins/axios'
+import { MEMO_SYNC_CHANNEL } from '@/composables/useMemoWindow'
 
 /**
  * 메모 채팅 상태 + 액션 컴포저블 (실제 API 연동).
@@ -63,6 +64,25 @@ export function useMemoChats(customerId, opts = {}) {
     load()
   }
 
+  /* 표의 '최근메모' 미리보기를 실시간 갱신하기 위한 브로드캐스트.
+     백엔드 미리보기 기준과 동일하게 STATUS 채팅은 제외한 '최신 채팅' 내용을 보낸다. */
+  function latestMemoContent() {
+    for (let i = chats.value.length - 1; i >= 0; i--) {
+      const c = chats.value[i]
+      if (c && c.chatType !== 'STATUS') return c.content ?? ''
+    }
+    return ''
+  }
+  function broadcastLatestMemo() {
+    try {
+      const ch = new BroadcastChannel(MEMO_SYNC_CHANNEL)
+      ch.postMessage({ type: 'memo-latest', customerId: String(customerId), content: latestMemoContent() })
+      ch.close()
+    } catch {
+      /* BroadcastChannel 미지원 환경 무시 */
+    }
+  }
+
   /* ──────────── 쓰기 액션 ──────────── */
   async function send(text) {
     const t = (text || '').trim()
@@ -70,6 +90,7 @@ export function useMemoChats(customerId, opts = {}) {
     try {
       const { data } = await api.post(`/api/work/db/memo/${customerId}/chats`, { content: t })
       chats.value = [...chats.value, data]
+      broadcastLatestMemo()
     } catch (e) {
       handleWriteError(e)
     }
@@ -94,6 +115,7 @@ export function useMemoChats(customerId, opts = {}) {
       const idx = chats.value.findIndex((c) => c.chatId === targetId)
       if (idx !== -1) chats.value.splice(idx, 1, data)
       cancelEdit()
+      broadcastLatestMemo()
     } catch (e) {
       handleWriteError(e)
     }
@@ -103,6 +125,7 @@ export function useMemoChats(customerId, opts = {}) {
     try {
       await api.delete(`/api/work/db/memo/chats/${chatId}`)
       chats.value = chats.value.filter((c) => c.chatId !== chatId)
+      broadcastLatestMemo()
     } catch (e) {
       handleWriteError(e)
     }

@@ -5,7 +5,13 @@
         class="relative max-w-full overflow-x-auto overflow-y-auto custom-scrollbar"
         :style="{ maxHeight: scrollMaxHeight }"
     >
-      <table class="w-full table-auto">
+      <table class="w-full table-fixed">
+        <!-- table-fixed: 칼럼 너비를 colgroup으로 고정 → 셀이 세로로 커져도 표 전체 재측정(reflow) 없음 -->
+        <colgroup>
+          <col v-if="showCheckbox" style="width: 44px" />
+          <col style="width: 52px" />
+          <col v-for="(col, idx) in columns" :key="idx" :style="{ width: colWidth(col) + 'px' }" />
+        </colgroup>
         <thead class="sticky top-0 z-20 bg-white dark:bg-gray-900
            shadow-[0_1px_0_0_rgba(229,231,235,0.4)]
            dark:shadow-[0_1px_0_0_rgba(31,41,55,0.7)]">
@@ -52,8 +58,8 @@
             {{ rowNumber(rowIndex) }}
           </td>
 
-          <!-- 동적 컬럼 -->
-          <td v-for="(col, colIndex) in columns" :key="colIndex" class="px-2 py-4 min-w-0">
+          <!-- 동적 컬럼 (select-none: 빈 여백 클릭 시 브라우저가 잘린 글자를 선택·스크롤해 드러내는 것 방지) -->
+          <td v-for="(col, colIndex) in columns" :key="colIndex" class="px-2 py-4 min-w-0 select-none">
             <!-- 생성일 컬럼 -->
             <span
                 v-if="col.key === 'createdAt'"
@@ -103,41 +109,14 @@
                 </div>
               </div>
 
-              <!-- 일반 텍스트 / 커스텀 펼침 -->
-              <template v-else>
-                <!-- 커스텀 펼침 슬롯(부모가 expand-{col.key} 제공 시: 예 메모=전체 채팅). 다시 클릭하면 접힘 -->
-                <div
-                    v-if="isExpanded(row, rowIndex, col.key) && $slots['expand-' + col.key]"
-                    @click="toggleExpand(row, rowIndex, col.key)"
-                >
-                  <slot :name="'expand-' + col.key" :row="row" />
-                </div>
-                <!-- 기본 텍스트 토글 -->
-                <button
-                    v-else
-                    class="block w-full -mx-2 -my-1 px-2 py-1 rounded focus:outline-none"
-                    @click="toggleExpand(row, rowIndex, col.key)"
-                >
-                  <span
-                      :class="isExpanded(row, rowIndex, col.key)
-                      ? 'block rounded text-gray-500 text-theme-sm dark:text-gray-400 text-left leading-tight whitespace-pre-wrap break-words overflow-auto'
-                      : 'block rounded text-gray-500 text-theme-sm dark:text-gray-400 text-left leading-tight truncate whitespace-nowrap overflow-hidden'"
-                      :style="(() => {
-                        const pref = ellipsisPx(col)
-                        const base = { width: `${pref}px` }
-                        return isExpanded(row, rowIndex, col.key)
-                          ? { ...base, maxHeight: '6.75rem', lineHeight: '1.25rem', paddingRight: '0.25rem' }
-                          : base
-                      })()"
-                  >
-                    <!-- col.render 가 있으면 커스텀 HTML(예: 과거 이력 강조), 없으면 기본 텍스트 -->
-                    <span v-if="typeof col.render === 'function'" v-html="col.render(row[col.key], row)"></span>
-                    <template v-else>{{ col.key === 'staff'
-                      ? (row[col.key]?.toString().trim() || '')
-                      : (row[col.key] ?? '') }}</template>
-                  </span>
-                </button>
-              </template>
+              <!-- 일반 텍스트: 클릭 시 '그 자리 팝업'으로 전체 표시(메모와 동일). 잘린 셀에서만 팝업 -->
+              <TextPopupCell
+                  v-else
+                  :cell-key="getRowKey(row, rowIndex) + '::' + col.key"
+                  :text="col.key === 'staff' ? (row[col.key]?.toString().trim() || '') : (row[col.key] ?? '')"
+                  :render-html="typeof col.render === 'function' ? col.render(row[col.key], row) : null"
+                  :width="ellipsisPx(col)"
+              />
             </template>
 
             <!-- 배지 -->
@@ -171,6 +150,17 @@
                 <option v-for="opt in getOptions(col, row)" :key="opt" :value="opt">{{ opt }}</option>
               </select>
             </div>
+
+            <!-- 읽기전용 메모(자체 펼침: 표 전체 리렌더 방지) -->
+            <MemoReadCell
+                v-else-if="col.type === 'memoRead'"
+                :key="getRowKey(row, rowIndex)"
+                :cell-key="getRowKey(row, rowIndex)"
+                :customer-id="row.id"
+                :preview="row[col.key]"
+                :width="ellipsisPx(col)"
+                :text-only="col.textOnly ? col.textOnly(row) : false"
+            />
 
             <!-- 아이콘 버튼 -->
             <button
@@ -347,15 +337,32 @@
 <script setup>
 import { ref, watch, computed, onMounted, onBeforeUnmount, nextTick } from "vue"
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/solid'
+import MemoReadCell from '@/components/memo/MemoReadCell.vue'
+import TextPopupCell from '@/components/tables/basic-tables/TextPopupCell.vue'
+import { resetMemo } from '@/composables/useMemoExpand'
 
-// 내용 - 툴팁 확장용
-const expandedCell = ref(null)
 function ellipsisPx(col) {
   const raw = (col && typeof col.ellipsis === 'object' && col.ellipsis !== null)
       ? col.ellipsis.width
       : col?.ellipsis;
   const n = (typeof raw === 'number') ? raw : Number.parseInt(raw, 10);
   return Number.isFinite(n) ? n : 100;
+}
+
+// table-fixed용 칼럼 너비(px). 기존 셀들이 span 너비(ellipsisPx)로 이미 폭이 잡혀 있어
+// 그 값을 그대로 따르고, 셀 좌우 패딩(px-2=16px) 여유만 더한다. 비텍스트 타입은 실제 렌더 폭 기준.
+const CELL_PAD = 20
+function colWidth(col) {
+  switch (col?.type) {
+    case 'badge':      return 96   // 배지 w-[70px] + 여유
+    case 'money':      return 120  // min-w-[6rem]
+    case 'date':       return 124  // min-w-[5.5~6rem]
+    case 'iconButton': return 60   // p-2 + 아이콘 w-5
+    default: break
+  }
+  if (col?.key === 'createdAt') return 104 // 날짜+시간 2줄
+  // text / memoRead — span 너비(ellipsisPx, 기본 100) + 패딩
+  return ellipsisPx(col) + CELL_PAD
 }
 
 const props = defineProps({
@@ -406,24 +413,13 @@ function rowNumber(rowIndex) {
   return rowIndex + 1
 }
 
-// 툴팁 확장 관련 함수
+// 행 고유 키(선택/팝업 단일오픈 식별용)
 function getRowKey(row, idx) {
   if (typeof props.rowKey === 'function') return props.rowKey(row, idx)
   if (row && row[props.rowKey] != null) return row[props.rowKey]
   // id가 없으면 페이지-인덱스로라도 충돌 방지
   return `${props.page}-${idx}`
 }
-function cellKey(row, idx, colKey) {
-  return `${getRowKey(row, idx)}::${colKey}`
-}
-function toggleExpand(row, idx, colKey) {
-  const k = cellKey(row, idx, colKey)
-  expandedCell.value = (expandedCell.value === k) ? null : k
-}
-function isExpanded(row, idx, colKey) {
-  return expandedCell.value === cellKey(row, idx, colKey)
-}
-
 // 페이지 변경시 선택 초기화
 watch(
     () => props.loading,
@@ -432,8 +428,8 @@ watch(
       if (prev && !loading) {
         displayPage.value = props.page
 
-        // 확장/에딧 상태만 초기화 (선택은 id 기반이라 페이지 이동에도 유지)
-        expandedCell.value = null
+        // 펼침/에딧 상태만 초기화 (선택은 id 기반이라 페이지 이동에도 유지)
+        resetMemo()   // 열린 메모/텍스트 팝업 닫기
         cancelEdit()
 
         // 스크롤 위치 초기화
@@ -919,6 +915,9 @@ const handleHorizontalWheel = (e) => {
 }
 
 onMounted(() => {
+  // 새 표가 뜰 때(라우트 전환 등) 이전에 열려있던 읽기전용 메모 펼침 상태 초기화
+  resetMemo()
+
   // 윈도우 스크롤/휠/터치
   window.addEventListener('wheel',     closeAllPickersOnScroll, { passive: true, capture: true })
   window.addEventListener('scroll',    closeAllPickersOnScroll, { passive: true, capture: true })

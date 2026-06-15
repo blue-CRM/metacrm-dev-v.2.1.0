@@ -98,6 +98,37 @@
             <span class="dark:hidden">다크테마</span>
           </button>
         </li>
+
+        <!-- 글자 크기 조절 -->
+        <li>
+          <div
+              class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg font-medium text-gray-700 text-theme-sm dark:text-gray-400"
+          >
+            <span class="flex items-center gap-3">
+              <span class="ml-[2px] w-5 text-center font-semibold text-gray-500">가</span>
+              글자 크기
+            </span>
+            <span class="flex items-center gap-1.5">
+              <button
+                  type="button"
+                  @click="dec"
+                  :disabled="atMin()"
+                  class="flex h-6 w-6 items-center justify-center rounded-md border border-gray-200 text-gray-600 transition
+                         hover:bg-gray-100 disabled:opacity-40 disabled:hover:bg-transparent
+                         dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5"
+              >−</button>
+              <span class="w-10 text-center text-theme-xs tabular-nums text-gray-500 dark:text-gray-400">{{ percent() }}%</span>
+              <button
+                  type="button"
+                  @click="inc"
+                  :disabled="atMax()"
+                  class="flex h-6 w-6 items-center justify-center rounded-md border border-gray-200 text-gray-600 transition
+                         hover:bg-gray-100 disabled:opacity-40 disabled:hover:bg-transparent
+                         dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5"
+              >+</button>
+            </span>
+          </div>
+        </li>
       </ul>
       <button
           @click="signOut"
@@ -119,7 +150,9 @@ import { ref, onMounted, onUnmounted } from 'vue'
 // 라이트테마/다크테마 토글
 import { useTheme } from '../ThemeProvider.vue'
 import {useAuthStore} from "@/stores/auth.js";
+import { useFontScale } from '@/composables/useFontScale'
 const { toggleTheme } = useTheme()
+const { inc, dec, percent, atMin, atMax } = useFontScale()
 
 const dropdownOpen = ref(false)
 const dropdownRef = ref(null)

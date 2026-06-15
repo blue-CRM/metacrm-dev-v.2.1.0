@@ -140,7 +140,7 @@ import AdminLayout from "@/components/layout/AdminLayout.vue";
 import ComponentCard from "@/components/common/ComponentCard.vue";
 import PsnsTable from "@/components/tables/basic-tables/PsnsTable.vue";
 import SelectedRowsModal from "@/components/ui/SelectedRowsModal.vue";
-import { openMemoWindow, broadcastCustomerUpdated } from "@/composables/useMemoWindow.js";
+import { openMemoWindow, broadcastCustomerUpdated, MEMO_SYNC_CHANNEL } from "@/composables/useMemoWindow.js";
 import { EyeIcon } from "@heroicons/vue/24/outline";
 import { useTableQuery } from "@/composables/useTableQuery.js";
 import { globalFilters } from "@/composables/globalFilters.js";
@@ -321,7 +321,6 @@ const adminColumns = [
   { key: "phone", label: "전화번호", type: "text", ellipsis: { width: 150 } },
   { key: "source", label: "DB출처", type: "text", ellipsis: { width: 100 } },
   { key: "content", label: "내용", type: "text", ellipsis: { width: 150 } },
-  { key: "memo", label: "메모", type: "iconButton", icon: EyeIcon, disabled: (row)=> row.origin==='DUPLICATE' },
   { key: "status", label: "상태", type: "badge",
       editable: notDuplicate,
       // 회수와 신규 상태는 수동으로 줄 수 없음
@@ -329,7 +328,10 @@ const adminColumns = [
       // 신규 : 최초의 확정분배 시에만 신규
       options: ["부재1","부재2","부재3","부재4","부재5","기타","결번","재콜","내방","내방취소","가망","자연풀","카피","거절"] },
   { key: "prevStatus", label: "직전상태", type: "badge", editable: false},
-  { key: "reservation", label: "예약", type: "date", editable: notDuplicate },
+  { key: "memo", label: "메모", type: "iconButton", icon: EyeIcon, disabled: (row)=> row.origin==='DUPLICATE' },
+  { key: "memo", label: "최근메모", type: "memoRead", ellipsis: { width: 220 }, textOnly: (row)=> row.origin==='DUPLICATE' },
+  // 예약 칼럼 숨김(회사 정책상 노출 불필요)
+  // { key: "reservation", label: "예약", type: "date", editable: notDuplicate },
   { key: "initialPrice", label: "최초(달러)", type: "money", editable: isSalesEditable },
   { key: "upsellPrice",  label: "업셀(달러)", type: "money", editable: isSalesEditable },
 ];
@@ -346,12 +348,14 @@ const commonColumns = [
   { key: "phone", label: "전화번호", type: "text", ellipsis: { width: 150 } },
   { key: "source", label: "DB출처", type: "text", ellipsis: { width: 100 } },
   { key: "content", label: "내용", type: "text", ellipsis: { width: 150 } },
-  { key: "memo", label: "메모", type: "iconButton", icon: EyeIcon, disabled: (row)=> row.origin==='DUPLICATE' },
   { key: "status", label: "상태", type: "badge",
       editable: notDuplicate,
       options: ["부재1","부재2","부재3","부재4","부재5","기타","결번","재콜","내방","내방취소","가망","자연풀","카피","거절"] },
   { key: "prevStatus", label: "직전상태", type: "badge", editable: false},
-  { key: "reservation", label: "예약", type: "date", editable: notDuplicate },
+  { key: "memo", label: "메모", type: "iconButton", icon: EyeIcon, disabled: (row)=> row.origin==='DUPLICATE' },
+  { key: "memo", label: "최근메모", type: "memoRead", ellipsis: { width: 220 }, textOnly: (row)=> row.origin==='DUPLICATE' },
+  // 예약 칼럼 숨김(회사 정책상 노출 불필요)
+  // { key: "reservation", label: "예약", type: "date", editable: notDuplicate },
   { key: "initialPrice", label: "최초(달러)", type: "money", editable: isSalesEditable },
   { key: "upsellPrice",  label: "업셀(달러)", type: "money", editable: isSalesEditable },
 ];
@@ -696,6 +700,26 @@ async function refetchAndClamp() {
     changePage(page.value - 1);
   }
 }
+
+// 메모 팝업에서 채팅을 쓰면(같은 브라우저) 표의 '최근메모' 미리보기를 실시간 갱신
+let memoSyncBc = null;
+onMounted(() => {
+  try {
+    memoSyncBc = new BroadcastChannel(MEMO_SYNC_CHANNEL);
+    memoSyncBc.onmessage = (e) => {
+      const m = e.data;
+      if (m?.type === 'memo-latest' && m.customerId != null) {
+        const row = items.value.find(
+            r => String(r.id) === String(m.customerId) && r.origin === 'CUSTOMER'
+        );
+        if (row) row.memo = m.content;
+      }
+    };
+  } catch {
+    /* BroadcastChannel 미지원 환경 무시 */
+  }
+});
+onUnmounted(() => { try { memoSyncBc?.close(); } catch {} });
 
 onMounted(async () => {
   // 매니저 초기 세팅

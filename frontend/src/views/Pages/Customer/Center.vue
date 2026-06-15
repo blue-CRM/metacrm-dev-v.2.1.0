@@ -28,11 +28,7 @@
               :page-size="size"
               :loading="busy"
               @changePage="changePage"
-          >
-            <template #expand-memo="{ row }">
-              <MemoCellChats :customer-id="row.id" />
-            </template>
-          </PsnsTable>
+          />
         </ComponentCard>
 
       </div>
@@ -73,7 +69,6 @@ import PageBreadcrumb from "@/components/common/PageBreadcrumb.vue";
 import AdminLayout from "@/components/layout/AdminLayout.vue";
 import ComponentCard from "@/components/common/ComponentCard.vue";
 import PsnsTable from "@/components/tables/basic-tables/PsnsTable.vue";
-import MemoCellChats from "@/components/memo/MemoCellChats.vue";
 import { useTableQuery } from "@/composables/useTableQuery.js";
 import { globalFilters } from "@/composables/globalFilters.js";
 import api from "@/plugins/axios.js";
@@ -213,7 +208,7 @@ const columns = [
   { key: "phone", label: "전화번호", type: "text", ellipsis: { width: 150 } },
   { key: "source", label: "DB출처", type: "text", ellipsis: { width: 100 } },
   { key: "content", label: "내용", type: "text", ellipsis: { width: 150 } },
-  { key: "memo", label: "메모", type: "text", ellipsis: { width: 150 } },
+  { key: "memo", label: "메모", type: "memoRead", ellipsis: { width: 220 } },
   { key: "status", label: "상태", type: "badge",
     options: ["부재1","부재2","부재3","부재4","부재5","기타","결번","재콜","내방","내방취소","가망","자연풀","카피","거절"] },
   { key: "reservation", label: "예약", type: "text", ellipsis: { width: 120 } },

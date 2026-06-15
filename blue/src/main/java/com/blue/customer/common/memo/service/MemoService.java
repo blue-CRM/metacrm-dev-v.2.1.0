@@ -40,6 +40,19 @@ public class MemoService {
     return dto;
   }
 
+  /**
+   * 읽기전용 셀(표 펼침) 전용 채팅 목록 조회.
+   * 헤더(회의실 서브쿼리 포함)·작성권한·채팅별 editable 계산을 모두 생략해
+   * 전체 getMemo 대비 쿼리 수와 응답 크기를 줄인 경량 버전이다.
+   */
+  @Transactional(readOnly = true)
+  public List<MemoChatDto> getChats(Long customerId, String callerEmail) {
+    UserContextDto me = me(callerEmail);
+    requireCustomer(customerId);
+    assertReadAccess(me, customerId);
+    return mapper.selectChatsByCustomer(customerId);
+  }
+
   /* ===================== 작성 ===================== */
 
   @Transactional

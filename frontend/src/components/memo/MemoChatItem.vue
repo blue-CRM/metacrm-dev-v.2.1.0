@@ -15,14 +15,14 @@
     ></textarea>
     <div class="flex justify-end gap-1.5 mt-1">
       <button
-        class="text-[11px] px-2.5 py-[3px] rounded border border-gray-200 dark:border-gray-600
+        class="text-[11px] px-2.5 py-[3px] rounded-2xl border border-gray-200 dark:border-gray-600
                bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-300"
         @click="$emit('cancel')"
       >
         취소
       </button>
       <button
-        class="text-[11px] px-2.5 py-[3px] rounded border-none bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+        class="text-[11px] px-2.5 py-[3px] rounded-2xl border-none bg-blue-500 hover:bg-blue-600 text-white font-semibold"
         @click="$emit('save')"
       >
         저장
@@ -35,7 +35,7 @@
     <!-- 말풍선 -->
     <div
       :class="[
-        'rounded-xl px-3.5 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap break-words max-w-full',
+        'rounded-xl px-3.5 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap break-words min-w-0 [overflow-wrap:anywhere]',
         isSystem
           ? 'bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400'
           : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100',
