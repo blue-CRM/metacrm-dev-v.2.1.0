@@ -68,13 +68,15 @@ public class UserService {
       throw new AuthException("본인 계정은 수정할 수 없습니다.",HttpStatus.GONE);
     }
     
+    // 요청자가 총관리자인지 1회만 조회 (이 메서드 내 모든 super 판정에 재사용)
+    boolean requesterIsSuper = isRequesterSuper(requesterEmail);
+
     // 2. 특별 계정이 아닌 경우 → 본사/관리자 계정 수정 불가
     boolean isRestricted = "SUPERADMIN".equals(target.getUserRole()) || "본사".equals(target.getCenterName());
-    if (isRestricted && !isRequesterSuper(requesterEmail)) {
+    if (isRestricted && !requesterIsSuper) {
       throw new AuthException("권한이 없습니다.",HttpStatus.GONE);
     }
-    
-    boolean requesterIsSuper = isRequesterSuper(requesterEmail);
+
     String targetRole = target.getUserRole();
     // 3-공통) 가시권한/분배권한은 둘 다 super만 수정 가능
     if (("visible".equals(field) || "allocate".equals(field)) && !requesterIsSuper) {
