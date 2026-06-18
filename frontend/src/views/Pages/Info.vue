@@ -2,7 +2,7 @@
   <AdminLayout>
     <PageBreadcrumb pageTitle="메타CRM 조직도" />
 
-    <div class="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-0
+    <div class="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-[#1f2a47] bg-white dark:bg-[#14203a] p-0
                 dark:border-[#1f2a47] dark:bg-[#14203a]">
       <div class="relative z-10 p-6">
 
@@ -35,7 +35,7 @@
 
         <!-- 모달 박스 -->
         <div
-            class="relative z-[100000] w-[440px] rounded-xl bg-white p-5 shadow-xl ring-1 ring-black/5
+            class="relative z-[100000] w-[440px] rounded-xl bg-white dark:bg-[#0e1626] p-5 shadow-xl ring-1 ring-black/5 dark:ring-white/10
              dark:bg-[#0e1626] dark:text-gray-100"
         >
           <h3 class="mb-3 text-base font-semibold">정보 수정</h3>
@@ -47,7 +47,7 @@
                   v-model.trim="edit.name"
                   @blur="validateName"
                   class="h-11 w-full rounded-lg border px-3
-                   bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+                   bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                    dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
               />
               <p v-if="editErr.name" class="mt-1 text-xs text-error-500">{{ editErr.name }}</p>
@@ -61,7 +61,7 @@
                   @blur="validatePhone"
                   placeholder="010-1234-5678"
                   class="h-11 w-full rounded-lg border px-3
-                   bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+                   bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                    dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
               />
               <p v-if="editErr.phone" class="mt-1 text-xs text-error-500">{{ editErr.phone }}</p>

@@ -40,7 +40,7 @@
                     placeholder="날짜 검색"
                     @keyup.enter="goToSearchedDate"
                     class="h-9 w-[160px] rounded-xl border px-3 pr-9 text-sm
-             bg-white text-gray-700 shadow-sm
+             bg-white dark:bg-[#16213b] text-gray-700 dark:text-gray-300 shadow-sm
              border-gray-200 hover:border-gray-300
              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
              dark:border-[#1f2a47] dark:bg-[#0e1626]/40 dark:text-gray-200"
@@ -74,7 +74,7 @@
                   @click="onRefreshSchedules"
                   title="새로고침"
                   class="inline-flex h-9 w-9 items-center justify-center rounded-full
-                   border border-gray-200 bg-white text-gray-600 hover:bg-gray-100
+                   border border-gray-200 bg-white dark:bg-[#16213b] text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#233152]
                    disabled:opacity-60 disabled:cursor-not-allowed
                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-200
                    dark:border-[#28365a] dark:bg-white/5 dark:text-gray-400 dark:hover:bg-[#16213b] dark:focus-visible:ring-blue-900"
@@ -289,7 +289,7 @@
                           placeholder="날짜 선택"
                           :disabled="!modalCanEdit"
                           class="w-full h-11 rounded-lg border px-3 pr-10
-                             bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+                             bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                              dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                       />
                     </div>
@@ -303,7 +303,7 @@
                           type="button"
                           :disabled="!modalCanEdit"
                           class="w-full h-11 rounded-lg border px-3 text-left
-                               bg-white text-gray-800
+                               bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                                dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                           @click="startOpen = !startOpen"
                       >
@@ -312,7 +312,7 @@
 
                       <div
                           v-if="startOpen"
-                          class="absolute z-[100001] mt-2 w-full rounded-lg border bg-white shadow-lg
+                          class="absolute z-[100001] mt-2 w-full rounded-lg border dark:border-[#28365a] bg-white dark:bg-[#16213b] shadow-lg
                                  dark:border-[#28365a] dark:bg-[#0e1626]"
                       >
                         <ul class="max-h-56 overflow-auto py-1">
@@ -341,7 +341,7 @@
                             type="button"
                             :disabled="!modalCanEdit"
                             class="w-full h-11 rounded-lg border px-3 text-left
-                                 bg-white text-gray-800
+                                 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                                  dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                             @click="endOpen = !endOpen"
                         >
@@ -350,7 +350,7 @@
 
                         <div
                             v-if="endOpen"
-                            class="absolute z-[100001] mt-2 w-full rounded-lg border bg-white shadow-lg
+                            class="absolute z-[100001] mt-2 w-full rounded-lg border dark:border-[#28365a] bg-white dark:bg-[#16213b] shadow-lg
                                   dark:border-[#28365a] dark:bg-[#0e1626]"
                         >
                           <ul class="max-h-56 overflow-auto py-1">
@@ -400,7 +400,7 @@
                       :disabled="!modalCanEdit"
                       placeholder="예: 외부 미팅 장소, 층/호수 등"
                       class="w-full h-11 rounded-lg border px-3
-                       bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+                       bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                        dark:border-[#28365a] dark:bg-[#16213b] dark:tvisit_scheduleext-gray-100 dark:text-gray-300"
                   />
                 </div>
@@ -440,7 +440,7 @@
                           placeholder="이름 또는 전화번호로 검색"
                           :disabled="!modalCanEdit"
                           class="h-11 w-full rounded-lg border px-3
-                               bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+                               bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                                dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                       />
                       <button
@@ -656,7 +656,7 @@ const endTimeOptions = computed(() => {
 // 버튼 색상
 const btnSoft =
     'h-9 px-3 rounded-xl border text-sm font-medium transition ' +
-    'border-gray-200 bg-white text-gray-700 shadow-sm ' +
+    'border-gray-200 bg-white dark:bg-[#16213b] text-gray-700 dark:text-gray-300 shadow-sm ' +
     'hover:bg-gray-50 hover:border-gray-300 ' +
     'focus:outline-none focus:ring-2 focus:ring-blue-500/20 ' +
     'dark:border-[#1f2a47] dark:bg-[#0e1626]/40 dark:text-gray-200 dark:shadow-none ' +

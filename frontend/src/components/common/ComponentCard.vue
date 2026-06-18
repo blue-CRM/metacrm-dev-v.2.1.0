@@ -98,7 +98,7 @@
               @click="$emit('refresh')"
               title="새로고침"
               class="inline-flex h-9 w-9 items-center justify-center rounded-full
-                   border border-gray-200 bg-white text-gray-600 hover:bg-gray-100
+                   border border-gray-200 bg-white dark:bg-[#16213b] text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#233152]
                    disabled:opacity-60 disabled:cursor-not-allowed
                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-200
                    dark:border-[#28365a] dark:bg-white/5 dark:text-gray-400 dark:hover:bg-[#16213b] dark:focus-visible:ring-blue-900"

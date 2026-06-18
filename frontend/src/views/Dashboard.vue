@@ -35,7 +35,7 @@
             <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">지점별</div>
             <div class="flex items-center gap-2">
               <button
-                  class="h-11 shrink-0 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-800 hover:bg-gray-50
+                  class="h-11 shrink-0 rounded-lg border border-gray-300 dark:border-[#28365a] bg-white dark:bg-[#16213b] px-4 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-[#233152]
                        dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                   @click="openBranchPicker = true"
               >
@@ -45,7 +45,7 @@
                 </span>
               </button>
               <button
-                  class="h-11 shrink-0 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-800 hover:bg-gray-50
+                  class="h-11 shrink-0 rounded-lg border border-gray-300 dark:border-[#28365a] bg-white dark:bg-[#16213b] px-4 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-[#233152]
                        disabled:opacity-50
                        dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                   @click="clearPickedBranches"
@@ -115,7 +115,7 @@
             </div>
             <div class="flex items-center gap-2">
               <button
-                  class="h-11 shrink-0 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-800 hover:bg-gray-50
+                  class="h-11 shrink-0 rounded-lg border border-gray-300 dark:border-[#28365a] bg-white dark:bg-[#16213b] px-4 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-[#233152]
                        dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                   @click="openCenterPicker = true"
               >
@@ -125,7 +125,7 @@
                 </span>
               </button>
               <button
-                  class="h-11 shrink-0 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-800 hover:bg-gray-50
+                  class="h-11 shrink-0 rounded-lg border border-gray-300 dark:border-[#28365a] bg-white dark:bg-[#16213b] px-4 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-[#233152]
                        disabled:opacity-50
                        dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                   @click="clearPickedCenters"
@@ -201,12 +201,12 @@
                   placeholder="프로 검색"
                   @keydown.enter.prevent="pickFirstUser"
                   class="h-11 w-full rounded-lg border px-3
-                       bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+                       bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                        dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
               />
               <button
                   type="button"
-                  class="h-11 shrink-0 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-800 hover:bg-gray-50
+                  class="h-11 shrink-0 rounded-lg border border-gray-300 dark:border-[#28365a] bg-white dark:bg-[#16213b] px-4 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-[#233152]
                        dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                   @click="pickFirstUser"
                   :disabled="!canSearchUser"
@@ -328,7 +328,7 @@
 
       <!-- 통계: 개인별 (내/동료 프로) -->
       <div
-          class="col-span-12 xl:col-span-8 xl:h-full rounded-2xl border bg-white p-5
+          class="col-span-12 xl:col-span-8 xl:h-full rounded-2xl border dark:border-[#1f2a47] bg-white dark:bg-[#14203a] p-5
              dark:border-[#1f2a47] dark:bg-[#14203a]"
       >
         <!-- 제목 + 검색창 + 버튼 같은 행 -->
@@ -344,12 +344,12 @@
                 placeholder="프로 검색"
                 @keydown.enter.prevent="pickFirstUser"
                 class="h-11 w-full rounded-lg border px-3
-                     bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+                     bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                      dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
             />
             <button
                 type="button"
-                class="h-11 shrink-0 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-800 hover:bg-gray-50
+                class="h-11 shrink-0 rounded-lg border border-gray-300 dark:border-[#28365a] bg-white dark:bg-[#16213b] px-4 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-[#233152]
                      dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                 @click="pickFirstUser"
                 :disabled="!canSearchUser"
@@ -488,7 +488,7 @@
                   v-model="branchQuery"
                   placeholder="지점 검색"
                   class="h-11 w-full rounded-lg border px-3
-                       bg-white text-gray-800 placeholder:text-gray-400
+                       bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100 placeholder:text-gray-400
                        focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                        dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:placeholder:text-gray-400"
               />
@@ -608,7 +608,7 @@
                   v-model="centerQuery"
                   placeholder="팀 검색"
                   class="h-11 w-full rounded-lg border px-3
-                       bg-white text-gray-800 placeholder:text-gray-400
+                       bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100 placeholder:text-gray-400
                        focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                        dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:placeholder:text-gray-400"
               />

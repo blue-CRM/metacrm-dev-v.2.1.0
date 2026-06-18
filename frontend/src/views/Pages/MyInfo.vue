@@ -3,7 +3,7 @@
     <PageBreadcrumb pageTitle="내 정보 수정" />
 
     <div
-        class="relative overflow-x-auto overflow-y-visible rounded-2xl border border-gray-200 bg-white p-0
+        class="relative overflow-x-auto overflow-y-visible rounded-2xl border border-gray-200 dark:border-[#1f2a47] bg-white dark:bg-[#14203a] p-0
              dark:border-[#1f2a47] dark:bg-[#14203a]"
     >
       <!-- 장식 그리드 -->
@@ -70,7 +70,7 @@
 <!--                    v-model="verifyCode"-->
 <!--                    placeholder="메일로 받은 6자리"-->
 <!--                    class="h-11 flex-1 min-w-[12rem] rounded-lg border px-3-->
-<!--                 bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10-->
+<!--                 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10-->
 <!--                 dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"-->
 <!--                />-->
 <!--                <button-->
@@ -118,7 +118,7 @@
                     @input="formatPhoneInput"
                     @blur="validatePhoneInput"
                     class="h-11 w-full rounded-lg border px-3
-                 bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+                 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                  dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                 />
                 <button
@@ -184,7 +184,7 @@
                       :disabled="!pwEditing || changingPw"
                       autocomplete="current-password"
                       class="h-11 w-full rounded-lg border px-3
-                         bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+                         bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                          dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                          disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
                          dark:disabled:bg-[#0e1626]/40 dark:disabled:text-gray-500 dark:disabled:border-[#28365a]"
@@ -213,7 +213,7 @@
                       :disabled="!pwEditing || changingPw"
                       autocomplete="new-password"
                       class="h-11 w-full rounded-lg border px-3
-                         bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+                         bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                          dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                          disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
                          dark:disabled:bg-[#0e1626]/40 dark:disabled:text-gray-500 dark:disabled:border-[#28365a]"
@@ -242,7 +242,7 @@
                       :disabled="!pwEditing || changingPw"
                       autocomplete="new-password"
                       class="h-11 w-full rounded-lg border px-3
-                         bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+                         bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                          dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                          disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
                          dark:disabled:bg-[#0e1626]/40 dark:disabled:text-gray-500 dark:disabled:border-[#28365a]"
@@ -362,7 +362,7 @@
                     :disabled="savingSheet || !sheetEditing"
                     placeholder="예) 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
                     @blur="validateSheetId"
-                    class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
+                    class="h-11 w-full rounded-lg border px-3 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                      focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                      dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                      disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
@@ -379,7 +379,7 @@
                     :disabled="savingSheet || !sheetEditing"
                     placeholder="예) Sheet1"
                     @blur="validateSheetName"
-                    class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
+                    class="h-11 w-full rounded-lg border px-3 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                      focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                      dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                      disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
@@ -399,7 +399,7 @@
                     step="1"
                     placeholder="예) 2"
                     @blur="validateStartRow"
-                    class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
+                    class="h-11 w-full rounded-lg border px-3 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                      focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                      dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                      disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
@@ -454,7 +454,7 @@
                         type="text"
                         placeholder="IP, 메모, 수정일(YYYY-MM-DD) 검색"
                         @keyup.enter="applyIpSearch"
-                        class="h-10 w-full rounded-lg border px-3 pr-8 bg-white text-gray-800
+                        class="h-10 w-full rounded-lg border px-3 pr-8 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                             focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                             dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                             disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
@@ -496,7 +496,7 @@
                           v-model="newIp"
                           :disabled="ipSaving"
                           placeholder="예) 118.235.10.27"
-                          class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
+                          class="h-11 w-full rounded-lg border px-3 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                                focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                                dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                       />
@@ -504,7 +504,7 @@
                           v-model="newIpMemo"
                           :disabled="ipSaving"
                           placeholder="메모 (예: 본사 팀장 PC)"
-                          class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
+                          class="h-11 w-full rounded-lg border px-3 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                                focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                                dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                       />
@@ -600,7 +600,7 @@
                           <input
                               v-model="editingRow.ipAddress"
                               class="mb-1 w-full rounded-md border border-gray-200 px-2 py-1 text-xs
-                                     bg-white text-gray-800
+                                     bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                                      focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
                                      dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                               placeholder="IP 주소"
@@ -623,7 +623,7 @@
                           <input
                               v-model="editingRow.memo"
                               class="w-full rounded-md border border-gray-200 px-2 py-1 text-xs
-                                     bg-white text-gray-800
+                                     bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                                      focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
                                      dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                               placeholder="메모"
@@ -647,7 +647,7 @@
                           <select
                               v-model="editingRow.isActive"
                               class="h-8 rounded-md border border-gray-300 px-2 text-xs
-                                     bg-white text-gray-800
+                                     bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                                      focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
                                      dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                           >
@@ -785,7 +785,7 @@
                         type="text"
                         placeholder="지점명 검색"
                         @keyup.enter="applyBranchSearch"
-                        class="h-10 w-full rounded-lg border px-3 pr-8 bg-white text-gray-800
+                        class="h-10 w-full rounded-lg border px-3 pr-8 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                              dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                     />
@@ -819,7 +819,7 @@
                   <input
                       v-model="newBranchName"
                       placeholder="예) 본사 지점"
-                      class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
+                      class="h-11 w-full rounded-lg border px-3 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                              dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                              disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
@@ -891,7 +891,7 @@
                           <input
                               v-model="editingBranchName"
                               class="w-full rounded-md border border-gray-200 px-2 py-1 text-xs
-                                     bg-white text-gray-800
+                                     bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                                      focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
                                      dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                               placeholder="지점명"
@@ -996,7 +996,7 @@
                         type="text"
                         placeholder="팀명 / 지점명 검색"
                         @keyup.enter="applyCenterSearch"
-                        class="h-10 w-full rounded-lg border px-3 pr-8 bg-white text-gray-800
+                        class="h-10 w-full rounded-lg border px-3 pr-8 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                              dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                     />
@@ -1030,7 +1030,7 @@
                   <input
                       v-model="newCenterName"
                       placeholder="예) 강남1팀"
-                      class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
+                      class="h-11 w-full rounded-lg border px-3 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                              dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                              disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
@@ -1039,7 +1039,7 @@
 
                   <select
                       v-model="newCenterBranchId"
-                      class="h-11 w-full md:w-48 rounded-lg border px-3 bg-white text-gray-800
+                      class="h-11 w-full md:w-48 rounded-lg border px-3 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                              dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                              disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
@@ -1171,7 +1171,7 @@
                           <input
                               v-model="editingCenter.centerName"
                               class="w-full rounded-md border border-gray-200 px-2 py-1 text-xs
-                                     bg-white text-gray-800
+                                     bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                                      focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
                                      dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                               placeholder="팀명"
@@ -1190,7 +1190,7 @@
                           <select
                               v-model="editingCenter.branchId"
                               class="h-9 w-full rounded-md border border-gray-300 px-2 text-xs
-                                     bg-white text-gray-800
+                                     bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                                      focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
                                      dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                           >
@@ -1306,7 +1306,7 @@
                         type="text"
                         placeholder="지점 / 팀 / 개인 / 구간명 검색"
                         @keyup.enter="applyPartitionSearch"
-                        class="h-10 w-full rounded-lg border px-3 pr-8 bg-white text-gray-800
+                        class="h-10 w-full rounded-lg border px-3 pr-8 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                              dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                     />
@@ -1340,7 +1340,7 @@
                   <!-- 1줄: 구분 -->
                   <select
                       v-model="newPartitionType"
-                      class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
+                      class="h-11 w-full rounded-lg border px-3 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                   >
@@ -1361,7 +1361,7 @@
                         min="1"
                         step="1"
                         placeholder="예) 100000"
-                        class="h-11 w-32 shrink-0 rounded-lg border px-3 bg-white text-gray-800
+                        class="h-11 w-32 shrink-0 rounded-lg border px-3 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                  focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                  dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                     />
@@ -1369,7 +1369,7 @@
                     <input
                         v-model="newPartitionName"
                         placeholder="메모 (예: 10만불 이하)"
-                        class="h-11 min-w-0 flex-1 rounded-lg border px-3 bg-white text-gray-800
+                        class="h-11 min-w-0 flex-1 rounded-lg border px-3 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                  focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                  dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                     />
@@ -1448,7 +1448,7 @@
                           <select
                               v-model="editingPartition.partitionType"
                               class="h-9 w-full rounded-md border border-gray-300 px-2 text-xs
-                                   bg-white text-gray-800
+                                   bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                                    focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
                                    dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                           >
@@ -1472,7 +1472,7 @@
                               min="1"
                               step="1"
                               class="w-full rounded-md border border-gray-200 px-2 py-1 text-xs
-                                   bg-white text-gray-800
+                                   bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                                    focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
                                    dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                           />
@@ -1489,7 +1489,7 @@
                           <input
                               v-model="editingPartition.name"
                               class="w-full rounded-md border border-gray-200 px-2 py-1 text-xs
-                                   bg-white text-gray-800
+                                   bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                                    focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
                                    dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                               placeholder="구간명"
@@ -1632,7 +1632,7 @@
                         type="text"
                         placeholder="전문가명 검색"
                         @keyup.enter="applyExpertSearch"
-                        class="h-10 w-full rounded-lg border px-3 pr-8 bg-white text-gray-800
+                        class="h-10 w-full rounded-lg border px-3 pr-8 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                              dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                     />
@@ -1666,7 +1666,7 @@
                   <input
                       v-model="newExpertName"
                       placeholder="예) 리드남"
-                      class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
+                      class="h-11 w-full rounded-lg border px-3 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                            focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                            dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                   />
@@ -1739,7 +1739,7 @@
                           <input
                               v-model="editingExpertName"
                               class="w-full rounded-md border border-gray-200 px-2 py-1 text-xs
-                                     bg-white text-gray-800
+                                     bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                                      focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
                                      dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                               placeholder="전문가명"
@@ -1870,7 +1870,7 @@
                         type="text"
                         placeholder="회의실명 검색"
                         @keyup.enter="applyRoomSearch"
-                        class="h-10 w-full rounded-lg border px-3 pr-8 bg-white text-gray-800
+                        class="h-10 w-full rounded-lg border px-3 pr-8 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                                focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                                dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                     />
@@ -1900,7 +1900,7 @@
                   <input
                       v-model="newRoomName"
                       placeholder="예) 1회의실"
-                      class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
+                      class="h-11 w-full rounded-lg border px-3 bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                              dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                   />
@@ -1956,7 +1956,7 @@
                           <input
                               v-model="editingRoom.roomName"
                               class="w-full rounded-md border border-gray-200 px-2 py-1 text-xs
-                       bg-white text-gray-800
+                       bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                        focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
                        dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                           />
@@ -1971,7 +1971,7 @@
                           <select
                               v-model="editingRoom.isActive"
                               class="h-8 rounded-md border border-gray-300 px-2 text-xs
-                       bg-white text-gray-800
+                       bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100
                        focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
                        dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                           >
@@ -2081,7 +2081,7 @@
                       placeholder="예) example@naver.com"
                       :disabled="!delegateEditing"
                       class="h-11 w-full rounded-lg border px-3
-                           bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+                           bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                            dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                            disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
                            dark:disabled:bg-[#0e1626]/40 dark:disabled:text-gray-500 dark:disabled:border-[#28365a]"

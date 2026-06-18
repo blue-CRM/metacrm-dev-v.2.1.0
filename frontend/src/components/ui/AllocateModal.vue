@@ -50,7 +50,7 @@
                 placeholder="이름으로 검색"
                 :disabled="mode==='HQ' && !centerId"
                 class="h-11 w-full rounded-lg border px-3
-                   bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
+                   bg-white dark:bg-[#16213b] text-gray-800 dark:text-gray-100 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
                    dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"/>
             <button
                 @click="searchUsers"

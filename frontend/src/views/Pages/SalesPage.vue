@@ -283,7 +283,7 @@
                 <div ref="tipTranslateEl" class="absolute left-0 top-0" style="transform: translate3d(0px,0px,0);">
                   <div
                       ref="tipInnerEl"
-                      class="pointer-events-auto rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 shadow-lg
+                      class="pointer-events-auto rounded-lg border border-gray-200 dark:border-[#28365a] bg-white dark:bg-[#16213b] px-3 py-2 text-xs text-gray-700 dark:text-gray-200 shadow-lg
                            dark:border-[#28365a] dark:bg-[#0e1626] dark:text-gray-200"
                       style="will-change: transform;"
                       @mouseenter="isTipHover = true; cancelClose()"
