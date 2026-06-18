@@ -123,9 +123,18 @@ public class UserService {
     if ("center".equals(field)) {
       boolean targetIsManager = "MANAGER".equals(targetRole);
       boolean targetIsCenterHead = "CENTERHEAD".equals(targetRole);
-      
+
       CenterDto newCenter = findCenterByNameInternal(value);
-      
+
+      // L2) 값이 있는데 해당 이름의 센터가 없으면 → 조용히 미배정되는 것 방지(거부)
+      if (value != null && !value.isBlank() && newCenter == null) {
+        throw new AuthException("존재하지 않는 소속입니다.", HttpStatus.GONE);
+      }
+      // L1) '본사'(center_id=1) 소속으로의 수동 변경 차단 — 본사 소속은 역할 변경으로만 결정
+      if (newCenter != null && Objects.equals(newCenter.getCenterId(), 1L)) {
+        throw new AuthException("본사 소속은 역할 변경으로만 가능합니다.", HttpStatus.GONE);
+      }
+
       if (newCenter != null) {
         boolean centerType = isCenterType(newCenter); // 브랜치=본사, 센터≠본사센터
         boolean teamType = isTeamType(newCenter);     // 브랜치≠본사
