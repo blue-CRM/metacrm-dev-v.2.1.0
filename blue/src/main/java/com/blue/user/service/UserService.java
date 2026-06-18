@@ -283,10 +283,11 @@ public class UserService {
       userMapper.updateUserField(userId, "visible", "N");
     }
 
-    // B-1.5) 센터장/전문가 -> 팀장/프로 (강등): 센터 소속 비움(팀 재배정 필요).
-    // 전문가 배지 해제는 아래 B-5.5에서 일괄 처리. (A-1/A-2 정합성 수정)
+    // B-1.5) 센터장/전문가 -> 팀장/프로 (강등): 센터 소속 비움(팀 재배정 필요) + 가시권한 공개(팀 기본값).
+    // 전문가 배지 해제는 아래 B-5.5에서 일괄 처리. (A-1/A-2/G1 정합성 수정)
     if (oldIsCenterRole && newIsTeam) {
       userMapper.updateUserField(userId, "center", null);
+      userMapper.updateUserField(userId, "visible", "Y");
     }
 
     // B-2) 센터장 -> 전문가
