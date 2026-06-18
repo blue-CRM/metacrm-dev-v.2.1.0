@@ -171,16 +171,16 @@ export function statusBadgeColor(value) {
     case '탈퇴':
     case '거절':
     case '회수':
-      return 'bg-[#F8D7DA] text-[#B23A48] dark:bg-[#4A1C1C]/80 dark:text-[#F28B82]/85'
+      return 'bg-[#F8D7DA] text-[#B23A48] dark:bg-[#4a1f28] dark:text-[#f7a8b4]'
     case '프로':
     case '신규':
     case '승인':
     case '최초':
-      return 'bg-[#D6E4FF] text-[#1E40AF] dark:bg-[#1A2B4C] dark:text-[#8AB4F8]'
+      return 'bg-[#D6E4FF] text-[#1E40AF] dark:bg-[#1d3a6b] dark:text-[#9cc4ff]'
     case '팀장':
     case '유효':
     case '재콜':
-      return 'bg-[#D1F2D6] text-[#2F855A] dark:bg-[#1B3A2E] dark:text-[#5FA97A]'
+      return 'bg-[#D1F2D6] text-[#2F855A] dark:bg-[#1c4636] dark:text-[#7fd6a6]'
     case '센터장':
     case '부재1':
     case '부재2':
@@ -189,23 +189,23 @@ export function statusBadgeColor(value) {
     case '부재5':
     case '대기':
     case '미할당':
-      return 'bg-[#FFF3CD] text-[#B7791F] dark:bg-[#4A3A12]/60 dark:text-[#C9A94B]/80'
+      return 'bg-[#FFF3CD] text-[#B7791F] dark:bg-[#4a3a1a] dark:text-[#e8c87a]'
     case '자연풀':
     case '공개':
-      return 'bg-[#D0F0F0] text-[#00796B] dark:bg-[#1B3C3C] dark:text-[#66C2A5]'
+      return 'bg-[#D0F0F0] text-[#00796B] dark:bg-[#16403c] dark:text-[#79d4c4]'
     case '전문가':
     case '카피':
     case '허용':
-      return 'bg-[#E0D7F8] text-[#5B4B9A] dark:bg-[#312C5C] dark:text-[#B6A9E3]'
+      return 'bg-[#E0D7F8] text-[#5B4B9A] dark:bg-[#332a5c] dark:text-[#c4b6f0]'
     case '가망':
     case '미지정':
-      return 'bg-[#F4E1CC] text-[#944E2A] dark:bg-[#3A2417]/70 dark:text-[#F3C6A6]/80'
+      return 'bg-[#F4E1CC] text-[#944E2A] dark:bg-[#4a3320] dark:text-[#f0bf94]'
     case '내방':
-      return 'bg-[#FCE7F3] text-[#C026D3] dark:bg-[#3B1126] dark:text-[#F9A8D4]/80'
+      return 'bg-[#FCE7F3] text-[#C026D3] dark:bg-[#4a1f3a] dark:text-[#f3a8d4]'
     case '':
-      return 'bg-[#FFE7D1] text-[#9A3412] dark:bg-[#3A2417] dark:text-[#FDBA74]'
+      return 'bg-[#FFE7D1] text-[#9A3412] dark:bg-[#4a2f1a] dark:text-[#fdba74]'
     default:
-      return 'bg-[#E5E7EB] text-[#4B5563] dark:bg-[#374151] dark:text-[#D1D5DB]'
+      return 'bg-[#E5E7EB] text-[#4B5563] dark:bg-[#233152] dark:text-[#b9c8e6]'
   }
 }
 

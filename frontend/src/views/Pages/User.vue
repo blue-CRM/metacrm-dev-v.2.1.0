@@ -399,7 +399,7 @@ function onClearSelection() {
 const selectionModalOpen = ref(false)
 const selectionColumns = [
   { key: 'name', label: '이름' },
-  { key: 'type', label: '구분' },
+  { key: 'type', label: '구분', type: 'badge' },
   { key: 'email', label: '이메일' },
   { key: 'createdAt', label: '생성일', type: 'date' },
 ]
