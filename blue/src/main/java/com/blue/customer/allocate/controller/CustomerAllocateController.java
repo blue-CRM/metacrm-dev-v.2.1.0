@@ -37,6 +37,12 @@ public class CustomerAllocateController {
   public AllocateResult allocateByHq(Authentication auth, @RequestBody AllocateHqReq req) {
     return service.allocateByHq(auth.getName(), req);
   }
+
+  // 본사 전용 - 여러 명에게 랜덤 균등분배
+  @PostMapping("/work/allocate/hq/random")
+  public AllocateResult allocateByHqRandom(Authentication auth, @RequestBody AllocateHqRandomReq req) {
+    return service.allocateByHqRandom(auth.getName(), req);
+  }
   
   // 팀장 재분배
   @PostMapping("/work/allocate/manager")

@@ -268,6 +268,8 @@ const columns = computed(() => {
       key: "center",
       label: "소속",
       type: "badge",
+      badgeWrap: true,      // 짧은 이름은 작게, 긴 이름만 최대폭 안에서 2~3줄 줄바꿈(말줄임)
+      badgeMaxWidth: 160,
       editable: (row) => row.center !== "본사",
 
       // 행(row)의 직책에 따라 옵션 목록을 갈아끼움

@@ -82,6 +82,7 @@
             v-if="modal.open"
             :mode="modal.mode"
             :selected-count="selectionCount"
+            :allow-multi="role === 'SUPERADMIN'"
             @close="closeModal"
             @confirm="onConfirmAllocate"
         >
@@ -448,45 +449,56 @@ function closeModal(){
 // ===== 실제 분배 호출 =====
 async function onConfirmAllocate(payload: {
   centerId?:number|null,
-  userId?:number|null,
+  userIds:number[],
   assignToManagerAsStaff?: boolean
 }) {
   const ids = needSelection();
   if (!ids.length) return
 
   await runBusy(async () => {
+    const userIds = payload.userIds || []
+
     // 1. 유효성 검사
     // 상위 분배자는 팀/직원 모두 필수
     if (modal.value.mode === 'HQ') {
       if (!payload.centerId) { alert('팀을 선택하세요.'); return; }
-      if (!payload.userId) { alert('직원을 선택하세요.'); return; }
+      if (!userIds.length) { alert('직원을 선택하세요.'); return; }
     } else {
       // 매니저는 직원 필수
-      if (!payload.userId) { alert('직원을 선택하세요.'); return; }
+      if (!userIds.length) { alert('직원을 선택하세요.'); return; }
     }
 
     // 2. API 호출 분기
     if (role.value === 'SUPERADMIN') {
-      // [본사]
-      await axios.post('/api/work/allocate/hq', {
-        customerIds: ids,
-        targetCenterId: payload.centerId,
-        targetUserId: payload.userId,
-        assignToManagerAsStaff: payload.assignToManagerAsStaff || false
-      })
+      // [본사] 여러 명 선택 시 랜덤 균등분배, 한 명이면 기존 단일 분배
+      if (userIds.length > 1) {
+        await axios.post('/api/work/allocate/hq/random', {
+          customerIds: ids,
+          targetCenterId: payload.centerId,
+          targetUserIds: userIds,
+          assignToManagerAsStaff: payload.assignToManagerAsStaff || false
+        })
+      } else {
+        await axios.post('/api/work/allocate/hq', {
+          customerIds: ids,
+          targetCenterId: payload.centerId,
+          targetUserId: userIds[0],
+          assignToManagerAsStaff: payload.assignToManagerAsStaff || false
+        })
+      }
     } else if (role.value === 'CENTERHEAD' || role.value === 'EXPERT') {
       // [센터장/전문가]
       await axios.post('/api/work/allocate/experthead', {
         customerIds: ids,
         targetCenterId: payload.centerId,
-        targetUserId: payload.userId,
+        targetUserId: userIds[0],
         assignToManagerAsStaff: payload.assignToManagerAsStaff || false
       })
     } else {
       // [팀장]
       await axios.post('/api/work/allocate/manager', {
         customerIds: ids,
-        targetUserId: payload.userId
+        targetUserId: userIds[0]
       })
     }
 

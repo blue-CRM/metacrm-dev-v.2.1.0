@@ -2,6 +2,7 @@ package com.blue.customer.all.service;
 
 import com.blue.customer.all.dto.*;
 import com.blue.customer.all.mapper.CustomerAllMapper;
+import com.blue.customer.common.memo.service.MemoService;
 import com.blue.global.exception.AuthException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import java.util.List;
 public class CustomerAllService {
   
   private final CustomerAllMapper mapper;
+  private final MemoService memoService;
   
   public PagedResponse<AllDbRowDto> getAll(
       String callerEmail, int page, int size,
@@ -177,14 +179,24 @@ public class CustomerAllService {
         if ("내방".equals(next) && !"내방".equals(current)) {
           mapper.updateCustomerReservation(customerId, null);
         }
-        
+
         mapper.updateCustomerStatus(customerId, dto.getValue());
+
+        // 전체메뉴 드롭다운으로 상태를 바꾼 경우, 수정한 사람 이름으로 자동 채팅 기록.
+        // (이 엔드포인트의 status 필드는 전체메뉴 표 드롭다운에서만 호출됨)
+        if (!next.equals(current)) {
+          String prevLabel = (current == null || current.isBlank()) ? "없음" : current;
+          memoService.addStatusChangeChat(customerId, me.getUserId(),
+              "상태 변경: " + prevLabel + " → " + next);
+        }
       }
       case "name" -> {
-        if (!"SUPERADMIN".equals(me.getRole())) {
+        // 이름 수정: 관리자(본사)/팀장/프로만 가능 (센터장·전문가 제외)
+        // 팀장은 자기 팀, 프로는 본인 담당 고객만 — 범위 제한은 위의 공통 권한 검증에서 이미 적용됨.
+        if (!List.of("SUPERADMIN", "MANAGER", "STAFF").contains(me.getRole())) {
           throw new AuthException("권한이 없습니다.", HttpStatus.GONE);
         }
-        
+
         String nextName = dto.getValue() == null ? "" : dto.getValue().trim();
         if (nextName.isBlank()) {
           throw new AuthException("고객명이 비어있습니다.", HttpStatus.GONE);

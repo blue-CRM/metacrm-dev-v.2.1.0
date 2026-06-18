@@ -73,7 +73,7 @@
                   :key="u.userId"
                   @click="selectUser(u)"
                   class="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
-                  :class="pickedUser?.userId === u.userId ? 'bg-gray-100 dark:bg-gray-800/70' : ''"
+                  :class="isPicked(u) ? 'bg-gray-100 dark:bg-gray-800/70' : ''"
               >
                 <div class="text-sm text-gray-700 dark:text-gray-200">
                   <b>{{ u.userName }}</b>
@@ -85,19 +85,20 @@
                 <button
                     class="px-2 py-1 text-xs rounded-md border transition"
                     @click.stop="selectUser(u)"
-                    :class="pickedUser?.userId === u.userId
+                    :class="isPicked(u)
                         ? 'bg-gray-900 text-white border-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:border-white dark:hover:bg-gray-200'
                         : 'text-gray-700 border-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800/70'"
                 >
-                  {{ pickedUser?.userId === u.userId ? '선택됨' : '선택' }}
+                  {{ isPicked(u) ? '선택됨' : '선택' }}
                 </button>
               </li>
             </ul>
           </div>
 
-<!--          <p v-if="pickedUser" class="text-xs text-gray-500 dark:text-gray-400">-->
-<!--            선택됨: <b>{{ pickedUser.userName }}</b>-->
-<!--          </p>-->
+          <p v-if="pickedCount" class="text-xs text-gray-500 dark:text-gray-400 break-words">
+            선택됨: <b>{{ pickedNamesLabel }}</b>
+            <span v-if="allowMulti && pickedCount > 1"> ({{ pickedCount }}명 · 랜덤 균등분배)</span>
+          </p>
         </div>
       </div>
 
@@ -111,7 +112,8 @@
           취소
         </button>
 
-        <template v-if="mode === 'HQ' && pickedUser && pickedUser.role === 'MANAGER'">
+        <!-- 단일 팀장 선택: 팀공용 / 팀장개인 -->
+        <template v-if="isSingleManager">
           <button
               class="h-10 px-4 rounded-lg bg-gray-600 text-white text-sm hover:bg-gray-700 disabled:opacity-60"
               :disabled="submitting"
@@ -124,14 +126,29 @@
           </button>
         </template>
 
+        <!-- 여러 명 + 팀장 포함: 팀장풀+프로 / 팀장개인+프로 랜덤분배 -->
+        <template v-else-if="isMultiWithManager">
+          <button
+              class="h-10 px-4 rounded-lg bg-gray-600 text-white text-sm hover:bg-gray-700 disabled:opacity-60"
+              :disabled="submitting"
+              @click="confirm(false)"> 팀장풀+프로 랜덤분배
+          </button>
+          <button
+              class="h-10 px-4 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-500 disabled:opacity-60"
+              :disabled="submitting"
+              @click="confirm(true)"> 팀장개인+프로 랜덤분배
+          </button>
+        </template>
+
+        <!-- 그 외: 단일 프로 분배 / 여러 명(프로만) 랜덤분배 -->
         <template v-else>
           <button
               class="h-10 px-4 rounded-lg bg-blue-600 text-white text-sm disabled:opacity-60"
               :disabled="submitting ||
-                    (mode==='HQ' && (!centerId || !pickedUser)) ||
-                    (mode==='MANAGER' && !pickedUser)"
+                    pickedCount === 0 ||
+                    (mode==='HQ' && !centerId)"
               @click="confirm(false)">
-            {{ submitting ? '처리 중...' : primaryLabel }}
+            {{ submitting ? '처리 중...' : (pickedCount > 1 ? '랜덤분배' : primaryLabel) }}
           </button>
         </template>
       </div>
@@ -153,18 +170,20 @@ const props = withDefaults(defineProps<{
   managerPersonalLabel?: string
   excludeCenterIds?: number[]
   apiBase?: string
+  allowMulti?: boolean // 여러 명 선택 + 랜덤 균등분배 허용(본사 전용)
 }>(), {
   title: 'DB 일괄 분배',
   primaryLabel: '분배하기',
   managerPoolLabel: '팀 공용 분배',
   managerPersonalLabel: '팀장 개인 분배',
-  apiBase: '/api/work/allocate'
+  apiBase: '/api/work/allocate',
+  allowMulti: false
 })
 const emit = defineEmits<{
   (e:'close'):void,
   (e:'confirm', payload:{
     centerId?:number|null,
-    userId?:number|null,
+    userIds:number[], // 선택된 직원 목록(1명이면 단일 분배, 2명 이상이면 랜덤 균등분배)
     assignToManagerAsStaff?: boolean // 팀장풀 / 팀장개인 분배 구분
   }):void
 }>()
@@ -175,8 +194,27 @@ const centerId = ref<number|null>(null)
 
 const users = ref<any[]>([])
 const query = ref('')
-const pickedUser = ref<any|null>(null)
+const pickedUsers = ref<any[]>([])
 const submitting = ref(false)
+
+// 선택 상태 헬퍼
+function isPicked(u:any){ return pickedUsers.value.some(p => p.userId === u.userId) }
+const pickedCount = computed(() => pickedUsers.value.length)
+
+// 선택된 이름 표시: 일정 개수를 넘으면 "A, B, C 외 N명"으로 축약(가로 칸 넘침 방지)
+const MAX_NAMES_SHOWN = 3
+const pickedNamesLabel = computed(() => {
+  const names = pickedUsers.value.map(u => u.userName)
+  if (names.length <= MAX_NAMES_SHOWN) return names.join(', ')
+  return `${names.slice(0, MAX_NAMES_SHOWN).join(', ')} 외 ${names.length - MAX_NAMES_SHOWN}명`
+})
+const singlePicked = computed(() => pickedUsers.value.length === 1 ? pickedUsers.value[0] : null)
+const hasManager = computed(() => pickedUsers.value.some(u => u.role === 'MANAGER'))
+
+// 단일 팀장 선택(HQ) → 팀공용/팀장개인 버튼
+const isSingleManager = computed(() => props.mode === 'HQ' && singlePicked.value?.role === 'MANAGER')
+// 여러 명 + 팀장 포함 → 팀장풀+프로 / 팀장개인+프로 랜덤분배 버튼
+const isMultiWithManager = computed(() => props.mode === 'HQ' && pickedCount.value > 1 && hasManager.value)
 
 async function loadCenters() {
   if (props.mode !== 'HQ') return
@@ -253,7 +291,17 @@ function debouncedSearch(){
   t = setTimeout(searchUsers, 250)
 }
 
-function selectUser(u:any){ pickedUser.value = u }
+function selectUser(u:any){
+  const i = pickedUsers.value.findIndex(p => p.userId === u.userId)
+  if (props.allowMulti) {
+    // 여러 명 선택 토글
+    if (i >= 0) pickedUsers.value.splice(i, 1)
+    else pickedUsers.value.push(u)
+  } else {
+    // 단일 선택: 같은 사람 다시 누르면 해제, 아니면 교체
+    pickedUsers.value = (i >= 0) ? [] : [u]
+  }
+}
 
 async function confirm(assignToManagerAsStaff: boolean = false){
   submitting.value = true
@@ -261,15 +309,15 @@ async function confirm(assignToManagerAsStaff: boolean = false){
     if (props.mode === 'HQ' && (!centerId.value)) {
       alert('팀을 선택하세요.')
       return
-    } else if (props.mode === 'HQ' && (!pickedUser.value?.userId)) {
+    } else if (!pickedUsers.value.length) {
       alert('직원을 선택하세요.')
       return
     }
 
-    // 부모 컴포넌트로 플래그와 함께 이벤트 전달
+    // 부모 컴포넌트로 플래그와 함께 이벤트 전달 (userIds 길이로 단일/랜덤 분기)
     emit('confirm', {
       centerId: centerId.value ?? undefined,
-      userId: pickedUser.value?.userId ?? undefined,
+      userIds: pickedUsers.value.map(u => u.userId),
       assignToManagerAsStaff
     })
   } finally { submitting.value = false }
@@ -281,7 +329,7 @@ watch(
     async (m) => {
       await loadCenters()
       users.value = []
-      pickedUser.value = null
+      pickedUsers.value = []
       // 매니저 모드는 모달 열리자마자 빈 검색 허용(팀 고정)
       if (m === 'MANAGER') searchUsers()
     },
@@ -291,7 +339,7 @@ watch(
 // HQ에서 팀 선택이 바뀌면 즉시 검색(또는 미선택이면 비우기)
 watch(centerId, () => {
   users.value = []
-  pickedUser.value = null
+  pickedUsers.value = []
   searchUsers()
 })
 
@@ -300,7 +348,7 @@ watch(
     async () => {
       await loadCenters()
       users.value = []
-      pickedUser.value = null
+      pickedUsers.value = []
     },
     { deep: true }
 )

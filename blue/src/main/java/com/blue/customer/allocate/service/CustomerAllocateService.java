@@ -133,6 +133,77 @@ public class CustomerAllocateService {
     return new AllocateResult(lockIds.size(), req.getCustomerIds().size() - lockIds.size());
   }
   
+  // 본사 전용 - 여러 명에게 랜덤 균등분배
+  // floor(잠금건수 / 선택인원)개씩 랜덤으로 배분하고, 나머지는 분배하지 않고 남긴다.
+  @Transactional
+  public AllocateResult allocateByHqRandom(String callerEmail, AllocateHqRandomReq req) {
+    UserContextDto me = mapper.findUserContextByEmail(callerEmail);
+    if (me == null || !"SUPERADMIN".equals(me.getRole())) {
+      throw new AuthException("권한이 없습니다.", HttpStatus.GONE);
+    }
+    if (!"Y".equals(me.getCanAllocate())) {
+      throw new AuthException("분배 권한이 없습니다.", HttpStatus.GONE);
+    }
+    if (req.getCustomerIds() == null || req.getCustomerIds().isEmpty()) {
+      return new AllocateResult(0, 0);
+    }
+    if (req.getTargetCenterId() == null) {
+      throw new AuthException("팀을 선택하세요.", HttpStatus.GONE);
+    }
+    if (req.getTargetUserIds() == null || req.getTargetUserIds().isEmpty()) {
+      throw new AuthException("분배할 직원을 선택하세요.", HttpStatus.GONE);
+    }
+
+    // 중복 제거 + 소속 검증
+    List<Long> userIds = req.getTargetUserIds().stream().distinct().toList();
+    for (Long uid : userIds) {
+      Integer ok = mapper.userBelongsToCenter(uid, req.getTargetCenterId());
+      if (ok == null || ok == 0) {
+        throw new AuthException("선택한 직원이 해당 팀 소속이 아닙니다.", HttpStatus.GONE);
+      }
+    }
+
+    // 조건에 맞는 대상만 잠금
+    List<Long> lockIds = new java.util.ArrayList<>(mapper.lockCustomersForHq(req.getCustomerIds()));
+    if (lockIds.isEmpty()) return new AllocateResult(0, req.getCustomerIds().size());
+
+    // 랜덤 셔플 후 floor 균등 분배
+    java.util.Collections.shuffle(lockIds);
+
+    int k = userIds.size();
+    int per = lockIds.size() / k;   // floor
+    int assigned = 0;
+
+    if (per > 0) {
+      int idx = 0;
+      for (Long uid : userIds) {
+        List<Long> sub = new java.util.ArrayList<>(lockIds.subList(idx, idx + per));
+        idx += per;
+        assigned += sub.size();
+
+        String targetRole = mapper.findUserRole(uid);
+
+        // 이력 추가 & 소유자 변경
+        mapper.insertPastForNewOwner(sub, uid);
+        mapper.updateOwner(sub, uid);
+
+        // 상태: 프로(또는 팀장개인 옵션) → 신규 / 팀장풀 → 없음
+        boolean treatAsPersonal =
+            !"MANAGER".equals(targetRole) || Boolean.TRUE.equals(req.getAssignToManagerAsStaff());
+        if (treatAsPersonal) {
+          mapper.updateStatusToNew(sub);
+        } else {
+          mapper.updateStatusToNone(sub);
+        }
+
+        writeAssignLogs(sub, me.getUserId(), null, uid, treatAsPersonal, null);
+      }
+    }
+
+    // 나머지(lockIds.size() - assigned)는 분배하지 않고 남김
+    return new AllocateResult(assigned, req.getCustomerIds().size() - assigned);
+  }
+
   @Transactional
   public AllocateResult allocateByManager(String callerEmail, AllocateMgrReq req) {
     UserContextDto me = mapper.findUserContextByEmail(callerEmail);

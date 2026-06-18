@@ -98,9 +98,14 @@ export function groupChats(chats) {
   return groups
 }
 
-/** SYSTEM(마이그레이션·시트 종목명) / STATUS(상태변경 자동, 2차) = 둘 다 '시스템'으로 표시 */
+/** SYSTEM(마이그레이션·시트 종목명) = 작성자 없이 '시스템'으로 표시 */
 export function isSystemType(chatType) {
-  return chatType === 'SYSTEM' || chatType === 'STATUS'
+  return chatType === 'SYSTEM'
+}
+
+/** STATUS(상태변경 자동) = 수정자 이름은 그대로 보이되, 말풍선만 강조 배경으로 구분 */
+export function isStatusType(chatType) {
+  return chatType === 'STATUS'
 }
 
 /* ──────────────── 검색(프런트 필터) ──────────────── */

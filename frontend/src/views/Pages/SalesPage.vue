@@ -48,7 +48,7 @@
               </div>
             </div>
 
-            <hr />
+            <hr class="border-gray-200 dark:border-gray-800" />
 
             <!-- 섹션 3개 -->
             <div v-for="sec in sections" :key="sec.key" class="space-y-3" :ref="el => setShotEl(sec.key, el)" :data-shot-key="sec.key">

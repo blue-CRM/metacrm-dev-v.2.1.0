@@ -81,6 +81,7 @@
               @badgeUpdate="onBadgeUpdate"
               @DateUpdate="onDateUpdate"
               @salesUpdate="onSalesUpdate"
+              @textUpdate="onTextUpdate"
               @visitSchedule="onVisitSchedule"
               @buttonClick="onTableButtonClick"
               @changePage="changePage"
@@ -305,7 +306,8 @@ function isSalesEditable(row) {
 }
 
 function isNameEditable(row) {
-  return role.value === 'SUPERADMIN' && row.origin !== 'DUPLICATE';
+  // 이름 수정 가능: 관리자(본사)/팀장/프로 (센터장·전문가 제외), 중복DB 제외
+  return ['SUPERADMIN', 'MANAGER', 'STAFF'].includes(role.value) && row.origin !== 'DUPLICATE';
 }
 
 /* =============================
@@ -317,7 +319,7 @@ const adminColumns = [
   { key: "division", label: "구분", type: "badge", options: ["최초", "중복", "유효"] },
   { key: "",  label: "",   type: "text", ellipsis: { width: 5 } },
   // { key: "category", label: "카테고리", type: "badge", options: ["주식", "코인"] },
-  { key: "name", label: "이름", type: "text", textEditable: isNameEditable },
+  { key: "name", label: "이름", type: "text", textEditable: isNameEditable, ellipsis: { width: 140 } },
   { key: "phone", label: "전화번호", type: "text", ellipsis: { width: 150 } },
   { key: "source", label: "DB출처", type: "text", ellipsis: { width: 100 } },
   { key: "content", label: "내용", type: "text", ellipsis: { width: 150 } },
@@ -344,7 +346,7 @@ const commonColumns = [
   { key: "",  label: "",   type: "text", ellipsis: { width: 5 } },
   { key: "staffView", label: "프로", type: "text" },
   // { key: "category", label: "카테고리", type: "badge", options: ["주식", "코인"] },
-  { key: "name", label: "이름", type: "text"},
+  { key: "name", label: "이름", type: "text", textEditable: isNameEditable, ellipsis: { width: 140 } },
   { key: "phone", label: "전화번호", type: "text", ellipsis: { width: 150 } },
   { key: "source", label: "DB출처", type: "text", ellipsis: { width: 100 } },
   { key: "content", label: "내용", type: "text", ellipsis: { width: 150 } },
@@ -376,6 +378,9 @@ function onBadgeUpdate(row, key, newValue) {
 
   // 상태 배지만 서버 반영 (필요시 division 등 확장)
   if (key === 'status') {
+    // 이 화면은 확인창이 없으므로 즉시 반영(낙관적), 실패 시 원복
+    const prev = row[key];
+    row[key] = newValue;
     axios.patch(`/api/work/db/all/update/${row.id}`, {
       field: key,
       value: newValue
@@ -386,6 +391,8 @@ function onBadgeUpdate(row, key, newValue) {
       }
       broadcastCustomerUpdated(row.id); // 열린 메모 팝업 헤더 즉시 갱신(같은 브라우저)
     }).catch(err => {
+      row[key] = prev; // 실패 시 원래 상태로 되돌림
+
       const msg =
           err?.response?.data?.message
           || err?.response?.data
@@ -471,7 +478,7 @@ async function onSalesUpdate(row, key, newValue) {
 async function onTextUpdate(row, key, newValue) {
   if (key !== 'name') return;
 
-  if (role.value !== 'SUPERADMIN') {
+  if (!['SUPERADMIN', 'MANAGER', 'STAFF'].includes(role.value)) {
     alert('권한이 없습니다.');
     return;
   }

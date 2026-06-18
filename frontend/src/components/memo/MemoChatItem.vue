@@ -36,9 +36,11 @@
     <div
       :class="[
         'rounded-xl px-3.5 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap break-words min-w-0 [overflow-wrap:anywhere]',
-        isSystem
-          ? 'bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400'
-          : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100',
+        isStatus
+          ? 'bg-amber-100 dark:bg-amber-500/15 border border-amber-300 dark:border-amber-500/40 text-amber-900 dark:text-amber-200 font-medium'
+          : isSystem
+            ? 'bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400'
+            : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100',
       ]"
     >
       {{ chat.content }}
@@ -91,7 +93,7 @@
 
 <script setup>
 import { ref, watch, nextTick } from 'vue'
-import { fmtDateTime, isSystemType } from '@/composables/memoFormat'
+import { fmtDateTime, isSystemType, isStatusType } from '@/composables/memoFormat'
 
 const props = defineProps({
   /** 채팅 1건. .editable(서버/클라 산출), .content, .createdAt, .updatedAt, .chatType */
@@ -107,9 +109,13 @@ const props = defineProps({
 const emit = defineEmits(['startEdit', 'remove', 'save', 'cancel', 'update:editText'])
 
 const isSystem = ref(isSystemType(props.chat.chatType))
+const isStatus = ref(isStatusType(props.chat.chatType))
 watch(
   () => props.chat.chatType,
-  (v) => (isSystem.value = isSystemType(v)),
+  (v) => {
+    isSystem.value = isSystemType(v)
+    isStatus.value = isStatusType(v)
+  },
 )
 
 const editRef = ref(null)

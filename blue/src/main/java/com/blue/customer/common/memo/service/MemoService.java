@@ -76,6 +76,24 @@ public class MemoService {
     return saved;
   }
 
+  /**
+   * 상태 변경 자동 채팅(전체메뉴 드롭다운 전용).
+   * 작성자 = 드롭다운을 눌러 상태를 바꾼 사람(authorUserId) → 화면엔 그 사람 이름으로 일반 메시지처럼 표시된다.
+   * 작성권한(canWrite) 검사는 하지 않는다(상태 변경 자체가 이미 권한 검증을 통과한 동작이므로).
+   */
+  @Transactional
+  public MemoChatDto addStatusChangeChat(Long customerId, Long authorUserId, String content) {
+    MemoChatDto chat = new MemoChatDto();
+    chat.setCustomerId(customerId);
+    chat.setAuthorUserId(authorUserId);
+    // STATUS 타입: 작성자(authorUserId)는 채워 이름이 보이게 하되, 프런트에서 강조 배경으로 구분.
+    // 수정/삭제는 computeEditable에서 총관리자만 가능(자동 로그 보호).
+    chat.setChatType("STATUS");
+    chat.setContent(content);
+    mapper.insertChat(chat);
+    return chat;
+  }
+
   /** 실행자 없는 시스템 채팅(author_user_id=NULL). 시트 동기화 최초 메모 등 내부용. */
   @Transactional
   public MemoChatDto addSystemChat(Long customerId, String content) {

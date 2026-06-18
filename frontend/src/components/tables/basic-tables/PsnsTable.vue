@@ -82,9 +82,10 @@
                            text-gray-500 dark:text-gray-400
                            cursor-pointer transition-colors
                            hover:text-blue-600 dark:hover:text-blue-400"
+                    :title="row[col.key] ?? ''"
                     @click.stop="startEdit(rowIndex, col.key, row[col.key])"
                 >
-                  {{ row[col.key] ?? '' }}
+                  <span class="block w-full truncate">{{ row[col.key] ?? '' }}</span>
                 </span>
 
                 <div
@@ -120,30 +121,43 @@
             </template>
 
             <!-- 배지 -->
-            <div v-else-if="col.type === 'badge' && !(col.key === 'prevStatus' && row[col.key] === null)" class="relative inline-block w-[70px] h-[28px]">
+            <!-- 기본: 70px 고정 단일줄 pill. badgeWrap 컬럼만: 내용폭(최대 badgeMaxWidth)으로 자동, 길면 2~3줄 줄바꿈 -->
+            <div v-else-if="col.type === 'badge' && !(col.key === 'prevStatus' && row[col.key] === null)"
+                 class="relative inline-block align-middle"
+                 :class="badgeExpand(col, row) ? 'min-h-[28px] min-w-[70px]' : 'h-[28px] w-[70px]'"
+                 :style="badgeExpand(col, row) ? { maxWidth: badgeMaxPx(col) + 'px' } : null">
                 <span
                     v-if="!(editState.row === rowIndex && editState.col === col.key)"
-                    class="absolute inset-0 flex items-center justify-center rounded-full px-2 py-0.5 text-theme-xs font-medium cursor-pointer transition"
-                    :class="[badgeClass(row[col.key]), col.editable ? 'hover:opacity-80' : '']"
+                    class="text-theme-xs font-medium cursor-pointer transition rounded-full"
+                    :class="[
+                      badgeClass(row[col.key]),
+                      col.editable ? 'hover:opacity-80' : '',
+                      badgeExpand(col, row)
+                        ? 'block px-3 py-1 text-center leading-tight break-words [overflow-wrap:anywhere]'
+                        : 'absolute inset-0 flex items-center justify-center px-2 py-0.5'
+                    ]"
+                    :style="badgeExpand(col, row) ? clamp3 : null"
+                    :title="typeof row[col.key] === 'string' ? row[col.key].trim() : row[col.key]"
                     @click.stop="onBadgeClick(row, rowIndex, col)"
                 >
                   <!-- render 함수가 있으면 그것을 사용 -->
-                  <span v-if="typeof col.render === 'function'" v-html="col.render(row[col.key], row)"></span>
+                  <span v-if="typeof col.render === 'function'" :class="badgeExpand(col, row) ? '' : 'block w-full truncate text-center'" v-html="col.render(row[col.key], row)"></span>
 
                                 <!-- 없으면 빈문자열/공백 → '미배정' 폴백 -->
-                  <template v-else>
+                  <span v-else :class="badgeExpand(col, row) ? '' : 'block w-full truncate text-center'">
                     {{
                       (typeof row[col.key] === 'string'
                           ? row[col.key].trim()
                           : row[col.key]) || (col.emptyText ?? '미배정')
                     }}
-                  </template>
+                  </span>
                 </span>
 
               <select
                   v-if="editState.row === rowIndex && editState.col === col.key"
                   v-model="editValue"
-                  class="absolute inset-0 w-full h-full px-1 py-1 text-xs rounded-md border border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+                  class="px-1 py-1 text-xs rounded-md border border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+                  :class="col.badgeWrap ? 'block w-full min-w-[120px]' : 'absolute inset-0 w-full h-full'"
                   @change="updateBadge(row, col.key)"
                   @blur="cancelEdit"
               >
@@ -351,10 +365,48 @@ function ellipsisPx(col) {
 
 // table-fixed용 칼럼 너비(px). 기존 셀들이 span 너비(ellipsisPx)로 이미 폭이 잡혀 있어
 // 그 값을 그대로 따르고, 셀 좌우 패딩(px-2=16px) 여유만 더한다. 비텍스트 타입은 실제 렌더 폭 기준.
+// badgeWrap 배지의 최대 가로폭(px). 이 폭 안에서 줄바꿈, 넘치면 말줄임(3줄).
+function badgeMaxPx(col) {
+  const n = Number.parseInt(col?.badgeMaxWidth, 10)
+  return Number.isFinite(n) ? n : 160
+}
+// 줄바꿈 배지: 최대 3줄까지만 보이고 넘치면 말줄임
+const clamp3 = { display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }
+
+// badgeWrap 확장 임계 글자수(기본 6자)
+function badgeThreshold(col) {
+  const n = Number.parseInt(col?.badgeWrapThreshold, 10)
+  return Number.isFinite(n) ? n : 6
+}
+// 셀 값 길이
+function badgeLen(col, row) {
+  const v = row?.[col.key]
+  return (typeof v === 'string' ? v.trim() : (v ?? '')).toString().length
+}
+// 이 배지를 '확장(둥근 모양 유지하며 넓어지고 줄바꿈)'할지 여부.
+// badgeWrap 컬럼에서 글자수가 임계값을 넘을 때만 확장. 그 이하는 고정폭 70px 둥근 pill.
+function badgeExpand(col, row) {
+  if (!col?.badgeWrap) return false
+  return badgeLen(col, row) > badgeThreshold(col)
+}
+// badgeWrap 컬럼의 동적 너비: 현재 데이터 중 가장 긴 값에 맞춰 계산(최대 badgeMaxWidth).
+// 전부 짧으면 70px로 좁게, 긴 값이 있을 때만 그만큼만 넓어진다.
+const CHAR_PX = 13
+function badgeWrapColPx(col) {
+  const cap = badgeMaxPx(col)
+  let need = 70
+  for (const r of (props.data || [])) {
+    const len = badgeLen(col, r)
+    const w = len <= badgeThreshold(col) ? 70 : Math.min(cap, len * CHAR_PX + 24)
+    if (w > need) need = w
+  }
+  return Math.round(need)
+}
+
 const CELL_PAD = 20
 function colWidth(col) {
   switch (col?.type) {
-    case 'badge':      return 96   // 배지 w-[70px] + 여유
+    case 'badge':      return (col?.badgeWrap ? badgeWrapColPx(col) : 70) + 26   // 배지 폭 + 좌우 여유
     case 'money':      return 120  // min-w-[6rem]
     case 'date':       return 124  // min-w-[5.5~6rem]
     case 'iconButton': return 60   // p-2 + 아이콘 w-5
@@ -531,9 +583,11 @@ function startEdit(rowIndex, colKey, currentValue) {
 }
 function cancelEdit() { editState.value = { row: null, col: null } }
 function updateBadge(row, key) {
-  row[key] = editValue.value
-  emit("badgeUpdate", row, key, editValue.value)
+  // 낙관적 선반영 금지: 값은 부모가 확인/검증 통과 후 직접 반영한다.
+  // (부모에서 confirm을 띄우는 경우, 확인 전에 배지가 먼저 바뀌는 문제 방지)
+  const next = editValue.value
   cancelEdit()
+  emit("badgeUpdate", row, key, next)
 }
 
 // 금액 저장 함수
