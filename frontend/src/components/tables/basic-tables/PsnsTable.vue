@@ -380,31 +380,23 @@ function badgeMaxPx(col) {
   return Number.isFinite(n) ? n : 160
 }
 
-// badgeWrap 확장 임계 글자수(기본 6자)
-function badgeThreshold(col) {
-  const n = Number.parseInt(col?.badgeWrapThreshold, 10)
-  return Number.isFinite(n) ? n : 6
-}
 // 셀 값 길이
 function badgeLen(col, row) {
   const v = row?.[col.key]
   return (typeof v === 'string' ? v.trim() : (v ?? '')).toString().length
 }
-// 이 배지를 '확장(둥근 모양 유지하며 넓어지고 줄바꿈)'할지 여부.
-// badgeWrap 컬럼에서 글자수가 임계값을 넘을 때만 확장. 그 이하는 고정폭 70px 둥근 pill.
-function badgeExpand(col, row) {
-  if (!col?.badgeWrap) return false
-  return badgeLen(col, row) > badgeThreshold(col)
+// badgeWrap 컬럼은 글자수와 무관하게 '항상' 줄바꿈 레이아웃 사용(말줄임 절대 X, 최소 70px 유지).
+// → 글자수는 적은데 폭이 70px를 넘는 값('유튜브 모닝' 등)도 잘리지 않고 내용폭으로 표시됨.
+function badgeExpand(col) {
+  return !!col?.badgeWrap
 }
-// badgeWrap 컬럼의 동적 너비: 현재 데이터 중 가장 긴 값에 맞춰 계산(최대 badgeMaxWidth).
-// 전부 짧으면 70px로 좁게, 긴 값이 있을 때만 그만큼만 넓어진다.
+// badgeWrap 컬럼의 동적 너비: 현재 데이터 중 가장 긴 값의 내용폭(최소 70px ~ 최대 badgeMaxWidth).
 const CHAR_PX = 13
 function badgeWrapColPx(col) {
   const cap = badgeMaxPx(col)
   let need = 70
   for (const r of (props.data || [])) {
-    const len = badgeLen(col, r)
-    const w = len <= badgeThreshold(col) ? 70 : Math.min(cap, len * CHAR_PX + 24)
+    const w = Math.min(cap, Math.max(70, badgeLen(col, r) * CHAR_PX + 24))
     if (w > need) need = w
   }
   return Math.round(need)
