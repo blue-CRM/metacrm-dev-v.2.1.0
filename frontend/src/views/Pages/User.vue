@@ -530,9 +530,9 @@ async function onBadgeUpdate(row, key, newValue) {
     return
   }
 
-  // === 승인된 직원은 super계정 만 '관리자'로 변경 가능 ===
-  if (key === "type" && newValue === "관리자" && row.requestStatus === "승인" && !auth.grants.isSuper) {
-    alert("수정 권한이 없습니다.");
+  // === '관리자'로의 승격은 총관리자(super)만 가능 (승인 여부 무관, 백엔드 C-5와 동일 기준) ===
+  if (key === "type" && newValue === "관리자" && !auth.grants.isSuper) {
+    alert("관리자로의 승격은 총관리자만 가능합니다.");
     await fetchData();
     return;
   }
