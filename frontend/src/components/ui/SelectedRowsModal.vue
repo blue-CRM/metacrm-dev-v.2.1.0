@@ -2,9 +2,9 @@
   <div class="fixed inset-0 z-[100000] flex items-center justify-center bg-black/40 p-4"
        @click.self="$emit('close')"
        @keydown.esc.prevent.stop="$emit('close')">
-    <div class="w-full max-w-[680px] rounded-2xl bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-gray-800">
+    <div class="w-full max-w-[680px] rounded-2xl bg-white dark:bg-[#0e1626] shadow-xl border border-gray-200 dark:border-[#1f2a47]">
       <!-- 헤더 -->
-      <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+      <div class="px-5 py-4 border-b border-gray-200 dark:border-[#1f2a47] flex items-center justify-between">
         <h3 class="text-base font-semibold text-gray-800 dark:text-gray-100">{{ title }}</h3>
         <button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" @click="$emit('close')">✕</button>
       </div>
@@ -17,16 +17,16 @@
         </p>
 
         <div v-if="rows.length"
-             class="max-h-[60vh] overflow-auto rounded-lg border border-gray-200 dark:border-gray-700">
+             class="max-h-[60vh] overflow-auto rounded-lg border border-gray-200 dark:border-[#28365a]">
           <table class="w-full border-collapse text-sm">
-            <thead class="sticky top-0 z-10 bg-gray-100 dark:bg-gray-800">
+            <thead class="sticky top-0 z-10 bg-gray-100 dark:bg-[#16213b]">
               <tr>
                 <th v-for="col in columns" :key="col.key"
-                    class="border-b border-r border-gray-200 dark:border-gray-700 py-2.5 text-xs font-semibold text-gray-600 dark:text-gray-300 whitespace-nowrap"
+                    class="border-b border-r border-gray-200 dark:border-[#28365a] py-2.5 text-xs font-semibold text-gray-600 dark:text-gray-300 whitespace-nowrap"
                     :class="col.type === 'badge' ? 'px-5 text-center' : 'px-3 text-left'">
                   {{ col.label }}
                 </th>
-                <th class="border-b border-gray-200 dark:border-gray-700 px-3 py-2.5 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 w-px whitespace-nowrap">
+                <th class="border-b border-gray-200 dark:border-[#28365a] px-3 py-2.5 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 w-px whitespace-nowrap">
                   해제
                 </th>
               </tr>
@@ -34,33 +34,34 @@
             <tbody>
               <tr v-for="(row, idx) in rows"
                   :key="keyOf(row, idx)"
-                  class="odd:bg-white even:bg-gray-50 dark:odd:bg-gray-900 dark:even:bg-gray-800/40
-                         hover:bg-blue-50/60 dark:hover:bg-gray-800/70">
+                  class="odd:bg-white even:bg-gray-50 dark:odd:bg-[#0e1626] dark:even:bg-[#16213b]/40
+                         hover:bg-blue-50/60 dark:hover:bg-[#16213b]/70">
                 <td v-for="(col, ci) in columns"
                     :key="col.key"
-                    class="border-b border-r border-gray-100 dark:border-gray-800 py-2.5 align-middle whitespace-nowrap"
-                    :class="col.type === 'badge' ? 'px-5 text-center' : 'px-3'"
-                    :title="String(rawVal(row, col) ?? '')">
+                    class="border-b border-r border-gray-100 dark:border-[#1f2a47] py-2.5 align-middle whitespace-nowrap"
+                    :class="col.type === 'badge' ? 'px-5 text-center' : 'px-3'">
                   <!-- 상태/직전상태: 색 배지 (가로 폭 통일 + 가운데 정렬) -->
                   <span v-if="col.type === 'badge' && !isEmpty(row, col)"
                         class="inline-flex h-[26px] w-[60px] items-center justify-center rounded-full text-xs font-medium"
                         :class="statusBadgeColor(rawVal(row, col))">
                     {{ display(row, col) }}
                   </span>
-                  <!-- 텍스트(이름/그 외): 항상 말줄임. 전체 내용은 hover 툴팁(title)으로 -->
-                  <span v-else
-                        class="block truncate"
-                        :class="ci === 0 ? 'max-w-[12rem] text-sm font-semibold text-gray-800 dark:text-gray-100' : 'max-w-[15rem] text-xs text-gray-500 dark:text-gray-400'">
-                    {{ display(row, col) }}
-                  </span>
+                  <!-- 텍스트(이름/그 외): 말줄임 대신, 잘리면 클릭 시 그 자리 팝업으로 전체 표시 -->
+                  <TextPopupCell v-else
+                        :cell-key="keyOf(row, idx) + '::' + col.key"
+                        :text="display(row, col)"
+                        :width="ci === 0 ? 150 : 110"
+                        :preview-class="ci === 0
+                            ? '!text-gray-800 dark:!text-gray-100 text-sm font-semibold'
+                            : 'text-xs'" />
                 </td>
-                <td class="border-b border-gray-100 dark:border-gray-800 px-3 py-2.5 text-right whitespace-nowrap">
+                <td class="border-b border-gray-100 dark:border-[#1f2a47] px-3 py-2.5 text-right whitespace-nowrap">
                   <button
                       type="button"
                       @click="$emit('deselect', row)"
                       class="rounded-md border border-gray-300 px-2.5 py-1 text-xs text-gray-600 transition
                              hover:bg-gray-100 hover:text-gray-800
-                             dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800/70 dark:hover:text-gray-100">
+                             dark:border-[#28365a] dark:text-gray-300 dark:hover:bg-[#16213b]/70 dark:hover:text-gray-100">
                     해제
                   </button>
                 </td>
@@ -75,11 +76,11 @@
       </div>
 
       <!-- 푸터 -->
-      <div class="px-5 py-3 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between gap-2">
+      <div class="px-5 py-3 border-t border-gray-200 dark:border-[#1f2a47] flex items-center justify-between gap-2">
         <button
             class="h-10 rounded-lg border border-gray-200 px-4 text-sm text-gray-600 transition
                    hover:bg-gray-50 disabled:opacity-50
-                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60"
+                   dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
             :disabled="!rows.length"
             @click="$emit('clearAll')">
           전체 해제
@@ -96,6 +97,7 @@
 
 <script setup>
 import { statusBadgeColor } from '@/composables/memoFormat.js'
+import TextPopupCell from '@/components/tables/basic-tables/TextPopupCell.vue'
 
 const props = defineProps({
   rows:    { type: Array,  default: () => [] },         // 선택된 행 객체 배열

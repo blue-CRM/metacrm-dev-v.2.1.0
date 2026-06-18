@@ -29,14 +29,14 @@
         <!-- 텍스트 전용(중복 행) -->
         <div
             v-if="textOnly"
-            class="resize overflow-auto rounded-lg border border-gray-200/90 dark:border-gray-700 ring-1 ring-gray-900/[0.04] shadow-xl bg-white dark:bg-gray-900 px-3 py-2.5 w-[300px] min-w-[160px] max-w-[85vw] min-h-[44px] max-h-[280px] text-theme-sm leading-relaxed whitespace-pre-wrap break-words text-gray-700 dark:text-gray-200"
+            class="resize overflow-auto rounded-lg border border-gray-200/90 dark:border-[#28365a] ring-1 ring-gray-900/[0.04] shadow-xl bg-white dark:bg-[#0e1626] px-3 py-2.5 w-[300px] min-w-[160px] max-w-[85vw] min-h-[44px] max-h-[280px] text-theme-sm leading-relaxed whitespace-pre-wrap break-words text-gray-700 dark:text-gray-200"
         >
           {{ preview ?? '' }}
         </div>
         <!-- 채팅 메모 -->
         <div
             v-else
-            class="resize overflow-auto rounded-lg border border-gray-200/90 dark:border-gray-700 ring-1 ring-gray-900/[0.04] shadow-xl bg-white dark:bg-gray-900 w-[300px] min-w-[160px] max-w-[85vw] min-h-[48px] max-h-[280px]"
+            class="resize overflow-auto rounded-lg border border-gray-200/90 dark:border-[#28365a] ring-1 ring-gray-900/[0.04] shadow-xl bg-white dark:bg-[#0e1626] w-[300px] min-w-[160px] max-w-[85vw] min-h-[48px] max-h-[280px]"
         >
           <MemoCellChats :customer-id="customerId" />
         </div>

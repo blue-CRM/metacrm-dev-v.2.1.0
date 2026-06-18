@@ -1,18 +1,18 @@
 <template>
   <header
-      class="fixed whitespace-nowrap inset-x-0 top-0 z-[9998] w-screen bg-white dark:bg-gray-900 lg:sticky lg:inset-x-auto lg:w-full lg:border-b dark:border-gray-800"
+      class="fixed whitespace-nowrap inset-x-0 top-0 z-[9998] w-screen bg-white dark:bg-[#0e1626] lg:sticky lg:inset-x-auto lg:w-full lg:border-b dark:border-[#1f2a47]"
   >
     <div class="flex flex-col items-center justify-between grow lg:flex-row lg:px-6">
       <div
-          class="flex items-center justify-between w-full gap-2 px-3 py-3 border-b border-gray-200 dark:border-gray-800 sm:gap-4 lg:justify-normal lg:border-b-0 lg:px-0 lg:py-4"
+          class="flex items-center justify-between w-full gap-2 px-3 py-3 border-b border-gray-200 dark:border-[#1f2a47] sm:gap-4 lg:justify-normal lg:border-b-0 lg:px-0 lg:py-4"
       >
         <!-- 모바일에서만 -> 사이드바를 접을 수 있는 버튼 -->
         <button
             @click="handleToggle"
-            class="flex items-center justify-center w-10 h-10 text-gray-500 border-gray-200 rounded-lg z-[99999] dark:border-gray-800 dark:text-gray-400 lg:h-11 lg:w-11 lg:border lg:hidden"
+            class="flex items-center justify-center w-10 h-10 text-gray-500 border-gray-200 rounded-lg z-[99999] dark:border-[#1f2a47] dark:text-gray-400 lg:h-11 lg:w-11 lg:border lg:hidden"
             :class="[
             isMobileOpen
-              ? 'lg:bg-transparent dark:lg:bg-transparent bg-gray-100 dark:bg-gray-800'
+              ? 'lg:bg-transparent dark:lg:bg-transparent bg-gray-100 dark:bg-[#16213b]'
               : '',
           ]"
         >
@@ -54,7 +54,7 @@
         <!-- 모바일에서만 -> 유저 프로필 접히는 버튼 -->
         <button
             @click="toggleApplicationMenu"
-            class="flex items-center justify-center w-10 h-10 text-gray-700 rounded-lg z-[99999] hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 lg:hidden"
+            class="flex items-center justify-center w-10 h-10 text-gray-700 rounded-lg z-[99999] hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-[#16213b] lg:hidden"
         >
           <svg
               width="24"
@@ -82,22 +82,22 @@
             <input
                 type="text"
                 ref="startPicker"
-                class="w-26 h-11 border border-gray-200 dark:border-gray-700 rounded-l-lg px-3 py-2 text-sm text-center
-                      focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:bg-gray-800 dark:text-gray-200"
+                class="w-26 h-11 border border-gray-200 dark:border-[#28365a] rounded-l-lg px-3 py-2 text-sm text-center
+                      focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:bg-[#16213b] dark:text-gray-200"
                 placeholder="시작일"
             />
 
             <!-- 구분자 -->
             <span
-                class="flex items-center justify-center w-8 h-11 border-t border-b border-gray-200 dark:border-gray-700
-                 text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900">~</span>
+                class="flex items-center justify-center w-8 h-11 border-t border-b border-gray-200 dark:border-[#28365a]
+                 text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-[#0e1626]">~</span>
 
             <!-- 종료일 -->
             <input
                 type="text"
                 ref="endPicker"
-                class="w-26 h-11 border border-gray-200 dark:border-gray-700 rounded-r-lg px-3 py-2 text-sm text-center
-                      focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:bg-gray-800 dark:text-gray-200"
+                class="w-26 h-11 border border-gray-200 dark:border-[#28365a] rounded-r-lg px-3 py-2 text-sm text-center
+                      focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:bg-[#16213b] dark:text-gray-200"
                 placeholder="종료일"
             />
           </div>
@@ -105,9 +105,9 @@
           <!-- 카테고리 필터 -->
           <select
               v-model="selectedCategory"
-              class="w-20 h-11 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1
+              class="w-20 h-11 border border-gray-200 dark:border-[#28365a] rounded-lg px-2 py-1
              text-sm focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-             dark:bg-gray-800 dark:text-gray-400 text-gray-500"
+             dark:bg-[#16213b] dark:text-gray-400 text-gray-500"
           >
             <option value="all">전체</option>
             <option value="주식">주식</option>
@@ -138,7 +138,7 @@
           <button
               @click="extendSession"
               class="items-center gap-0.5 rounded-lg border border-gray-200 bg-gray-50 px-[7px] py-[4.5px]
-                   text-xs text-gray-500 hover:bg-gray-100 dark:border-gray-800 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-gray-800"
+                   text-xs text-gray-500 hover:bg-gray-100 dark:border-[#1f2a47] dark:bg-white/5 dark:text-gray-400 dark:hover:bg-[#16213b]"
           >
             연장
           </button>
@@ -151,7 +151,7 @@
       <!-- 모바일용 필터 (로고 바로 밑에) -->
       <div
           v-if="isApplicationMenuOpen"
-          class="shadow-theme-md flex flex-row justify-between items-center w-full px-5 py-4 border-gray-200 dark:border-gray-700 lg:hidden"
+          class="shadow-theme-md flex flex-row justify-between items-center w-full px-5 py-4 border-gray-200 dark:border-[#28365a] lg:hidden"
       >
         <!-- 왼쪽 그룹 -->
         <div class="flex flex-row gap-2">
@@ -161,22 +161,22 @@
             <input
                 type="text"
                 ref="startPicker"
-                class="w-26 h-11 border border-gray-200 dark:border-gray-700 rounded-l-lg px-3 py-2 text-sm text-center
-                      focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:bg-gray-800 dark:text-gray-200"
+                class="w-26 h-11 border border-gray-200 dark:border-[#28365a] rounded-l-lg px-3 py-2 text-sm text-center
+                      focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:bg-[#16213b] dark:text-gray-200"
                 placeholder="시작일"
             />
 
             <!-- 구분자 -->
             <span
-                class="flex items-center justify-center w-8 h-11 border-t border-b border-gray-200 dark:border-gray-700
-                 text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900">~</span>
+                class="flex items-center justify-center w-8 h-11 border-t border-b border-gray-200 dark:border-[#28365a]
+                 text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-[#0e1626]">~</span>
 
             <!-- 종료일 -->
             <input
                 type="text"
                 ref="endPicker"
-                class="w-26 h-11 border border-gray-200 dark:border-gray-700 rounded-r-lg px-3 py-2 text-sm text-center
-                      focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:bg-gray-800 dark:text-gray-200"
+                class="w-26 h-11 border border-gray-200 dark:border-[#28365a] rounded-r-lg px-3 py-2 text-sm text-center
+                      focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:bg-[#16213b] dark:text-gray-200"
                 placeholder="종료일"
             />
           </div>
@@ -184,9 +184,9 @@
           <!-- 카테고리 필터 -->
           <select
               v-model="selectedCategory"
-              class="w-20 h-11 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1
+              class="w-20 h-11 border border-gray-200 dark:border-[#28365a] rounded-lg px-2 py-1
              text-sm focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-             dark:bg-gray-800 dark:text-gray-400 text-gray-500"
+             dark:bg-[#16213b] dark:text-gray-400 text-gray-500"
           >
             <option value="all">전체</option>
             <option value="주식">주식</option>

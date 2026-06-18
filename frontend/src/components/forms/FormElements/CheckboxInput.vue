@@ -13,7 +13,7 @@
               :class="
                 checkboxOne
                   ? 'border-brand-500 bg-brand-500'
-                  : 'bg-transparent border-gray-300 dark:border-gray-700'
+                  : 'bg-transparent border-gray-300 dark:border-[#28365a]'
               "
               class="mr-3 flex h-5 w-5 items-center justify-center rounded-md border-[1.25px] hover:border-brand-500 dark:hover:border-brand-500"
             >
@@ -52,7 +52,7 @@
               :class="
                 checkboxTwo
                   ? 'border-brand-500 bg-brand-500'
-                  : 'bg-transparent border-gray-300 dark:border-gray-700'
+                  : 'bg-transparent border-gray-300 dark:border-[#28365a]'
               "
               class="mr-3 flex h-5 w-5 items-center justify-center rounded-md border-[1.25px] hover:border-brand-500 dark:hover:border-brand-500"
             >
@@ -96,7 +96,7 @@
             <div
               :class="
                 checkboxThree
-                  ? 'bg-transparent border-gray-200 dark:border-gray-800'
+                  ? 'bg-transparent border-gray-200 dark:border-[#1f2a47]'
                   : 'border-brand-500 bg-brand-500'
               "
               class="mr-3 flex h-5 w-5 items-center justify-center rounded-md border-[1.25px]"

@@ -1,11 +1,11 @@
 <template>
   <div
-    class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+    class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-[#1f2a47] dark:bg-[#14203a]"
   >
     <div class="max-w-full overflow-x-auto custom-scrollbar">
       <table class="min-w-full">
         <thead>
-          <tr class="border-b border-gray-200 dark:border-gray-700">
+          <tr class="border-b border-gray-200 dark:border-[#28365a]">
             <th class="px-5 py-3 text-left w-3/11 sm:px-6">
               <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">User</p>
             </th>
@@ -23,11 +23,11 @@
             </th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+        <tbody class="divide-y divide-gray-200 dark:divide-[#28365a]">
           <tr
             v-for="(user, index) in users"
             :key="index"
-            class="border-t border-gray-100 dark:border-gray-800"
+            class="border-t border-gray-100 dark:border-[#1f2a47]"
           >
             <td class="px-5 py-4 sm:px-6">
               <div class="flex items-center gap-3">
@@ -52,7 +52,7 @@
                 <div
                   v-for="(member, memberIndex) in user.team"
                   :key="memberIndex"
-                  class="w-6 h-6 overflow-hidden border-2 border-white rounded-full dark:border-gray-900"
+                  class="w-6 h-6 overflow-hidden border-2 border-white rounded-full dark:border-[#131c30]"
                 >
                   <img :src="member" alt="team member" />
                 </div>

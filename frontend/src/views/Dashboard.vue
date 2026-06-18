@@ -28,7 +28,7 @@
         <div
             class="col-span-12 xl:col-span-4 rounded-2xl border p-5
                  border-gray-200
-                 dark:border-gray-800 dark:bg-white/[0.03]"
+                 dark:border-[#1f2a47] dark:bg-[#14203a]"
         >
           <!-- 헤더 + 버튼 -->
           <div class="mb-4 flex items-center justify-between">
@@ -36,7 +36,7 @@
             <div class="flex items-center gap-2">
               <button
                   class="h-11 shrink-0 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-800 hover:bg-gray-50
-                       dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60"
+                       dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                   @click="openBranchPicker = true"
               >
                 지점 선택
@@ -47,7 +47,7 @@
               <button
                   class="h-11 shrink-0 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-800 hover:bg-gray-50
                        disabled:opacity-50
-                       dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60"
+                       dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                   @click="clearPickedBranches"
                   :disabled="pickedBranches.size === 0"
               >
@@ -106,7 +106,7 @@
         <div
             class="col-span-12 xl:col-span-4 rounded-2xl border p-5
                  border-gray-200
-                 dark:border-gray-800 dark:bg-white/[0.03]"
+                 dark:border-[#1f2a47] dark:bg-[#14203a]"
         >
           <!-- 헤더 + 버튼 -->
           <div class="mb-4 flex items-center justify-between">
@@ -116,7 +116,7 @@
             <div class="flex items-center gap-2">
               <button
                   class="h-11 shrink-0 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-800 hover:bg-gray-50
-                       dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60"
+                       dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                   @click="openCenterPicker = true"
               >
                 팀 선택
@@ -127,7 +127,7 @@
               <button
                   class="h-11 shrink-0 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-800 hover:bg-gray-50
                        disabled:opacity-50
-                       dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60"
+                       dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                   @click="clearPickedCenters"
                   :disabled="pickedCenters.size === 0"
               >
@@ -186,7 +186,7 @@
         <div
             class="col-span-12 xl:col-span-4 rounded-2xl border p-5
                  border-gray-200
-                 dark:border-gray-800 dark:bg-white/[0.03]"
+                 dark:border-[#1f2a47] dark:bg-[#14203a]"
         >
           <!-- 제목 + 검색창 + 버튼 같은 행 -->
           <div class="mb-4 flex items-center gap-2">
@@ -202,12 +202,12 @@
                   @keydown.enter.prevent="pickFirstUser"
                   class="h-11 w-full rounded-lg border px-3
                        bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                       dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                       dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
               />
               <button
                   type="button"
                   class="h-11 shrink-0 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-800 hover:bg-gray-50
-                       dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60"
+                       dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                   @click="pickFirstUser"
                   :disabled="!canSearchUser"
               >
@@ -329,7 +329,7 @@
       <!-- 통계: 개인별 (내/동료 프로) -->
       <div
           class="col-span-12 xl:col-span-8 xl:h-full rounded-2xl border bg-white p-5
-             dark:border-gray-800 dark:bg-white/[0.03]"
+             dark:border-[#1f2a47] dark:bg-[#14203a]"
       >
         <!-- 제목 + 검색창 + 버튼 같은 행 -->
         <div class="mb-4 flex items-center gap-2">
@@ -345,12 +345,12 @@
                 @keydown.enter.prevent="pickFirstUser"
                 class="h-11 w-full rounded-lg border px-3
                      bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                     dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                     dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
             />
             <button
                 type="button"
                 class="h-11 shrink-0 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-800 hover:bg-gray-50
-                     dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60"
+                     dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                 @click="pickFirstUser"
                 :disabled="!canSearchUser"
             >
@@ -464,12 +464,12 @@
           @click.self="cancelBranches()"
       >
         <div
-            class="w-full max-w-[700px] rounded-2xl bg-white dark:bg-gray-900 shadow-xl
-                 border border-gray-200 dark:border-gray-800"
+            class="w-full max-w-[700px] rounded-2xl bg-white dark:bg-[#0e1626] shadow-xl
+                 border border-gray-200 dark:border-[#1f2a47]"
         >
           <!-- 헤더 -->
           <div
-              class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between"
+              class="px-5 py-4 border-b border-gray-200 dark:border-[#1f2a47] flex items-center justify-between"
           >
             <h3 class="text-base font-semibold text-gray-800 dark:text-gray-100">지점 선택</h3>
             <button
@@ -490,13 +490,13 @@
                   class="h-11 w-full rounded-lg border px-3
                        bg-white text-gray-800 placeholder:text-gray-400
                        focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                       dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400"
+                       dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:placeholder:text-gray-400"
               />
               <div class="flex gap-2">
                 <button
                     class="inline-flex h-11 items-center justify-center rounded-lg border border-gray-200 px-4 text-sm
                          hover:bg-gray-50 disabled:opacity-60
-                         dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60"
+                         dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                     @click="selectAllFilteredBranches"
                 >
                   <span class="whitespace-nowrap">전체</span>
@@ -504,7 +504,7 @@
                 <button
                     class="inline-flex h-11 items-center justify-center rounded-lg border border-gray-200 px-4 text-sm
                          hover:bg-gray-50 disabled:opacity-60
-                         dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60"
+                         dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                     @click="modalBranches = new Set()"
                 >
                   <span class="whitespace-nowrap">해제</span>
@@ -514,16 +514,16 @@
 
             <!-- 리스트 -->
             <div
-                class="max-h-[56vh] overflow-auto border border-gray-200 dark:border-gray-800 rounded-md"
+                class="max-h-[56vh] overflow-auto border border-gray-200 dark:border-[#1f2a47] rounded-md"
             >
               <ul>
                 <li
                     v-for="b in filteredBranches"
                     :key="b.id"
                     @click="toggleBranch(b.id)"
-                    class="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+                    class="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#16213b]"
                     :class="modalBranches.has(b.id)
-                    ? 'bg-gray-100 dark:bg-gray-800/70'
+                    ? 'bg-gray-100 dark:bg-[#16213b]/70'
                     : ''"
                 >
                   <div class="truncate text-sm text-gray-900 dark:text-gray-100">
@@ -536,7 +536,7 @@
                       @click.stop="toggleBranch(b.id)"
                       :class="modalBranches.has(b.id)
                       ? 'bg-gray-900 text-white border-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:border-white dark:hover:bg-gray-200'
-                      : 'text-gray-700 border-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800/70'"
+                      : 'text-gray-700 border-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:border-[#28365a] dark:hover:bg-[#16213b]/70'"
                   >
                     {{ modalBranches.has(b.id) ? '선택됨' : '선택' }}
                   </button>
@@ -553,12 +553,12 @@
 
           <!-- 푸터 -->
           <div
-              class="px-5 py-3 border-t border-gray-200 dark:border-gray-800 flex items-center justify-end gap-2"
+              class="px-5 py-3 border-t border-gray-200 dark:border-[#1f2a47] flex items-center justify-end gap-2"
           >
             <button
                 class="inline-flex h-10 items-center justify-center rounded-lg border border-gray-200 px-4 text-sm
                      hover:bg-gray-50
-                     dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60"
+                     dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                 @click="cancelBranches"
             >
               취소
@@ -584,12 +584,12 @@
           @click.self="cancelCenters()"
       >
         <div
-            class="w-full max-w-[700px] rounded-2xl bg-white dark:bg-gray-900 shadow-xl
-                 border border-gray-200 dark:border-gray-800"
+            class="w-full max-w-[700px] rounded-2xl bg-white dark:bg-[#0e1626] shadow-xl
+                 border border-gray-200 dark:border-[#1f2a47]"
         >
           <!-- 헤더 -->
           <div
-              class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between"
+              class="px-5 py-4 border-b border-gray-200 dark:border-[#1f2a47] flex items-center justify-between"
           >
             <h3 class="text-base font-semibold text-gray-800 dark:text-gray-100">팀 선택</h3>
             <button
@@ -610,13 +610,13 @@
                   class="h-11 w-full rounded-lg border px-3
                        bg-white text-gray-800 placeholder:text-gray-400
                        focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                       dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400"
+                       dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:placeholder:text-gray-400"
               />
               <div class="flex gap-2">
                 <button
                     class="inline-flex h-11 items-center justify-center rounded-lg border border-gray-200 px-4 text-sm
                          hover:bg-gray-50 disabled:opacity-60
-                         dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60"
+                         dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                     @click="selectAllFilteredCenters"
                 >
                   <span class="whitespace-nowrap">전체</span>
@@ -624,7 +624,7 @@
                 <button
                     class="inline-flex h-11 items-center justify-center rounded-lg border border-gray-200 px-4 text-sm
                          hover:bg-gray-50 disabled:opacity-60
-                         dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60"
+                         dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                     @click="modalCenters = new Set()"
                 >
                   <span class="whitespace-nowrap">해제</span>
@@ -634,16 +634,16 @@
 
             <!-- 리스트 -->
             <div
-                class="max-h-[56vh] overflow-auto border border-gray-200 dark:border-gray-800 rounded-md"
+                class="max-h-[56vh] overflow-auto border border-gray-200 dark:border-[#1f2a47] rounded-md"
             >
               <ul>
                 <li
                     v-for="c in filteredCenters"
                     :key="c.id"
                     @click="toggleCenter(c.id)"
-                    class="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+                    class="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#16213b]"
                     :class="modalCenters.has(c.id)
-                    ? 'bg-gray-100 dark:bg-gray-800/70'
+                    ? 'bg-gray-100 dark:bg-[#16213b]/70'
                     : ''"
                 >
                   <div class="truncate text-sm text-gray-900 dark:text-gray-100">
@@ -656,7 +656,7 @@
                       @click.stop="toggleCenter(c.id)"
                       :class="modalCenters.has(c.id)
                       ? 'bg-gray-900 text-white border-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:border-white dark:hover:bg-gray-200'
-                      : 'text-gray-700 border-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800/70'"
+                      : 'text-gray-700 border-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:border-[#28365a] dark:hover:bg-[#16213b]/70'"
                   >
                     {{ modalCenters.has(c.id) ? '선택됨' : '선택' }}
                   </button>
@@ -673,12 +673,12 @@
 
           <!-- 푸터 -->
           <div
-              class="px-5 py-3 border-t border-gray-200 dark:border-gray-800 flex items-center justify-end gap-2"
+              class="px-5 py-3 border-t border-gray-200 dark:border-[#1f2a47] flex items-center justify-end gap-2"
           >
             <button
                 class="inline-flex h-10 items-center justify-center rounded-lg border border-gray-200 px-4 text-sm
                      hover:bg-gray-50
-                     dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60"
+                     dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                 @click="cancelCenters"
             >
               취소

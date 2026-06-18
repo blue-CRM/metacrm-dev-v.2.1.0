@@ -4,7 +4,7 @@
       <img
         src="/images/nope.png"
         alt="Cover"
-        class="w-full border border-gray-200 rounded-xl dark:border-gray-800"
+        class="w-full border border-gray-200 rounded-xl dark:border-[#1f2a47]"
       />
     </div>
     <div id="ghostpane" class="absolute top-0 left-0 duration-300 ease-in-out"></div>

@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]',
+      'rounded-2xl border border-gray-200 bg-white dark:border-[#1f2a47] dark:bg-[#14203a]',
       className,
     ]"
   >
@@ -21,9 +21,9 @@
           <!-- 고정 select (30, 50, 100) -->
           <select
               @input="$emit('changeSize', $event.target.value)"
-              class="w-25 h-11 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1
+              class="w-25 h-11 border border-gray-200 dark:border-[#28365a] rounded-lg px-2 py-1
                text-sm focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-               dark:bg-gray-800 dark:text-gray-400 text-gray-500">
+               dark:bg-[#16213b] dark:text-gray-400 text-gray-500">
             <option v-for="n in [20,30,50,100]" :key="n" :value="n" :selected="n === 50">{{ n }}개</option>
           </select>
 
@@ -31,9 +31,9 @@
           <template v-for="(selectOptions, idx) in selects" :key="'sel-' + idx">
             <select
                 @input="$emit('selectChange', { idx, value: $event.target.value })"
-                class="w-30 h-11 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1
+                class="w-30 h-11 border border-gray-200 dark:border-[#28365a] rounded-lg px-2 py-1
                 text-sm focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                dark:bg-gray-800 dark:text-gray-200 text-gray-500"
+                dark:bg-[#16213b] dark:text-gray-200 text-gray-500"
             >
               <option v-for="opt in selectOptions" :key="opt" :value="opt">{{ opt }}</option>
             </select>
@@ -49,10 +49,10 @@
                 :class="[
                   'w-30 h-11 px-3 py-1 rounded-lg border text-sm font-medium transition-colors',
                   isDisabled(btn)
-                    ? 'border-gray-200 bg-gray-50 text-gray-300 dark:border-gray-700 dark:bg-gray-900/40 dark:text-gray-600'
-                    : 'border-gray-200 text-gray-500 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800',
+                    ? 'border-gray-200 bg-gray-50 text-gray-300 dark:border-[#28365a] dark:bg-[#0e1626]/40 dark:text-gray-600'
+                    : 'border-gray-200 text-gray-500 hover:bg-gray-100 dark:border-[#28365a] dark:text-gray-400 dark:hover:bg-[#16213b]',
                   active && active.includes(btn) && !isDisabled(btn)
-                    ? 'bg-gray-100 dark:bg-gray-800'
+                    ? 'bg-gray-100 dark:bg-[#16213b]'
                     : ''
                 ]"
             >
@@ -80,15 +80,15 @@
                 v-model.number="bulkN"
                 @keyup.enter="$emit('bulkSelect', bulkN)"
                 placeholder="N"
-                class="w-16 h-9 border border-gray-200 dark:border-gray-700 rounded-lg px-2
-                       text-sm text-gray-500 dark:text-gray-400 dark:bg-gray-800
+                class="w-16 h-9 border border-gray-200 dark:border-[#28365a] rounded-lg px-2
+                       text-sm text-gray-500 dark:text-gray-400 dark:bg-[#16213b]
                        focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10"
             />
             <button
                 type="button"
                 @click="$emit('bulkSelect', bulkN)"
                 class="h-9 px-3 rounded-lg border border-gray-200 text-sm font-medium text-gray-500
-                       hover:bg-gray-100 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
+                       hover:bg-gray-100 dark:border-[#28365a] dark:text-gray-400 dark:hover:bg-[#16213b]"
             >선택</button>
           </template>
 
@@ -101,7 +101,7 @@
                    border border-gray-200 bg-white text-gray-600 hover:bg-gray-100
                    disabled:opacity-60 disabled:cursor-not-allowed
                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-200
-                   dark:border-gray-700 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-gray-800 dark:focus-visible:ring-blue-900"
+                   dark:border-[#28365a] dark:bg-white/5 dark:text-gray-400 dark:hover:bg-[#16213b] dark:focus-visible:ring-blue-900"
           >
             <RefreshIcon :class="['h-4 w-4', refreshing ? 'animate-spin' : '']"/>
           </button>
@@ -110,7 +110,7 @@
     </div>
 
     <!-- Card Body -->
-    <div class="px-6 pt-0 pb-5 border-gray-100 dark:border-gray-800">
+    <div class="px-6 pt-0 pb-5 border-gray-100 dark:border-[#1f2a47]">
       <div class="space-y-5">
         <slot></slot>
       </div>

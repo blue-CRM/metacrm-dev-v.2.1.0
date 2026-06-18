@@ -218,8 +218,12 @@ const {
             u.userApproved === 'Y' ? '승인' :
             u.userApproved === 'N' ? '대기' :
             u.userApproved === 'X' ? '탈퇴' : u.userApproved,
+        // 가시권한: 공개/차단 (팀장·프로는 기본 공개)
         visible: u.managerPhoneAccess === 'N' ? '차단' : '공개',
-        allocate: u.canAllocate === 'Y' ? '허용' : '차단',
+        // 팀장은 역할 기반으로 분배 상시 가능 → 표시도 '허용'으로 보정(B-3)
+        allocate: u.userRole === 'MANAGER'
+            ? '허용'
+            : (u.canAllocate === 'Y' ? '허용' : '차단'),
         expert: u.expertName || '미지정',
         createdAt: u.userCreatedAt || '',
       })),
@@ -317,6 +321,8 @@ const columns = computed(() => {
         key: "expert",
         label: "전문가",
         type: "badge",
+        badgeWrap: true,      // 전문가명이 길면 말줄임 대신 줄바꿈으로 전체 표시
+        badgeMaxWidth: 160,
         // 직책이 '전문가, 센터장'인 행에서만 수정 가능 + super만
         editable: (row) => isSuper.value && (row.type === "센터장" || row.type === "전문가"),
         options: expertOptions.value.map(e => e.expertName)  // 배지에 보일 텍스트

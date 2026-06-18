@@ -3,7 +3,7 @@
     <PageBreadcrumb pageTitle="메타CRM 조직도" />
 
     <div class="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-0
-                dark:border-gray-800 dark:bg-white/[0.03]">
+                dark:border-[#1f2a47] dark:bg-[#14203a]">
       <div class="relative z-10 p-6">
 
         <ul class="space-y-3">
@@ -36,7 +36,7 @@
         <!-- 모달 박스 -->
         <div
             class="relative z-[100000] w-[440px] rounded-xl bg-white p-5 shadow-xl ring-1 ring-black/5
-             dark:bg-gray-900 dark:text-gray-100"
+             dark:bg-[#0e1626] dark:text-gray-100"
         >
           <h3 class="mb-3 text-base font-semibold">정보 수정</h3>
 
@@ -48,7 +48,7 @@
                   @blur="validateName"
                   class="h-11 w-full rounded-lg border px-3
                    bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                   dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
               />
               <p v-if="editErr.name" class="mt-1 text-xs text-error-500">{{ editErr.name }}</p>
             </div>
@@ -62,7 +62,7 @@
                   placeholder="010-1234-5678"
                   class="h-11 w-full rounded-lg border px-3
                    bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                   dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
               />
               <p v-if="editErr.phone" class="mt-1 text-xs text-error-500">{{ editErr.phone }}</p>
             </div>
@@ -71,7 +71,7 @@
           <div class="mt-4 flex justify-end gap-2">
             <button
                 class="h-10 rounded-lg bg-gray-200 px-4 text-gray-800 hover:bg-gray-100
-                 dark:bg-gray-700 dark:text-gray-100"
+                 dark:bg-[#233152] dark:text-gray-100"
                 @click="closeEdit"
             >
               취소

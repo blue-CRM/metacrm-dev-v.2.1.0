@@ -37,10 +37,10 @@
     <!-- Dropdown Start -->
     <div
       v-if="dropdownOpen"
-      class="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark z-50"
+      class="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-[#1f2a47] dark:bg-gray-dark z-50"
     >
 
-      <ul class="flex flex-col gap-1 pt-1 pb-3 border-b border-gray-200 dark:border-gray-800">
+      <ul class="flex flex-col gap-1 pt-1 pb-3 border-b border-gray-200 dark:border-[#1f2a47]">
         <li v-for="item in menuItems" :key="item.href">
           <router-link
             :to="item.href"
@@ -115,7 +115,7 @@
                   :disabled="atMin()"
                   class="flex h-6 w-6 items-center justify-center rounded-md border border-gray-200 text-gray-600 transition
                          hover:bg-gray-100 disabled:opacity-40 disabled:hover:bg-transparent
-                         dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5"
+                         dark:border-[#28365a] dark:text-gray-300 dark:hover:bg-white/5"
               >−</button>
               <span class="w-10 text-center text-theme-xs tabular-nums text-gray-500 dark:text-gray-400">{{ percent() }}%</span>
               <button
@@ -124,7 +124,7 @@
                   :disabled="atMax()"
                   class="flex h-6 w-6 items-center justify-center rounded-md border border-gray-200 text-gray-600 transition
                          hover:bg-gray-100 disabled:opacity-40 disabled:hover:bg-transparent
-                         dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5"
+                         dark:border-[#28365a] dark:text-gray-300 dark:hover:bg-white/5"
               >+</button>
             </span>
           </div>

@@ -2,7 +2,7 @@
   <div class="relative" ref="multiSelectRef">
     <div
       @click="toggleDropdown"
-      class="dark:bg-dark-900 h-11 flex items-center w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+      class="dark:bg-dark-900 h-11 flex items-center w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-[#28365a] dark:bg-[#0e1626] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
       :class="{ 'text-gray-800 dark:text-white/90': isOpen }"
     >
       <span v-if="selectedItems.length === 0" class="text-gray-400"> Select items... </span>
@@ -10,7 +10,7 @@
         <div
           v-for="item in selectedItems"
           :key="item.value"
-          class="group flex items-center justify-center h-[30px] rounded-full border-[0.7px] border-transparent bg-gray-100 py-1 pl-2.5 pr-2 text-sm text-gray-800 hover:border-gray-200 dark:bg-gray-800 dark:text-white/90 dark:hover:border-gray-800"
+          class="group flex items-center justify-center h-[30px] rounded-full border-[0.7px] border-transparent bg-gray-100 py-1 pl-2.5 pr-2 text-sm text-gray-800 hover:border-gray-200 dark:bg-[#16213b] dark:text-white/90 dark:hover:border-[#1f2a47]"
         >
           <span>{{ item.label }}</span>
           <button
@@ -64,10 +64,10 @@
     >
       <div
         v-if="isOpen"
-        class="absolute z-10 w-full mt-1 bg-white rounded-lg shadow-sm dark:bg-gray-900"
+        class="absolute z-10 w-full mt-1 bg-white rounded-lg shadow-sm dark:bg-[#0e1626]"
       >
         <ul
-          class="overflow-y-auto divide-y divide-gray-200 custom-scrollbar max-h-60 dark:divide-gray-800"
+          class="overflow-y-auto divide-y divide-gray-200 custom-scrollbar max-h-60 dark:divide-[#1f2a47]"
           role="listbox"
           aria-multiselectable="true"
         >
@@ -75,8 +75,8 @@
             v-for="item in props.options"
             :key="item.value"
             @click="toggleItem(item)"
-            class="relative flex items-center w-full px-3 py-2 border-transparent cursor-pointer first:rounded-t-lg last:rounded-b-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-            :class="{ 'bg-gray-50 dark:bg-white/[0.03]': isSelected(item) }"
+            class="relative flex items-center w-full px-3 py-2 border-transparent cursor-pointer first:rounded-t-lg last:rounded-b-lg dark:text-white hover:bg-gray-100 dark:hover:bg-[#16213b]"
+            :class="{ 'bg-gray-50 dark:bg-[#14203a]': isSelected(item) }"
             role="option"
             :aria-selected="isSelected(item)"
           >

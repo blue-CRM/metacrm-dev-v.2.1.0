@@ -1,9 +1,9 @@
 <template>
   <div
-    class="rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/[0.03]"
+    class="rounded-2xl border border-gray-200 bg-gray-100 dark:border-[#1f2a47] dark:bg-[#14203a]"
   >
     <div
-      class="px-5 pt-5 bg-white shadow-default rounded-2xl pb-11 dark:bg-gray-900 sm:px-6 sm:pt-6"
+      class="px-5 pt-5 bg-white shadow-default rounded-2xl pb-11 dark:bg-[#0e1626] sm:px-6 sm:pt-6"
     >
       <div class="flex justify-between">
         <div>
@@ -75,7 +75,7 @@
         </p>
       </div>
 
-      <div class="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
+      <div class="w-px bg-gray-200 h-7 dark:bg-[#16213b]"></div>
 
       <div>
         <p class="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
@@ -102,7 +102,7 @@
         </p>
       </div>
 
-      <div class="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
+      <div class="w-px bg-gray-200 h-7 dark:bg-[#16213b]"></div>
 
       <div>
         <p class="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">

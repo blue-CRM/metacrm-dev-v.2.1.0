@@ -1,9 +1,9 @@
 <template>
-  <div class="rounded-xl border border-gray-200 bg-gray-50/60 dark:border-gray-800 dark:bg-gray-800/30">
+  <div class="rounded-xl border border-gray-200 bg-gray-50/60 dark:border-[#1f2a47] dark:bg-[#16213b]/30">
     <!-- 1) 최상위 아코디언: 처음엔 접힘 -->
     <button
         type="button"
-        class="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-gray-50/70 dark:hover:bg-gray-800/40"
+        class="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-gray-50/70 dark:hover:bg-[#16213b]/40"
         @click="toggleOuter"
     >
       <div class="min-w-0 flex-1">
@@ -31,7 +31,7 @@
     </button>
 
     <!-- 최상위 아코디언 내용 -->
-    <div v-if="outerOpen" class="border-t border-gray-100 px-4 py-3 dark:border-gray-800">
+    <div v-if="outerOpen" class="border-t border-gray-100 px-4 py-3 dark:border-[#1f2a47]">
       <div v-if="loading" class="text-sm text-gray-500 dark:text-gray-400">
         불러오는 중...
       </div>
@@ -42,10 +42,10 @@
 
       <div v-else-if="groupedRows.length" class="space-y-3">
         <!-- 2) 전체 전문가 합계 아코디언: 처음엔 접힘 -->
-        <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900/40">
+        <div class="rounded-lg border border-gray-200 bg-white dark:border-[#28365a] dark:bg-[#0e1626]/40">
           <button
               type="button"
-              class="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800/60"
+              class="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-[#16213b]/60"
               @click="overallOpen = !overallOpen"
           >
             <div class="min-w-0 flex-1">
@@ -71,12 +71,12 @@
             </div>
           </button>
 
-          <div v-if="overallOpen" class="border-t border-gray-100 px-4 py-3 dark:border-gray-800">
-            <div class="max-h-28 overflow-y-auto rounded-md bg-gray-50 dark:bg-gray-800/50">
+          <div v-if="overallOpen" class="border-t border-gray-100 px-4 py-3 dark:border-[#1f2a47]">
+            <div class="max-h-28 overflow-y-auto rounded-md bg-gray-50 dark:bg-[#16213b]/50">
               <div
                   v-for="expert in overallExpertTotals"
                   :key="expert.expertName"
-                  class="flex items-center justify-between gap-3 border-b border-gray-100 px-3 py-2 text-sm last:border-b-0 dark:border-gray-700"
+                  class="flex items-center justify-between gap-3 border-b border-gray-100 px-3 py-2 text-sm last:border-b-0 dark:border-[#28365a]"
               >
                 <span class="min-w-0 flex-1 truncate text-gray-700 dark:text-gray-200">
                   {{ expert.expertName }}
@@ -90,10 +90,10 @@
         </div>
 
         <!-- 3) 날짜별 집계 아코디언: 처음엔 접힘 -->
-        <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900/40">
+        <div class="rounded-lg border border-gray-200 bg-white dark:border-[#28365a] dark:bg-[#0e1626]/40">
           <button
               type="button"
-              class="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800/60"
+              class="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-[#16213b]/60"
               @click="datesSectionOpen = !datesSectionOpen"
           >
             <div class="min-w-0 flex-1">
@@ -116,18 +116,18 @@
             </div>
           </button>
 
-          <div v-if="datesSectionOpen" class="border-t border-gray-100 px-4 py-3 dark:border-gray-800">
+          <div v-if="datesSectionOpen" class="border-t border-gray-100 px-4 py-3 dark:border-[#1f2a47]">
             <!-- 세로 길이 줄임 -->
-            <div class="max-h-52 overflow-y-auto rounded-md bg-gray-50/60 dark:bg-gray-800/30">
+            <div class="max-h-52 overflow-y-auto rounded-md bg-gray-50/60 dark:bg-[#16213b]/30">
               <div
                   v-for="row in groupedRows"
                   :key="row.statDate"
-                  class="border-b border-gray-100 last:border-b-0 dark:border-gray-800"
+                  class="border-b border-gray-100 last:border-b-0 dark:border-[#1f2a47]"
               >
                 <!-- 날짜별 아코디언: 처음엔 전부 접힘 -->
                 <button
                     type="button"
-                    class="flex w-full items-center justify-between gap-3 px-3 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800/60"
+                    class="flex w-full items-center justify-between gap-3 px-3 py-3 text-left hover:bg-gray-50 dark:hover:bg-[#16213b]/60"
                     @click="toggleDate(row.statDate)"
                 >
                   <div class="min-w-0 flex-1">
@@ -154,11 +154,11 @@
                 </button>
 
                 <div v-if="isOpen(row.statDate)" class="px-3 pb-3">
-                  <div class="rounded-md bg-white dark:bg-gray-900/40">
+                  <div class="rounded-md bg-white dark:bg-[#0e1626]/40">
                     <div
                         v-for="expert in row.experts"
                         :key="`${row.statDate}-${expert.expertName}`"
-                        class="flex items-center justify-between gap-3 border-b border-gray-100 px-3 py-2 text-sm last:border-b-0 dark:border-gray-700"
+                        class="flex items-center justify-between gap-3 border-b border-gray-100 px-3 py-2 text-sm last:border-b-0 dark:border-[#28365a]"
                     >
                       <span class="min-w-0 flex-1 truncate text-gray-700 dark:text-gray-200">
                         {{ expert.expertName }}

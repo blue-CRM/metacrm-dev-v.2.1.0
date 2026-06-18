@@ -1,12 +1,12 @@
 <template>
   <div
-    class="flex flex-col h-full bg-white dark:bg-gray-900 overflow-hidden"
+    class="flex flex-col h-full bg-white dark:bg-[#0e1626] overflow-hidden"
     style="font-family: 'Pretendard', 'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif"
   >
     <!-- ───────── 헤더(H1): 이름 · 전화 · 담당자 · 우측 상태배지+약속칩 + 새로고침 ───────── -->
     <header
-      class="flex items-end gap-3 px-[18px] py-3.5 border-b border-gray-200 dark:border-gray-700
-             bg-white dark:bg-gray-900 shrink-0"
+      class="flex items-end gap-3 px-[18px] py-3.5 border-b border-gray-200 dark:border-[#28365a]
+             bg-white dark:bg-[#0e1626] shrink-0"
     >
       <!-- 좌측 정보: 평소 1줄(이름·전화·프로). 좁거나 이름이 길면 전화·프로 묶음이 다음 줄로 wrap.
            이름은 8자 이상이면 말줄임(max-w + truncate). -->
@@ -53,7 +53,7 @@
         title="새로고침"
         class="w-7 h-7 rounded-md flex items-center justify-center shrink-0
                text-gray-400 hover:text-gray-700 hover:bg-gray-100
-               dark:hover:text-gray-200 dark:hover:bg-gray-700 transition"
+               dark:hover:text-gray-200 dark:hover:bg-[#233152] transition"
         @click="refresh"
       >
         <svg width="15" height="15" viewBox="0 0 14 14" fill="none">
@@ -67,12 +67,12 @@
 
     <!-- ───────── 검색(Split): 텍스트 + 날짜 픽커 (프런트 필터) ───────── -->
     <div
-      class="flex items-center gap-1.5 px-3.5 py-2 border-b border-gray-200 dark:border-gray-700
-             bg-gray-50 dark:bg-gray-800/50 shrink-0"
+      class="flex items-center gap-1.5 px-3.5 py-2 border-b border-gray-200 dark:border-[#28365a]
+             bg-gray-50 dark:bg-[#16213b]/50 shrink-0"
     >
       <div
-        class="flex-1 flex items-center gap-1.5 min-w-0 bg-white dark:bg-gray-800 rounded-md
-               border border-gray-200 dark:border-gray-700 px-2.5 py-1.5"
+        class="flex-1 flex items-center gap-1.5 min-w-0 bg-white dark:bg-[#16213b] rounded-md
+               border border-gray-200 dark:border-[#28365a] px-2.5 py-1.5"
       >
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="text-gray-400 shrink-0">
           <circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3" />
@@ -99,7 +99,7 @@
             'flex items-center gap-1.5 rounded-md px-2.5 h-7 text-[12px] font-semibold border transition',
             dateSearch
               ? 'bg-blue-50 dark:bg-blue-500/[0.12] border-blue-300 text-blue-600 dark:text-blue-400'
-              : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400',
+              : 'bg-white dark:bg-[#16213b] border-gray-200 dark:border-[#28365a] text-gray-500 dark:text-gray-400',
           ]"
           @click="openDatePicker"
         >
@@ -127,7 +127,7 @@
     </div>
 
     <!-- ───────── 바디 ───────── -->
-    <div ref="bodyRef" class="flex-1 overflow-y-auto px-4 pt-3.5 pb-4 bg-gray-50 dark:bg-gray-800/50">
+    <div ref="bodyRef" class="flex-1 overflow-y-auto px-4 pt-3.5 pb-4 bg-gray-50 dark:bg-[#16213b]/50">
       <!-- 로딩 -->
       <div v-if="loading" class="h-full flex items-center justify-center text-center px-6">
         <p class="text-[13px] text-gray-400 dark:text-gray-500">불러오는 중…</p>
@@ -168,7 +168,7 @@
             <div
               v-if="g.isSystem"
               class="w-[26px] h-[26px] rounded-full flex items-center justify-center shrink-0
-                     bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                     bg-gray-200 dark:bg-[#233152] text-gray-500 dark:text-gray-400"
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3" />
@@ -216,11 +216,11 @@
     <!-- ───────── 입력창 (canWrite && !view 일 때만) ───────── -->
     <div
       v-if="canWrite && !view"
-      class="flex items-end gap-2 p-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shrink-0"
+      class="flex items-end gap-2 p-3 border-t border-gray-200 dark:border-[#28365a] bg-white dark:bg-[#0e1626] shrink-0"
     >
       <div
-        class="flex-1 flex items-end bg-gray-50 dark:bg-gray-800 rounded-2xl px-3.5 py-2
-               border border-gray-200 dark:border-gray-700"
+        class="flex-1 flex items-end bg-gray-50 dark:bg-[#16213b] rounded-2xl px-3.5 py-2
+               border border-gray-200 dark:border-[#28365a]"
       >
         <textarea
           ref="composerRef"
@@ -239,7 +239,7 @@
           'h-9 px-4 rounded-2xl text-[13px] font-semibold shrink-0 transition',
           draft.trim()
             ? 'bg-blue-500 hover:bg-blue-600 text-white cursor-pointer'
-            : 'bg-gray-100 dark:bg-gray-800 text-gray-400 cursor-not-allowed',
+            : 'bg-gray-100 dark:bg-[#16213b] text-gray-400 cursor-not-allowed',
         ]"
         @click="submit"
       >

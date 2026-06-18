@@ -1,6 +1,6 @@
 <template>
   <!-- 메모 채팅 별도 창 (라우트 /memo/:customerId). bare 레이아웃(사이드바 없음) — 팝업 전용. -->
-  <div class="h-screen w-screen overflow-hidden bg-white dark:bg-gray-900">
+  <div class="h-screen w-screen overflow-hidden bg-white dark:bg-[#0e1626]">
     <MemoWindow
       :customer-id="customerId"
       :view="view"

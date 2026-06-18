@@ -5,11 +5,11 @@
     <div class="grid grid-cols-12 gap-4 min-w-0">
       <div class="col-span-12 space-y-6 min-w-0">
         <div
-            class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+            class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-[#1f2a47] dark:bg-[#14203a]"
         >
           <!-- 상단 툴바 -->
           <div
-              class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-3 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/60"
+              class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-3 border-b border-gray-200 dark:border-[#1f2a47] bg-white/80 dark:bg-[#0e1626]/60"
           >
             <div class="flex items-center gap-2 flex-wrap">
               <button
@@ -43,7 +43,7 @@
              bg-white text-gray-700 shadow-sm
              border-gray-200 hover:border-gray-300
              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-             dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200"
+             dark:border-[#1f2a47] dark:bg-[#0e1626]/40 dark:text-gray-200"
                 />
               </div>
 
@@ -77,7 +77,7 @@
                    border border-gray-200 bg-white text-gray-600 hover:bg-gray-100
                    disabled:opacity-60 disabled:cursor-not-allowed
                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-200
-                   dark:border-gray-700 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-gray-800 dark:focus-visible:ring-blue-900"
+                   dark:border-[#28365a] dark:bg-white/5 dark:text-gray-400 dark:hover:bg-[#16213b] dark:focus-visible:ring-blue-900"
               >
                 <RefreshIcon :class="['h-4 w-4', loadingSchedules ? 'animate-spin' : '']" />
               </button>
@@ -94,15 +94,15 @@
             <!-- 전체 그리드 -->
             <div class="min-w-max" :style="{ width: totalWidth + 'px' }">
               <!-- 헤더 (sticky) -->
-              <div class="sticky top-0 z-40 bg-white dark:bg-gray-900">
+              <div class="sticky top-0 z-40 bg-white dark:bg-[#0e1626]">
                 <!-- 날짜 그룹 헤더 -->
                 <div
-                    class="grid border-b border-gray-200 dark:border-gray-800"
+                    class="grid border-b border-gray-200 dark:border-[#1f2a47]"
                     :style="{ gridTemplateColumns: gridTemplateColumns }"
                 >
                   <div
-                      class="sticky left-0 z-50 flex items-center justify-center h-10 border-r border-gray-200 dark:border-gray-800
-                           bg-slate-50 text-slate-700 text-xs font-semibold dark:bg-gray-900/60 dark:text-slate-200"
+                      class="sticky left-0 z-50 flex items-center justify-center h-10 border-r border-gray-200 dark:border-[#1f2a47]
+                           bg-slate-50 text-slate-700 text-xs font-semibold dark:bg-[#0e1626]/60 dark:text-slate-200"
                   >
                     시간
                   </div>
@@ -113,7 +113,7 @@
                         :style="{ gridColumn: `span ${roomsPerDay}` }"
                         :class="[
                         dayHeaderClass(d.key),
-                        dayIdx === days.length - 1 ? '' : 'border-r-4 border-gray-300 dark:border-gray-600'
+                        dayIdx === days.length - 1 ? '' : 'border-r-4 border-gray-300 dark:border-[#3a4a72]'
                       ]"
                     >
                       {{ d.label }}
@@ -123,12 +123,12 @@
 
                 <!-- 룸 헤더 -->
                 <div
-                    class="grid border-b border-gray-200 dark:border-gray-800"
+                    class="grid border-b border-gray-200 dark:border-[#1f2a47]"
                     :style="{ gridTemplateColumns: gridTemplateColumns }"
                 >
                   <div
                       class="sticky left-0 z-50 h-9 border-r border-gray-200
-                           bg-slate-200 dark:bg-slate-800 dark:border-gray-800"
+                           bg-slate-200 dark:bg-[#16213b] dark:border-[#1f2a47]"
                   />
 
                   <template v-for="(col, colIdx) in columns" :key="col.key">
@@ -136,7 +136,7 @@
                         class="h-9 flex items-center justify-center text-xs font-medium"
                         :class="[
                         roomHeaderClass(col.dayKey),
-                        col.isDayEnd ? 'border-r-4 border-gray-300 dark:border-gray-600' : 'border-r border-gray-200 dark:border-gray-800'
+                        col.isDayEnd ? 'border-r-4 border-gray-300 dark:border-[#3a4a72]' : 'border-r border-gray-200 dark:border-[#1f2a47]'
                       ]"
                     >
                       {{ col.roomLabel }}
@@ -231,7 +231,7 @@
                 >
                   <!-- 시간(좌측 sticky) -->
                   <div
-                      class="sticky left-0 z-40 flex items-center justify-end pr-2 text-xs border-r border-gray-200 dark:border-gray-800"
+                      class="sticky left-0 z-40 flex items-center justify-end pr-2 text-xs border-r border-gray-200 dark:border-[#1f2a47]"
                       :class="timeColBgClass(slotIdx)"
                       :style="rowTopBorderStyle(slotIdx)"
                   >
@@ -246,7 +246,7 @@
                         :data-slot="slotIdx"
                         :class="[
                         cellBgClass(slotIdx, col.dayKey),
-                        col.isDayEnd ? 'border-r-4 border-gray-300 dark:border-gray-600' : 'border-r border-gray-200 dark:border-gray-800'
+                        col.isDayEnd ? 'border-r-4 border-gray-300 dark:border-[#3a4a72]' : 'border-r border-gray-200 dark:border-[#1f2a47]'
                       ]"
                         :style="rowTopBorderStyle(slotIdx)"
                         @pointerdown.stop.prevent="onCellPointerDown($event, colIdx, slotIdx)"
@@ -266,9 +266,9 @@
               @click.self="closeModal"
               @keydown.esc.prevent.stop="closeModal"
           >
-            <div class="w-full max-w-[700px] rounded-2xl bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-gray-800">
+            <div class="w-full max-w-[700px] rounded-2xl bg-white dark:bg-[#0e1626] shadow-xl border border-gray-200 dark:border-[#1f2a47]">
               <!-- 헤더 -->
-              <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+              <div class="px-5 py-4 border-b border-gray-200 dark:border-[#1f2a47] flex items-center justify-between">
                 <h3 class="text-base font-semibold text-gray-800 dark:text-gray-100">
                   {{ editingEventId ? '내방 일정 수정' : '내방 일정 추가' }}
                 </h3>
@@ -290,7 +290,7 @@
                           :disabled="!modalCanEdit"
                           class="w-full h-11 rounded-lg border px-3 pr-10
                              bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                             dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                             dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                       />
                     </div>
                   </div>
@@ -304,7 +304,7 @@
                           :disabled="!modalCanEdit"
                           class="w-full h-11 rounded-lg border px-3 text-left
                                bg-white text-gray-800
-                               dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                               dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                           @click="startOpen = !startOpen"
                       >
                         {{ formStartTime || '선택' }}
@@ -313,13 +313,13 @@
                       <div
                           v-if="startOpen"
                           class="absolute z-[100001] mt-2 w-full rounded-lg border bg-white shadow-lg
-                                 dark:border-gray-700 dark:bg-gray-900"
+                                 dark:border-[#28365a] dark:bg-[#0e1626]"
                       >
                         <ul class="max-h-56 overflow-auto py-1">
                           <li
                               v-for="t in startTimeOptions"
                               :key="t"
-                              class="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
+                              class="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-[#16213b] text-gray-600 dark:text-gray-300"
                               @click="
                                   formStartTime = t;
                                   startOpen = false;
@@ -342,7 +342,7 @@
                             :disabled="!modalCanEdit"
                             class="w-full h-11 rounded-lg border px-3 text-left
                                  bg-white text-gray-800
-                                 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                                 dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                             @click="endOpen = !endOpen"
                         >
                           {{ formEndTime || '선택' }}
@@ -351,13 +351,13 @@
                         <div
                             v-if="endOpen"
                             class="absolute z-[100001] mt-2 w-full rounded-lg border bg-white shadow-lg
-                                  dark:border-gray-700 dark:bg-gray-900"
+                                  dark:border-[#28365a] dark:bg-[#0e1626]"
                         >
                           <ul class="max-h-56 overflow-auto py-1">
                             <li
                                 v-for="t in endTimeOptions"
                                 :key="t"
-                                class="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
+                                class="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-[#16213b] text-gray-600 dark:text-gray-300"
                                 @click="
                                     formEndTime = t;
                                     endOpen = false;
@@ -381,9 +381,9 @@
                   <select
                       v-model.number="pendingRoom"
                       :disabled="!modalCanEdit"
-                      class="w-full h-11 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2
+                      class="w-full h-11 border border-gray-200 dark:border-[#28365a] rounded-lg px-3 py-2
                            text-sm focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                           dark:bg-gray-800 dark:text-gray-200"
+                           dark:bg-[#16213b] dark:text-gray-200"
                   >
                     <option :value="null" disabled>회의실을 선택하세요</option>
                     <option v-for="r in roomListForGrid" :key="r.room" :value="r.room">
@@ -401,7 +401,7 @@
                       placeholder="예: 외부 미팅 장소, 층/호수 등"
                       class="w-full h-11 rounded-lg border px-3
                        bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                       dark:border-gray-700 dark:bg-gray-800 dark:tvisit_scheduleext-gray-100 dark:text-gray-300"
+                       dark:border-[#28365a] dark:bg-[#16213b] dark:tvisit_scheduleext-gray-100 dark:text-gray-300"
                   />
                 </div>
 
@@ -409,14 +409,14 @@
                   <div class="col-span-3 text-sm text-gray-600 dark:text-gray-300">
                     {{ isBlockMode ? '일정관리자' : '담당 프로' }}
                   </div>
-                  <div class="col-span-9 h-11 flex items-center px-2 border-b border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm">
+                  <div class="col-span-9 h-11 flex items-center px-2 border-b border-gray-200 dark:border-[#28365a] text-gray-600 dark:text-gray-300 text-sm">
                     {{ editingScheduledByName }}
                   </div>
 
                   <!-- 대상 고객 -->
                   <template v-if="!isBlockMode">
                     <div class="col-span-3 text-sm text-gray-600 dark:text-gray-300">대상 고객</div>
-                    <div class="col-span-9 h-11 flex items-center px-2 border-b border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm">
+                    <div class="col-span-9 h-11 flex items-center px-2 border-b border-gray-200 dark:border-[#28365a] text-gray-600 dark:text-gray-300 text-sm">
                       <span v-if="pickedCustomer">
                         {{ pickedCustomer.customerName }}
                         <span class="text-gray-400 ml-2">{{ pickedCustomer.customerPhone }}</span>
@@ -441,7 +441,7 @@
                           :disabled="!modalCanEdit"
                           class="h-11 w-full rounded-lg border px-3
                                bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                               dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                               dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                       />
                       <button
                           @click="searchCustomers"
@@ -449,7 +449,7 @@
                           class="inline-flex h-11 items-center justify-center
                                rounded-lg border border-gray-200 px-4 text-sm
                                hover:bg-gray-50 disabled:opacity-60
-                               dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60"
+                               dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                       >
                         <span class="whitespace-nowrap">검색</span>
                       </button>
@@ -457,15 +457,15 @@
 
                     <div
                         v-if="customerResults.length"
-                        class="max-h-52 overflow-auto border border-gray-100 dark:border-gray-800 rounded-md"
+                        class="max-h-52 overflow-auto border border-gray-100 dark:border-[#1f2a47] rounded-md"
                     >
                       <ul>
                         <li
                             v-for="c in customerResults"
                             :key="c.customerId"
                             @click="toggleCustomer(c)"
-                            class="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
-                            :class="pickedCustomer?.customerId === c.customerId ? 'bg-gray-100 dark:bg-gray-800/70' : ''"
+                            class="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#16213b]"
+                            :class="pickedCustomer?.customerId === c.customerId ? 'bg-gray-100 dark:bg-[#16213b]/70' : ''"
                         >
                           <div class="text-sm text-gray-700 dark:text-gray-200">
                             <b>{{ c.customerName }}</b>
@@ -478,7 +478,7 @@
                               :disabled="!modalCanEdit"
                               :class="pickedCustomer?.customerId === c.customerId
                                       ? 'bg-gray-900 text-white border-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:border-white dark:hover:bg-gray-200'
-                                      : 'text-gray-700 border-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800/70'"
+                                      : 'text-gray-700 border-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:border-[#28365a] dark:hover:bg-[#16213b]/70'"
                           >
                             {{ pickedCustomer?.customerId === c.customerId ? '선택됨' : '선택' }}
                           </button>
@@ -492,10 +492,10 @@
               </div>
 
               <!-- 푸터 -->
-              <div class="px-5 py-3 border-t border-gray-200 dark:border-gray-800 flex items-center justify-end gap-2">
+              <div class="px-5 py-3 border-t border-gray-200 dark:border-[#1f2a47] flex items-center justify-end gap-2">
                 <button
                     class="h-10 px-4 rounded-lg border border-gray-200 text-sm hover:bg-gray-50
-               dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60"
+               dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
                     @click="closeModal"
                 >
                   취소
@@ -659,8 +659,8 @@ const btnSoft =
     'border-gray-200 bg-white text-gray-700 shadow-sm ' +
     'hover:bg-gray-50 hover:border-gray-300 ' +
     'focus:outline-none focus:ring-2 focus:ring-blue-500/20 ' +
-    'dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200 dark:shadow-none ' +
-    'dark:hover:bg-white/[0.03]'
+    'dark:border-[#1f2a47] dark:bg-[#0e1626]/40 dark:text-gray-200 dark:shadow-none ' +
+    'dark:hover:bg-[#1b2740]'
 
 const btnSoftPrimary =
     'h-9 px-3 rounded-xl text-sm font-semibold transition ' +
@@ -887,12 +887,12 @@ function roomHeaderClass(dayKey: string) {
 }
 function cellBgClass(slotIdx: number, dayKey: string) {
   const isZebraEven = slotIdx % 2 === 0
-  return isZebraEven ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800/60'
+  return isZebraEven ? 'bg-white dark:bg-[#0e1626]' : 'bg-gray-50 dark:bg-[#16213b]/60'
 }
 function timeColBgClass(slotIdx: number) {
   return slotIdx % 2 === 0
-      ? 'bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-200'
-      : 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-200'
+      ? 'bg-slate-100 text-slate-700 dark:bg-[#0e1626] dark:text-slate-200'
+      : 'bg-slate-200 text-slate-700 dark:bg-[#16213b] dark:text-slate-200'
 }
 
 /** ===== 스크롤 높이 + Ctrl+휠 가로스크롤 ===== */

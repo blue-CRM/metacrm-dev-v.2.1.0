@@ -7,18 +7,18 @@
         'flex items-center gap-2 rounded-2xl px-4 py-2 ring-1 border-l-4 transition-colors',
         node.userRole === 'HQ'
           ? 'bg-slate-50/90 text-slate-900 ring-slate-200/70 border-slate-500/50 ' +
-            'dark:bg-slate-900/45 dark:text-slate-50 dark:ring-white/10 dark:border-indigo-300/20'
+            'dark:bg-[#0e1626]/45 dark:text-slate-50 dark:ring-white/10 dark:border-indigo-300/20'
           : node.userRole === 'GROUP'
             ? 'bg-blue-50/80 text-slate-900 ring-blue-100/70 border-blue-400/35 ' +
               'dark:bg-blue-950/18 dark:text-slate-50 dark:ring-white/8 dark:border-blue-300/18'
             : 'bg-gray-50/90 text-slate-900 ring-gray-200/70 border-gray-300/50 ' +
-              'dark:bg-slate-900/28 dark:text-slate-50 dark:ring-white/6 dark:border-slate-400/14'
+              'dark:bg-[#0e1626]/28 dark:text-slate-50 dark:ring-white/6 dark:border-slate-400/14'
         ]"
     >
       <button
           @click="toggle()"
           class="mr-1 w-6 h-6 inline-flex items-center justify-center rounded
-               hover:bg-gray-300/60 dark:hover:bg-gray-700/60"
+               hover:bg-gray-300/60 dark:hover:bg-[#233152]/60"
       >
         <span v-if="expanded">−</span>
         <span v-else>+</span>
@@ -44,13 +44,13 @@
 
       <!-- 리프(직원) 리스트 -->
       <div v-else-if="hasLeaf" class="ml-6">
-        <div class="rounded-2xl bg-white/60 p-2 ring-1 ring-gray-100 dark:bg-white/[0.01] dark:ring-gray-800">
+        <div class="rounded-2xl bg-white/60 p-2 ring-1 ring-gray-100 dark:bg-[#14203a] dark:ring-[#1f2a47]">
           <div
               v-for="child in node.children"
               :key="child.userId"
               :id="'user-' + child.userId"
               class="grid grid-cols-[2fr_2fr_1.3fr_auto] items-center gap-3 px-2 py-2
-                   border-b last:border-b-0 border-gray-100 dark:border-gray-800"
+                   border-b last:border-b-0 border-gray-100 dark:border-[#1f2a47]"
           >
             <!-- 이름(+권한) -->
             <div class="truncate">
@@ -81,7 +81,7 @@
       <div v-else class="ml-6">
         <div
             class="rounded-xl border border-dashed border-gray-200 p-4 text-sm
-           text-gray-500 dark:border-gray-700 dark:text-gray-400"
+           text-gray-500 dark:border-[#28365a] dark:text-gray-400"
         >
           <template v-if="isUnassignedStaff">
             아직 팀에 배정되지 않았습니다.

@@ -4,7 +4,7 @@
 
     <div
         class="relative overflow-x-auto overflow-y-visible rounded-2xl border border-gray-200 bg-white p-0
-             dark:border-gray-800 dark:bg-white/[0.03]"
+             dark:border-[#1f2a47] dark:bg-[#14203a]"
     >
       <!-- 장식 그리드 -->
       <div
@@ -18,7 +18,7 @@
             position="-top-1 -right-4"
             opacity="opacity-[0.06] dark:opacity-[0.10]"
             lightColor="bg-gray-900"
-            darkColor="dark:bg-gray-900"
+            darkColor="dark:bg-[#0e1626]"
         />
       </div>
 
@@ -71,7 +71,7 @@
 <!--                    placeholder="메일로 받은 6자리"-->
 <!--                    class="h-11 flex-1 min-w-[12rem] rounded-lg border px-3-->
 <!--                 bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10-->
-<!--                 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"-->
+<!--                 dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"-->
 <!--                />-->
 <!--                <button-->
 <!--                    type="button"-->
@@ -119,7 +119,7 @@
                     @blur="validatePhoneInput"
                     class="h-11 w-full rounded-lg border px-3
                  bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                 dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                 />
                 <button
                     type="button"
@@ -135,7 +135,7 @@
 
             <!-- 구분선 -->
             <div class="col-span-2">
-              <hr class="my-6 border-gray-200 dark:border-gray-700" />
+              <hr class="my-6 border-gray-200 dark:border-[#28365a]" />
             </div>
 
             <!-- 비밀번호 변경 -->
@@ -150,7 +150,7 @@
                     <button
                         v-if="!pwEditing"
                         type="button"
-                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-[#233152] dark:text-gray-100"
                         :disabled="changingPw"
                         @click="onPwEdit"
                     >수정</button>
@@ -158,7 +158,7 @@
                     <template v-else>
                       <button
                           type="button"
-                          class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                          class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-[#233152] dark:text-gray-100"
                           :disabled="changingPw"
                           @click="onPwCancel"
                       >취소</button>
@@ -185,9 +185,9 @@
                       autocomplete="current-password"
                       class="h-11 w-full rounded-lg border px-3
                          bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                         dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100
+                         dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                          disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
-                         dark:disabled:bg-gray-900/40 dark:disabled:text-gray-500 dark:disabled:border-gray-700"
+                         dark:disabled:bg-[#0e1626]/40 dark:disabled:text-gray-500 dark:disabled:border-[#28365a]"
                       @blur="validateCurrentPassword"
                   />
                   <span
@@ -214,9 +214,9 @@
                       autocomplete="new-password"
                       class="h-11 w-full rounded-lg border px-3
                          bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                         dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100
+                         dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                          disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
-                         dark:disabled:bg-gray-900/40 dark:disabled:text-gray-500 dark:disabled:border-gray-700"
+                         dark:disabled:bg-[#0e1626]/40 dark:disabled:text-gray-500 dark:disabled:border-[#28365a]"
                       @blur="validateNewPassword"
                   />
                   <span
@@ -243,9 +243,9 @@
                       autocomplete="new-password"
                       class="h-11 w-full rounded-lg border px-3
                          bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                         dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100
+                         dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                          disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
-                         dark:disabled:bg-gray-900/40 dark:disabled:text-gray-500 dark:disabled:border-gray-700"
+                         dark:disabled:bg-[#0e1626]/40 dark:disabled:text-gray-500 dark:disabled:border-[#28365a]"
                       @blur="validateNewPasswordConfirm"
                   />
                   <span
@@ -266,7 +266,7 @@
 
               <!-- ===== 접속 로그 다운로드 ===== -->
               <div class="col-span-2">
-                <hr class="my-6 border-gray-200 dark:border-gray-700" />
+                <hr class="my-6 border-gray-200 dark:border-[#28365a]" />
               </div>
 
               <div class="col-span-2">
@@ -287,24 +287,24 @@
                     <input
                         type="text"
                         ref="logStartInput"
-                        class="w-full h-11 border border-gray-200 dark:border-gray-700 rounded-l-lg px-3 py-2 text-sm text-center
+                        class="w-full h-11 border border-gray-200 dark:border-[#28365a] rounded-l-lg px-3 py-2 text-sm text-center
                              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                             dark:bg-gray-800 dark:text-gray-200"
+                             dark:bg-[#16213b] dark:text-gray-200"
                         placeholder="시작일"
                     />
 
                     <!-- 구분자 -->
                     <span
-                        class="flex items-center justify-center w-20 h-11 border-t border-b border-gray-200 dark:border-gray-700
-                              text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900">~</span>
+                        class="flex items-center justify-center w-20 h-11 border-t border-b border-gray-200 dark:border-[#28365a]
+                              text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-[#0e1626]">~</span>
 
                     <!-- 종료일 -->
                     <input
                         type="text"
                         ref="logEndInput"
-                        class="w-full h-11 border border-gray-200 dark:border-gray-700 rounded-r-lg px-3 py-2 text-sm text-center
+                        class="w-full h-11 border border-gray-200 dark:border-[#28365a] rounded-r-lg px-3 py-2 text-sm text-center
                            focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                           dark:bg-gray-800 dark:text-gray-200"
+                           dark:bg-[#16213b] dark:text-gray-200"
                         placeholder="종료일"
                     />
                   </div>
@@ -322,7 +322,7 @@
 
               <!-- ===== google 스프레드 시트 연동 ===== -->
               <div class="col-span-2">
-                <hr class="my-6 border-gray-200 dark:border-gray-700" />
+                <hr class="my-6 border-gray-200 dark:border-[#28365a]" />
               </div>
 
               <!-- 제목 + 우측 버튼 -->
@@ -333,13 +333,13 @@
                     <button
                         v-if="!sheetEditing"
                         type="button"
-                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-[#233152] dark:text-gray-100"
                         @click="sheetEditing = true"
                     >수정</button>
                     <template v-else>
                       <button
                           type="button"
-                          class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                          class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-[#233152] dark:text-gray-100"
                           :disabled="savingSheet"
                           @click="onSheetCancel"
                       >취소</button>
@@ -364,9 +364,9 @@
                     @blur="validateSheetId"
                     class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
                      focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                     dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100
+                     dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                      disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
-                     dark:disabled:bg-gray-900/40 dark:disabled:text-gray-500 dark:disabled:border-gray-700"
+                     dark:disabled:bg-[#0e1626]/40 dark:disabled:text-gray-500 dark:disabled:border-[#28365a]"
                 />
                 <p v-if="sheetIdError" class="mt-1 text-sm text-error-500">{{ sheetIdError }}</p>
               </div>
@@ -381,9 +381,9 @@
                     @blur="validateSheetName"
                     class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
                      focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                     dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100
+                     dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                      disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
-                     dark:disabled:bg-gray-900/40 dark:disabled:text-gray-500 dark:disabled:border-gray-700"
+                     dark:disabled:bg-[#0e1626]/40 dark:disabled:text-gray-500 dark:disabled:border-[#28365a]"
                 />
                 <p v-if="sheetNameError" class="mt-1 text-sm text-error-500">{{ sheetNameError }}</p>
               </div>
@@ -401,16 +401,16 @@
                     @blur="validateStartRow"
                     class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
                      focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                     dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100
+                     dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                      disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
-                     dark:disabled:bg-gray-900/40 dark:disabled:text-gray-500 dark:disabled:border-gray-700"
+                     dark:disabled:bg-[#0e1626]/40 dark:disabled:text-gray-500 dark:disabled:border-[#28365a]"
                 />
                 <p v-if="startRowError" class="mt-1 text-sm text-error-500">{{ startRowError }}</p>
               </div>
 
               <!-- ===== IP 화이트리스트 ===== -->
               <div class="col-span-2">
-                <hr class="my-6 border-gray-200 dark:border-gray-700" />
+                <hr class="my-6 border-gray-200 dark:border-[#28365a]" />
               </div>
 
               <div class="col-span-2">
@@ -423,7 +423,7 @@
                         v-if="!ipEditing"
                         type="button"
                         class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100
-                             dark:bg-gray-700 dark:text-gray-100"
+                             dark:bg-[#233152] dark:text-gray-100"
                         @click="ipEditing = true"
                     >
                       수정
@@ -432,7 +432,7 @@
                         v-else
                         type="button"
                         class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100
-                             dark:bg-gray-700 dark:text-gray-100"
+                             dark:bg-[#233152] dark:text-gray-100"
                         @click="onIpCancel"
                     >
                       취소
@@ -456,9 +456,9 @@
                         @keyup.enter="applyIpSearch"
                         class="h-10 w-full rounded-lg border px-3 pr-8 bg-white text-gray-800
                             focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                            dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100
+                            dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                             disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
-                            dark:disabled:bg-gray-900/40 dark:disabled:text-gray-500 dark:disabled:border-gray-700"
+                            dark:disabled:bg-[#0e1626]/40 dark:disabled:text-gray-500 dark:disabled:border-[#28365a]"
                     />
                     <!-- 값 있을 때는 항상 X 보이게 -->
                     <button
@@ -498,7 +498,7 @@
                           placeholder="예) 118.235.10.27"
                           class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
                                focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                               dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                               dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                       />
                       <input
                           v-model="newIpMemo"
@@ -506,7 +506,7 @@
                           placeholder="메모 (예: 본사 팀장 PC)"
                           class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
                                focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                               dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                               dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                       />
                       <button
                           type="button"
@@ -528,7 +528,7 @@
               <!-- 등록된 IP 목록 : 항상 표시 & 그리드 2열 전체 사용 -->
               <div class="col-span-2 mt-4">
                 <div
-                    class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800
+                    class="ip-scroll rounded-md border border-gray-100 dark:border-[#1f2a47]
                          max-h-100 overflow-auto spin-dark"
                 >
                   <!-- 로딩 -->
@@ -561,12 +561,12 @@
                       class="min-w-full table-fixed text-sm"
                   >
                     <thead
-                        class="sticky top-0 z-10 bg-white dark:bg-gray-900
+                        class="sticky top-0 z-10 bg-white dark:bg-[#0e1626]
                              shadow-[0_1px_0_0_rgba(229,231,235,0.7)]
                              dark:shadow-[0_1px_0_0_rgba(31,41,55,0.8)]"
                     >
                     <tr
-                        class="border-b border-gray-200 dark:border-gray-700
+                        class="border-b border-gray-200 dark:border-[#28365a]
                                text-xs text-gray-500 dark:text-gray-400"
                     >
                       <th class="w-10 px-3 py-2 text-center whitespace-nowrap">번호</th>
@@ -582,10 +582,10 @@
                         v-for="(row, idx) in filteredIpList"
                         :key="row.ipId ?? idx"
                         :class="[
-                          'border-b border-gray-100 dark:border-gray-800',
+                          'border-b border-gray-100 dark:border-[#1f2a47]',
                           idx % 2 === 0
-                            ? 'bg-white dark:bg-gray-900'
-                            : 'bg-gray-50 dark:bg-gray-800/60'
+                            ? 'bg-white dark:bg-[#0e1626]'
+                            : 'bg-gray-50 dark:bg-[#16213b]/60'
                         ]"
                     >
                       <!-- 행번호 -->
@@ -602,7 +602,7 @@
                               class="mb-1 w-full rounded-md border border-gray-200 px-2 py-1 text-xs
                                      bg-white text-gray-800
                                      focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
-                                     dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                                     dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                               placeholder="IP 주소"
                           />
                         </template>
@@ -625,7 +625,7 @@
                               class="w-full rounded-md border border-gray-200 px-2 py-1 text-xs
                                      bg-white text-gray-800
                                      focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
-                                     dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                                     dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                               placeholder="메모"
                           />
                         </template>
@@ -649,7 +649,7 @@
                               class="h-8 rounded-md border border-gray-300 px-2 text-xs
                                      bg-white text-gray-800
                                      focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
-                                     dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                                     dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                           >
                             <option value="Y">사용</option>
                             <option value="N">중지</option>
@@ -699,9 +699,9 @@
                           </button>
                           <button
                               type="button"
-                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-gray-700
+                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-[#28365a]
                                      bg-white text-gray-700 hover:bg-gray-50
-                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-gray-700
+                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-[#233152]
                                      disabled:opacity-50"
                               :disabled="ipSaving"
                               @click="cancelIpRowEdit"
@@ -713,9 +713,9 @@
                         <template v-else>
                           <button
                               type="button"
-                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-gray-700
+                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-[#28365a]
                                      bg-white text-gray-700 hover:bg-gray-50
-                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-gray-700
+                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-[#233152]
                                      disabled:opacity-50"
                               :disabled="!ipEditing || ipSaving"
                               @click="startIpRowEdit(row)"
@@ -743,7 +743,7 @@
 
               <!-- ===== 지점 / 팀 관리 ===== -->
               <div class="col-span-2">
-                <hr class="my-6 border-gray-200 dark:border-gray-700" />
+                <hr class="my-6 border-gray-200 dark:border-[#28365a]" />
               </div>
 
               <!-- 지점 관리 -->
@@ -756,7 +756,7 @@
                     <button
                         v-if="!branchesEditing"
                         type="button"
-                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-[#233152] dark:text-gray-100"
                         @click="branchesEditing = true"
                     >
                       수정
@@ -764,7 +764,7 @@
                     <button
                         v-else
                         type="button"
-                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-[#233152] dark:text-gray-100"
                         @click="onBranchesCancel"
                     >
                       취소
@@ -787,7 +787,7 @@
                         @keyup.enter="applyBranchSearch"
                         class="h-10 w-full rounded-lg border px-3 pr-8 bg-white text-gray-800
                              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                             dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                             dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                     />
                     <button
                         v-if="branchSearchInput"
@@ -821,9 +821,9 @@
                       placeholder="예) 본사 지점"
                       class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
                              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                             dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100
+                             dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                              disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
-                             dark:disabled:bg-gray-900/40 dark:disabled:text-gray-500 dark:disabled:border-gray-700"
+                             dark:disabled:bg-[#0e1626]/40 dark:disabled:text-gray-500 dark:disabled:border-[#28365a]"
                   />
                   <button
                       type="button"
@@ -842,7 +842,7 @@
               <!-- 지점 목록 -->
               <div class="col-span-2 mt-4">
                 <div
-                    class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800
+                    class="ip-scroll rounded-md border border-gray-100 dark:border-[#1f2a47]
                            max-h-100 overflow-auto spin-dark"
                 >
                   <div v-if="branchesLoading" class="p-4 text-sm text-gray-500 dark:text-gray-400">
@@ -859,12 +859,12 @@
                       class="min-w-full table-fixed text-sm"
                   >
                     <thead
-                        class="sticky top-0 z-10 bg-white dark:bg-gray-900
+                        class="sticky top-0 z-10 bg-white dark:bg-[#0e1626]
                                shadow-[0_1px_0_0_rgba(229,231,235,0.7)]
                                dark:shadow-[0_1px_0_0_rgba(31,41,55,0.8)]"
                     >
                     <tr
-                        class="border-b border-gray-200 dark:border-gray-700
+                        class="border-b border-gray-200 dark:border-[#28365a]
                                text-xs text-gray-500 dark:text-gray-400"
                     >
                       <th class="w-10 px-3 py-2 text-center whitespace-nowrap">번호</th>
@@ -877,10 +877,10 @@
                         v-for="(b, idx) in filteredBranches"
                         :key="b.branchId ?? idx"
                         :class="[
-                          'border-b border-gray-100 dark:border-gray-800',
+                          'border-b border-gray-100 dark:border-[#1f2a47]',
                           idx % 2 === 0
-                            ? 'bg-white dark:bg-gray-900'
-                            : 'bg-gray-50 dark:bg-gray-800/60'
+                            ? 'bg-white dark:bg-[#0e1626]'
+                            : 'bg-gray-50 dark:bg-[#16213b]/60'
                         ]"
                     >
                       <td class="px-3 py-3 text-center text-xs text-gray-400 whitespace-nowrap">
@@ -893,7 +893,7 @@
                               class="w-full rounded-md border border-gray-200 px-2 py-1 text-xs
                                      bg-white text-gray-800
                                      focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
-                                     dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                                     dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                               placeholder="지점명"
                           />
                         </template>
@@ -915,9 +915,9 @@
                           </button>
                           <button
                               type="button"
-                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-gray-700
+                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-[#28365a]
                                      bg-white text-gray-700 hover:bg-gray-50
-                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-gray-700"
+                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-[#233152]"
                               @click="cancelBranchEdit"
                           >
                             취소
@@ -926,9 +926,9 @@
                         <template v-else>
                           <button
                               type="button"
-                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-gray-700
+                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-[#28365a]
                                      bg-white text-gray-700 hover:bg-gray-50
-                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-gray-700
+                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-[#233152]
                                      disabled:opacity-50"
                               :disabled="!branchesEditing"
                               @click="startBranchEdit(b)"
@@ -956,7 +956,7 @@
 
               <!-- 구분선 -->
               <div class="col-span-2">
-                <hr class="my-6 border-gray-200 dark:border-gray-700" />
+                <hr class="my-6 border-gray-200 dark:border-[#28365a]" />
               </div>
 
               <!-- 팀 관리 -->
@@ -967,7 +967,7 @@
                     <button
                         v-if="!centersEditing"
                         type="button"
-                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-[#233152] dark:text-gray-100"
                         @click="centersEditing = true"
                     >
                       수정
@@ -975,7 +975,7 @@
                     <button
                         v-else
                         type="button"
-                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-[#233152] dark:text-gray-100"
                         @click="onCentersCancel"
                     >
                       취소
@@ -998,7 +998,7 @@
                         @keyup.enter="applyCenterSearch"
                         class="h-10 w-full rounded-lg border px-3 pr-8 bg-white text-gray-800
                              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                             dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                             dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                     />
                     <button
                         v-if="centerSearchInput"
@@ -1032,18 +1032,18 @@
                       placeholder="예) 강남1팀"
                       class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
                              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                             dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100
+                             dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                              disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
-                             dark:disabled:bg-gray-900/40 dark:disabled:text-gray-500 dark:disabled:border-gray-700"
+                             dark:disabled:bg-[#0e1626]/40 dark:disabled:text-gray-500 dark:disabled:border-[#28365a]"
                   />
 
                   <select
                       v-model="newCenterBranchId"
                       class="h-11 w-full md:w-48 rounded-lg border px-3 bg-white text-gray-800
                              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                             dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100
+                             dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                              disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
-                             dark:disabled:bg-gray-900/40 dark:disabled:text-gray-500 dark:disabled:border-gray-700"
+                             dark:disabled:bg-[#0e1626]/40 dark:disabled:text-gray-500 dark:disabled:border-[#28365a]"
                   >
                     <option value="">지점 지정 안 함</option>
                     <option
@@ -1061,7 +1061,7 @@
                       <!-- 트리거: 현재 색 -->
                       <button
                           type="button"
-                          class="h-11 w-14 rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-white dark:bg-gray-800"
+                          class="h-11 w-14 rounded-lg border border-gray-200 dark:border-[#28365a] p-1 bg-white dark:bg-[#16213b]"
                           :style="{ backgroundColor: newCenterColor }"
                           @click="toggleColorPopover($event, 'NEW_CENTER')"
                           ref="colorBtnRef"
@@ -1087,7 +1087,7 @@
               <!-- 팀 목록 -->
               <div class="col-span-2 mt-4">
                 <div
-                    class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800
+                    class="ip-scroll rounded-md border border-gray-100 dark:border-[#1f2a47]
                            max-h-100 overflow-auto spin-dark"
                 >
                   <div v-if="centersLoading" class="p-4 text-sm text-gray-500 dark:text-gray-400">
@@ -1104,12 +1104,12 @@
                       class="min-w-full table-fixed text-sm"
                   >
                     <thead
-                        class="sticky top-0 z-10 bg-white dark:bg-gray-900
+                        class="sticky top-0 z-10 bg-white dark:bg-[#0e1626]
                                shadow-[0_1px_0_0_rgba(229,231,235,0.7)]
                                dark:shadow-[0_1px_0_0_rgba(31,41,55,0.8)]"
                     >
                     <tr
-                        class="border-b border-gray-200 dark:border-gray-700
+                        class="border-b border-gray-200 dark:border-[#28365a]
                                text-xs text-gray-500 dark:text-gray-400"
                     >
                       <th class="w-10 px-3 py-2 text-center whitespace-nowrap">번호</th>
@@ -1124,10 +1124,10 @@
                         v-for="(c, idx) in filteredCenters"
                         :key="c.centerId ?? idx"
                         :class="[
-                          'border-b border-gray-100 dark:border-gray-800',
+                          'border-b border-gray-100 dark:border-[#1f2a47]',
                           idx % 2 === 0
-                            ? 'bg-white dark:bg-gray-900'
-                            : 'bg-gray-50 dark:bg-gray-800/60'
+                            ? 'bg-white dark:bg-[#0e1626]'
+                            : 'bg-gray-50 dark:bg-[#16213b]/60'
                         ]"
                     >
                       <td class="px-3 py-3 text-center text-xs text-gray-400 whitespace-nowrap">
@@ -1140,7 +1140,7 @@
                             <!-- 트리거: 현재 색(버튼) -->
                             <button
                                 type="button"
-                                class="h-11 w-14 rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-white dark:bg-gray-800"
+                                class="h-11 w-14 rounded-lg border border-gray-200 dark:border-[#28365a] p-1 bg-white dark:bg-[#16213b]"
                                 :style="{ backgroundColor: (editingCenter.centerColor || '#4B5563') }"
                                 @click.stop="toggleColorPopover($event, 'EDIT_CENTER')"
                             />
@@ -1149,7 +1149,7 @@
                             <div
                                 class="inline-flex items-center justify-center h-10 px-3 rounded-lg border
                                        text-xs tabular-nums text-gray-600 dark:text-gray-300
-                                       border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
+                                       border-gray-200 dark:border-[#28365a] bg-gray-50 dark:bg-[#16213b]"
                             >
                               {{ editingCenter.centerColor || '미지정' }}
                             </div>
@@ -1173,7 +1173,7 @@
                               class="w-full rounded-md border border-gray-200 px-2 py-1 text-xs
                                      bg-white text-gray-800
                                      focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
-                                     dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                                     dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                               placeholder="팀명"
                           />
                         </template>
@@ -1192,7 +1192,7 @@
                               class="h-9 w-full rounded-md border border-gray-300 px-2 text-xs
                                      bg-white text-gray-800
                                      focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
-                                     dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                                     dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                           >
                             <option :value="null">지점 지정 안 함</option>
                             <option
@@ -1224,9 +1224,9 @@
                           </button>
                           <button
                               type="button"
-                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-gray-700
+                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-[#28365a]
                                      bg-white text-gray-700 hover:bg-gray-50
-                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-gray-700"
+                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-[#233152]"
                               @click="cancelCenterEdit"
                           >
                             취소
@@ -1235,9 +1235,9 @@
                         <template v-else>
                           <button
                               type="button"
-                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-gray-700
+                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-[#28365a]
                                      bg-white text-gray-700 hover:bg-gray-50
-                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-gray-700
+                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-[#233152]
                                      disabled:opacity-50"
                               :disabled="!centersEditing"
                               @click="startCenterEdit(c)"
@@ -1265,7 +1265,7 @@
 
               <!-- ===== 매출 파티션 관리 ===== -->
               <div class="col-span-2">
-                <hr class="my-6 border-gray-200 dark:border-gray-700" />
+                <hr class="my-6 border-gray-200 dark:border-[#28365a]" />
               </div>
 
               <div class="col-span-2">
@@ -1277,7 +1277,7 @@
                     <button
                         v-if="!partitionsEditing"
                         type="button"
-                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-[#233152] dark:text-gray-100"
                         @click="partitionsEditing = true"
                     >
                       수정
@@ -1285,7 +1285,7 @@
                     <button
                         v-else
                         type="button"
-                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-[#233152] dark:text-gray-100"
                         @click="onPartitionsCancel"
                     >
                       취소
@@ -1308,7 +1308,7 @@
                         @keyup.enter="applyPartitionSearch"
                         class="h-10 w-full rounded-lg border px-3 pr-8 bg-white text-gray-800
                              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                             dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                             dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                     />
                     <button
                         v-if="partitionSearchInput"
@@ -1342,7 +1342,7 @@
                       v-model="newPartitionType"
                       class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
                focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-               dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+               dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                   >
                     <option
                         v-for="opt in SALES_PARTITION_TYPES"
@@ -1363,7 +1363,7 @@
                         placeholder="예) 100000"
                         class="h-11 w-32 shrink-0 rounded-lg border px-3 bg-white text-gray-800
                  focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                 dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                     />
 
                     <input
@@ -1371,12 +1371,12 @@
                         placeholder="메모 (예: 10만불 이하)"
                         class="h-11 min-w-0 flex-1 rounded-lg border px-3 bg-white text-gray-800
                  focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                 dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                     />
 
                     <button
                         type="button"
-                        class="h-11 w-14 shrink-0 rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-white dark:bg-gray-800"
+                        class="h-11 w-14 shrink-0 rounded-lg border border-gray-200 dark:border-[#28365a] p-1 bg-white dark:bg-[#16213b]"
                         :style="{ backgroundColor: newPartitionColor }"
                         @click="toggleColorPopover($event, 'NEW_PARTITION')"
                     />
@@ -1400,7 +1400,7 @@
               <!-- 파티션 목록 -->
               <div class="col-span-2 mt-4">
                 <div
-                    class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800
+                    class="ip-scroll rounded-md border border-gray-100 dark:border-[#1f2a47]
                            max-h-100 overflow-auto spin-dark"
                 >
                   <div v-if="partitionsLoading" class="p-4 text-sm text-gray-500 dark:text-gray-400">
@@ -1415,11 +1415,11 @@
 
                   <table v-else class="min-w-full table-fixed text-sm">
                     <thead
-                        class="sticky top-0 z-10 bg-white dark:bg-gray-900
+                        class="sticky top-0 z-10 bg-white dark:bg-[#0e1626]
                              shadow-[0_1px_0_0_rgba(229,231,235,0.7)]
                              dark:shadow-[0_1px_0_0_rgba(31,41,55,0.8)]"
                     >
-                    <tr class="border-b border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
+                    <tr class="border-b border-gray-200 dark:border-[#28365a] text-xs text-gray-500 dark:text-gray-400">
                       <th class="w-10 px-3 py-2 text-center whitespace-nowrap">번호</th>
                       <th class="w-20 px-3 py-2 text-center whitespace-nowrap">구분</th>
                       <th class="w-28 px-3 py-2 text-right whitespace-nowrap">구간값</th>
@@ -1435,8 +1435,8 @@
                         v-for="(row, idx) in filteredPartitions"
                         :key="row.partitionId ?? idx"
                         :class="[
-                          'border-b border-gray-100 dark:border-gray-800',
-                          idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800/60'
+                          'border-b border-gray-100 dark:border-[#1f2a47]',
+                          idx % 2 === 0 ? 'bg-white dark:bg-[#0e1626]' : 'bg-gray-50 dark:bg-[#16213b]/60'
                         ]"
                     >
                       <td class="px-3 py-3 text-center text-xs text-gray-400 whitespace-nowrap">
@@ -1450,7 +1450,7 @@
                               class="h-9 w-full rounded-md border border-gray-300 px-2 text-xs
                                    bg-white text-gray-800
                                    focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
-                                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                                   dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                           >
                             <option v-for="opt in SALES_PARTITION_TYPES" :key="opt.value" :value="opt.value">
                               {{ opt.label }}
@@ -1474,7 +1474,7 @@
                               class="w-full rounded-md border border-gray-200 px-2 py-1 text-xs
                                    bg-white text-gray-800
                                    focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
-                                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                                   dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                           />
                         </template>
                         <template v-else>
@@ -1491,7 +1491,7 @@
                               class="w-full rounded-md border border-gray-200 px-2 py-1 text-xs
                                    bg-white text-gray-800
                                    focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
-                                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                                   dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                               placeholder="구간명"
                           />
                         </template>
@@ -1507,14 +1507,14 @@
                           <div class="flex items-center gap-2">
                             <button
                                 type="button"
-                                class="h-11 w-14 rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-white dark:bg-gray-800"
+                                class="h-11 w-14 rounded-lg border border-gray-200 dark:border-[#28365a] p-1 bg-white dark:bg-[#16213b]"
                                 :style="{ backgroundColor: (editingPartition.color || '#9CA3AF') }"
                                 @click.stop="toggleColorPopover($event, 'EDIT_PARTITION')"
                             />
                             <div
                                 class="inline-flex items-center justify-center h-10 px-3 rounded-lg border
                                        text-xs tabular-nums text-gray-600 dark:text-gray-300
-                                       border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
+                                       border-gray-200 dark:border-[#28365a] bg-gray-50 dark:bg-[#16213b]"
                             >
                               {{ editingPartition.color || '미지정' }}
                             </div>
@@ -1550,9 +1550,9 @@
                           </button>
                           <button
                               type="button"
-                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-gray-700
+                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-[#28365a]
                                      bg-white text-gray-700 hover:bg-gray-50
-                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-gray-700"
+                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-[#233152]"
                               @click="cancelPartitionEdit"
                           >
                             취소
@@ -1561,9 +1561,9 @@
                         <template v-else>
                           <button
                               type="button"
-                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-gray-700
+                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-[#28365a]
                                      bg-white text-gray-700 hover:bg-gray-50
-                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-gray-700
+                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-[#233152]
                                      disabled:opacity-50"
                               :disabled="!partitionsEditing"
                               @click="startPartitionEdit(row)"
@@ -1591,7 +1591,7 @@
 
               <!-- ===== 전문가 관리 ===== -->
               <div class="col-span-2">
-                <hr class="my-6 border-gray-200 dark:border-gray-700" />
+                <hr class="my-6 border-gray-200 dark:border-[#28365a]" />
               </div>
 
               <div class="col-span-2">
@@ -1603,7 +1603,7 @@
                     <button
                         v-if="!expertsEditing"
                         type="button"
-                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-[#233152] dark:text-gray-100"
                         @click="expertsEditing = true"
                     >
                       수정
@@ -1611,7 +1611,7 @@
                     <button
                         v-else
                         type="button"
-                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-[#233152] dark:text-gray-100"
                         @click="onExpertsCancel"
                     >
                       취소
@@ -1634,7 +1634,7 @@
                         @keyup.enter="applyExpertSearch"
                         class="h-10 w-full rounded-lg border px-3 pr-8 bg-white text-gray-800
                              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                             dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                             dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                     />
                     <button
                         v-if="expertSearchInput"
@@ -1668,7 +1668,7 @@
                       placeholder="예) 리드남"
                       class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
                            focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                           dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                           dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                   />
                   <button
                       type="button"
@@ -1687,7 +1687,7 @@
               <!-- 전문가 목록 -->
               <div class="col-span-2 mt-4">
                 <div
-                    class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800
+                    class="ip-scroll rounded-md border border-gray-100 dark:border-[#1f2a47]
                          max-h-100 overflow-auto spin-dark"
                 >
                   <div v-if="expertsLoading" class="p-4 text-sm text-gray-500 dark:text-gray-400">
@@ -1702,12 +1702,12 @@
 
                   <table v-else class="min-w-full table-fixed text-sm">
                     <thead
-                        class="sticky top-0 z-10 bg-white dark:bg-gray-900
+                        class="sticky top-0 z-10 bg-white dark:bg-[#0e1626]
                              shadow-[0_1px_0_0_rgba(229,231,235,0.7)]
                              dark:shadow-[0_1px_0_0_rgba(31,41,55,0.8)]"
                     >
                     <tr
-                        class="border-b border-gray-200 dark:border-gray-700
+                        class="border-b border-gray-200 dark:border-[#28365a]
                                text-xs text-gray-500 dark:text-gray-400"
                     >
                       <th class="w-10 px-3 py-2 text-center whitespace-nowrap">번호</th>
@@ -1722,10 +1722,10 @@
                         v-for="(e, idx) in filteredExperts"
                         :key="e.expertId ?? idx"
                         :class="[
-                          'border-b border-gray-100 dark:border-gray-800',
+                          'border-b border-gray-100 dark:border-[#1f2a47]',
                           idx % 2 === 0
-                            ? 'bg-white dark:bg-gray-900'
-                            : 'bg-gray-50 dark:bg-gray-800/60'
+                            ? 'bg-white dark:bg-[#0e1626]'
+                            : 'bg-gray-50 dark:bg-[#16213b]/60'
                         ]"
                     >
                       <!-- 번호 -->
@@ -1741,7 +1741,7 @@
                               class="w-full rounded-md border border-gray-200 px-2 py-1 text-xs
                                      bg-white text-gray-800
                                      focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
-                                     dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                                     dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                               placeholder="전문가명"
                           />
                         </template>
@@ -1791,9 +1791,9 @@
                           </button>
                           <button
                               type="button"
-                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-gray-700
+                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-[#28365a]
                                      bg-white text-gray-700 hover:bg-gray-50
-                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-gray-700"
+                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-[#233152]"
                               @click="cancelExpertEdit"
                           >
                             취소
@@ -1802,9 +1802,9 @@
                         <template v-else>
                           <button
                               type="button"
-                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-gray-700
+                              class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-[#28365a]
                                      bg-white text-gray-700 hover:bg-gray-50
-                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-gray-700
+                                     dark:bg-transparent dark:text-gray-200 dark:hover:bg-[#233152]
                                      disabled:opacity-50"
                               :disabled="!expertsEditing"
                               @click="startExpertEdit(e)"
@@ -1832,7 +1832,7 @@
 
               <!-- ===== 회의실 관리 ===== -->
               <div class="col-span-2">
-                <hr class="my-6 border-gray-200 dark:border-gray-700" />
+                <hr class="my-6 border-gray-200 dark:border-[#28365a]" />
               </div>
 
               <div class="col-span-2">
@@ -1844,14 +1844,14 @@
                     <button
                         v-if="!roomsEditing"
                         type="button"
-                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-[#233152] dark:text-gray-100"
                         @click="roomsEditing = true"
                     >수정</button>
 
                     <button
                         v-else
                         type="button"
-                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-[#233152] dark:text-gray-100"
                         @click="roomsEditing = false; cancelRoomEdit(); newRoomName=''; roomFormError='';"
                     >취소</button>
                   </div>
@@ -1872,7 +1872,7 @@
                         @keyup.enter="applyRoomSearch"
                         class="h-10 w-full rounded-lg border px-3 pr-8 bg-white text-gray-800
                                focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                               dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                               dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                     />
                     <button
                         v-if="roomSearchInput"
@@ -1902,7 +1902,7 @@
                       placeholder="예) 1회의실"
                       class="h-11 w-full rounded-lg border px-3 bg-white text-gray-800
                              focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                             dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                             dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                   />
                   <button
                       type="button"
@@ -1916,7 +1916,7 @@
 
               <!-- 목록 -->
               <div class="col-span-2 mt-4">
-                <div class="ip-scroll rounded-md border border-gray-100 dark:border-gray-800 max-h-100 overflow-auto spin-dark">
+                <div class="ip-scroll rounded-md border border-gray-100 dark:border-[#1f2a47] max-h-100 overflow-auto spin-dark">
                   <div v-if="roomsLoading" class="p-4 text-sm text-gray-500 dark:text-gray-400">불러오는 중…</div>
 
                   <div v-else-if="!rooms || rooms.length === 0" class="p-4 text-sm text-gray-500 dark:text-gray-400">
@@ -1928,10 +1928,10 @@
                   </div>
 
                   <table v-else class="min-w-full table-fixed text-sm">
-                    <thead class="sticky top-0 z-10 bg-white dark:bg-gray-900
+                    <thead class="sticky top-0 z-10 bg-white dark:bg-[#0e1626]
                     shadow-[0_1px_0_0_rgba(229,231,235,0.7)]
                     dark:shadow-[0_1px_0_0_rgba(31,41,55,0.8)]">
-                    <tr class="border-b border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
+                    <tr class="border-b border-gray-200 dark:border-[#28365a] text-xs text-gray-500 dark:text-gray-400">
                       <th class="w-10 px-3 py-2 text-center whitespace-nowrap">번호</th>
                       <th class="px-3 py-2 text-left whitespace-nowrap">회의실명</th>
                       <th class="w-20 px-3 py-2 text-center whitespace-nowrap">상태</th>
@@ -1945,8 +1945,8 @@
                         v-for="(r, idx) in filteredRooms"
                         :key="r.roomId ?? idx"
                         :class="[
-                          'border-b border-gray-100 dark:border-gray-800',
-                          idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800/60'
+                          'border-b border-gray-100 dark:border-[#1f2a47]',
+                          idx % 2 === 0 ? 'bg-white dark:bg-[#0e1626]' : 'bg-gray-50 dark:bg-[#16213b]/60'
                         ]"
                     >
                       <td class="px-3 py-3 text-center text-xs text-gray-400 whitespace-nowrap">{{ idx + 1 }}</td>
@@ -1958,7 +1958,7 @@
                               class="w-full rounded-md border border-gray-200 px-2 py-1 text-xs
                        bg-white text-gray-800
                        focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
-                       dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                       dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                           />
                         </template>
                         <template v-else>
@@ -1973,7 +1973,7 @@
                               class="h-8 rounded-md border border-gray-300 px-2 text-xs
                        bg-white text-gray-800
                        focus:border-brand-300 focus:outline-hidden focus:ring-2 focus:ring-brand-500/10
-                       dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                       dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                           >
                             <option :value="true">사용</option>
                             <option :value="false">중지</option>
@@ -2009,9 +2009,9 @@
                             저장
                           </button>
                           <button type="button"
-                            class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-gray-700
+                            class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-[#28365a]
                                bg-white text-gray-700 hover:bg-gray-50
-                               dark:bg-transparent dark:text-gray-200 dark:hover:bg-gray-700"
+                               dark:bg-transparent dark:text-gray-200 dark:hover:bg-[#233152]"
                             :disabled="roomsSaving"
                             @click="cancelRoomEdit">
                             취소
@@ -2020,9 +2020,9 @@
 
                         <template v-else>
                           <button type="button"
-                            class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-gray-700
+                            class="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-[#28365a]
                                bg-white text-gray-700 hover:bg-gray-50
-                               dark:bg-transparent dark:text-gray-200 dark:hover:bg-gray-700
+                               dark:bg-transparent dark:text-gray-200 dark:hover:bg-[#233152]
                                disabled:opacity-50"
                             :disabled="!roomsEditing || roomsSaving"
                             @click="startRoomEdit(r)">
@@ -2049,7 +2049,7 @@
 
               <!-- ===== 슈퍼계정 위임 ===== -->
               <div class="col-span-2">
-                <hr class="my-6 border-gray-200 dark:border-gray-700" />
+                <hr class="my-6 border-gray-200 dark:border-[#28365a]" />
               </div>
 
               <div class="col-span-2">
@@ -2059,13 +2059,13 @@
                     <button
                         v-if="!delegateEditing"
                         type="button"
-                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-[#233152] dark:text-gray-100"
                         @click="onDelegateEdit"
                     >수정</button>
                     <button
                         v-else
                         type="button"
-                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-100"
+                        class="h-9 rounded-lg bg-gray-200 px-3 text-gray-800 hover:bg-gray-100 dark:bg-[#233152] dark:text-gray-100"
                         @click="onDelegateCancel"
                     >취소</button>
                   </div>
@@ -2082,9 +2082,9 @@
                       :disabled="!delegateEditing"
                       class="h-11 w-full rounded-lg border px-3
                            bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                           dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100
+                           dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100
                            disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
-                           dark:disabled:bg-gray-900/40 dark:disabled:text-gray-500 dark:disabled:border-gray-700"
+                           dark:disabled:bg-[#0e1626]/40 dark:disabled:text-gray-500 dark:disabled:border-[#28365a]"
                   />
                   <button
                       type="button"
@@ -2103,7 +2103,7 @@
               <!-- 조회 결과 카드 -->
               <template v-if="delegateEditing && candidate">
                 <div class="col-span-2"></div>
-                <div ref="delegateCardRef" class="col-start-2 w-full rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+                <div ref="delegateCardRef" class="col-start-2 w-full rounded-lg border border-gray-200 dark:border-[#1f2a47] p-4">
                   <div class="flex items-center justify-between">
                     <div>
                       <p class="text-sm text-gray-600 dark:text-gray-400">
@@ -2143,7 +2143,7 @@
 
           <!-- 바닥 여백 확보를 위한 구분선 -->
           <div class="col-span-2 mb-6">
-<!--            <hr class="my-6 border-gray-200 dark:border-gray-700" />-->
+<!--            <hr class="my-6 border-gray-200 dark:border-[#28365a]" />-->
           </div>
 
         </div>
@@ -2184,8 +2184,8 @@
       <!-- 실제 팝오버 -->
       <div
           ref="colorPopoverRef"
-          class="absolute w-80 rounded-xl border border-gray-200 dark:border-gray-700
-                                      bg-white dark:bg-gray-900 p-3 shadow-lg"
+          class="absolute w-80 rounded-xl border border-gray-200 dark:border-[#28365a]
+                                      bg-white dark:bg-[#0e1626] p-3 shadow-lg"
           :style="colorPopoverStyle"
           @mousedown.stop
       >
@@ -2200,8 +2200,8 @@
               type="color"
               v-model="colorDraft"
               class="h-10 w-27 rounded-md border p-1
-                                         border-gray-200 dark:border-gray-700
-                                         bg-white dark:bg-gray-800"
+                                         border-gray-200 dark:border-[#28365a]
+                                         bg-white dark:bg-[#16213b]"
           />
 
           <!-- 오른쪽: 미리보기 배지 -->
@@ -2216,7 +2216,7 @@
             <div
                 class="inline-flex items-center justify-center h-10 px-3 rounded-lg border
                                            text-xs tabular-nums text-gray-600 dark:text-gray-300
-                                           border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
+                                           border-gray-200 dark:border-[#28365a] bg-gray-50 dark:bg-[#16213b]"
             >
               {{ colorDraft }}
             </div>
@@ -2242,7 +2242,7 @@
               type="button"
               class="h-9 px-4 rounded-lg text-sm
                                        bg-gray-200 text-gray-800 hover:bg-gray-300
-                                       dark:bg-gray-700 dark:text-gray-100"
+                                       dark:bg-[#233152] dark:text-gray-100"
               @click="cancelColor"
           >
             취소

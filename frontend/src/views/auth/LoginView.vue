@@ -1,9 +1,9 @@
 <template>
   <FullScreenLayout>
-    <div class="relative xl:bg-gray-100 dark:xl:bg-gray-900 dark:bg-gray-800 bg-white z-1 sm:p-0">
+    <div class="relative xl:bg-gray-100 dark:xl:bg-[#0e1626] dark:bg-[#16213b] bg-white z-1 sm:p-0">
       <div class="relative flex flex-col justify-center w-full min-h-screen overflow-y-auto lg:flex-row">
         <!-- 카드 (왼쪽 : 로그인 / 오른쪽 : 회사소개) -->
-        <div :class="[ 'flex w-full max-w-6xl max-h-[700px] xl:bg-white xl:rounded-2xl xl:shadow-lg overflow-y-auto dark:bg-gray-800 dark:xl:bg-gray-800 dark:xl:rounded-2xl dark:xl:shadow-lg', mt ]">
+        <div :class="[ 'flex w-full max-w-6xl max-h-[700px] xl:bg-white xl:rounded-2xl xl:shadow-lg overflow-y-auto dark:bg-[#16213b] dark:xl:bg-[#16213b] dark:xl:rounded-2xl dark:xl:shadow-lg', mt ]">
 
         <!-- LEFT -->
         <div class="flex flex-col flex-1 w-full lg:w-1/2 p-10">
@@ -37,7 +37,7 @@
                         :disabled="REQUIRE_EMAIL_VERIFY && verified"
                         autocomplete="username"
                         class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400
-                             focus:outline-hidden focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90
+                             focus:outline-hidden focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-[#28365a] dark:bg-[#0e1626] dark:text-white/90
                              dark:placeholder:text-white/30 dark:focus:border-brand-800"/>
                     <button
                         v-if="REQUIRE_EMAIL_VERIFY"
@@ -61,8 +61,8 @@
                         v-model="code"
                         placeholder="인증코드 입력"
                         class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 shadow-theme-xs
-                             placeholder:text-gray-400 focus:outline-hidden focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700
-                             dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"/>
+                             placeholder:text-gray-400 focus:outline-hidden focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-[#28365a]
+                             dark:bg-[#0e1626] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"/>
                     <button
                         type="button"
                         class="shrink-0 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 transition bg-gray-100 hover:bg-gray-200
@@ -102,8 +102,8 @@
                         @keyup.enter.prevent="doLogin"
                         autocomplete="current-password"
                         class="h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-theme-xs
-                             placeholder:text-gray-400 focus:outline-hidden focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700
-                             dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"/>
+                             placeholder:text-gray-400 focus:outline-hidden focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-[#28365a]
+                             dark:bg-[#0e1626] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"/>
                     <span
                         @click="togglePasswordVisibility"
                         class="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
@@ -184,7 +184,7 @@ import ThemeToggler from "@/components/common/ThemeToggler.vue";
 import { useIdleRefresh } from '@/composables/useIdleRefresh.js'
 
 // 임시로 인증 우회할 때 false
-const REQUIRE_EMAIL_VERIFY = true
+const REQUIRE_EMAIL_VERIFY = false
 const canSignIn = computed(() => !REQUIRE_EMAIL_VERIFY || verified.value)
 
 // 줌 비율 적용 시작

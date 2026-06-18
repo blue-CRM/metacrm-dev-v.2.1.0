@@ -8,10 +8,10 @@
         @click.self="close"
     >
       <div
-          class="w-full max-w-[600px] rounded-2xl bg-white dark:bg-gray-900 shadow-xl
-             border border-gray-200 dark:border-gray-800"
+          class="w-full max-w-[600px] rounded-2xl bg-white dark:bg-[#0e1626] shadow-xl
+             border border-gray-200 dark:border-[#1f2a47]"
       >
-        <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+        <div class="px-5 py-4 border-b border-gray-200 dark:border-[#1f2a47] flex items-center justify-between">
           <div>
             <h3 class="text-base font-semibold text-gray-800 dark:text-gray-100">담당자 이력 관리</h3>
             <p class="text-xs text-gray-500 mt-1">현재 담당자는 삭제할 수 없으며, 이력만 삭제됩니다.</p>
@@ -33,7 +33,7 @@
             <div class="flex gap-2">
               <button
                   class="inline-flex h-9 items-center justify-center rounded-lg border border-gray-200 px-3 text-xs
-                       hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                       hover:bg-gray-50 dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"
                   @click="toggleAll"
                   :disabled="loading || list.length === 0"
               >
@@ -42,7 +42,7 @@
             </div>
           </div>
 
-          <div class="max-h-[50vh] overflow-auto border border-gray-200 dark:border-gray-800 rounded-md bg-white dark:bg-gray-900">
+          <div class="max-h-[50vh] overflow-auto border border-gray-200 dark:border-[#1f2a47] rounded-md bg-white dark:bg-[#0e1626]">
             <div v-if="loading" class="p-8 text-center">
               <svg class="animate-spin h-6 w-6 text-gray-400 mx-auto" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/></svg>
             </div>
@@ -52,16 +52,16 @@
                   v-for="item in list"
                   :key="item.logId"
                   @click="!item.isCurrent && toggleItem(item)"
-                  class="flex items-center justify-between px-4 py-3 border-b last:border-0 border-gray-100 dark:border-gray-800 transition-colors"
+                  class="flex items-center justify-between px-4 py-3 border-b last:border-0 border-gray-100 dark:border-[#1f2a47] transition-colors"
                   :class="[
                     // 선택된 이력(현재 담당자 제외) → 회색 하이라이트
                     selectedIds.has(item.logId) && !item.isCurrent
-                      ? 'bg-gray-100 dark:bg-gray-800/70'
+                      ? 'bg-gray-100 dark:bg-[#16213b]/70'
                       : '',
                     // 클릭 가능/불가 상태
                     !item.isCurrent
-                      ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800'
-                      : 'opacity-70 bg-gray-50 dark:bg-gray-800/70'
+                      ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-[#16213b]'
+                      : 'opacity-70 bg-gray-50 dark:bg-[#16213b]/70'
                   ]"
               >
                 <div class="flex flex-col">
@@ -102,7 +102,7 @@
                       class="px-2 py-1 text-xs rounded-md border transition pointer-events-none"
                       :class="selectedIds.has(item.logId)
                       ? 'bg-gray-900 text-white border-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:border-white dark:hover:bg-gray-200'
-                      : 'text-gray-700 border-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800/70'"
+                      : 'text-gray-700 border-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:border-[#28365a] dark:hover:bg-[#16213b]/70'"
                   >
                     {{ selectedIds.has(item.logId) ? '삭제 대상' : '선택' }}
                   </button>
@@ -119,11 +119,11 @@
           </div>
         </div>
 
-        <div class="px-5 py-3 border-t border-gray-200 dark:border-gray-800 flex items-center justify-end gap-2">
+        <div class="px-5 py-3 border-t border-gray-200 dark:border-[#1f2a47] flex items-center justify-end gap-2">
           <button
               class="inline-flex h-10 items-center justify-center rounded-lg border border-gray-200 px-4 text-sm
                    hover:bg-gray-50
-                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60"
+                   dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
               @click="close"
           >
             취소

@@ -1,9 +1,9 @@
 <template>
   <FullScreenLayout>
-    <div class="relative xl:bg-gray-100 dark:xl:bg-gray-900 dark:bg-gray-800 bg-white z-1 sm:p-0">
+    <div class="relative xl:bg-gray-100 dark:xl:bg-[#0e1626] dark:bg-[#16213b] bg-white z-1 sm:p-0">
       <div class="relative flex flex-col justify-center w-full min-h-screen overflow-y-auto lg:flex-row">
         <!-- 카드 -->
-        <div :class="['flex w-full max-w-6xl max-h-[850px] xl:bg-white xl:rounded-2xl xl:shadow-lg overflow-y-auto dark:bg-gray-800 dark:xl:bg-gray-800 dark:xl:rounded-2xl dark:xl:shadow-lg', mt]">
+        <div :class="['flex w-full max-w-6xl max-h-[850px] xl:bg-white xl:rounded-2xl xl:shadow-lg overflow-y-auto dark:bg-[#16213b] dark:xl:bg-[#16213b] dark:xl:rounded-2xl dark:xl:shadow-lg', mt]">
 
         <!-- LEFT -->
         <div class="flex flex-col flex-1 w-full lg:w-1/2 p-10">
@@ -33,7 +33,7 @@
                         autocomplete="email"
                         class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 shadow-theme-xs
                              placeholder:text-gray-400 focus:outline-hidden focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10
-                             dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
+                             dark:border-[#28365a] dark:bg-[#0e1626] dark:text-white/90 dark:placeholder:text-white/30"
                     />
                     <button
                         type="button"
@@ -59,7 +59,7 @@
                         @keyup.enter="verifyCode"
                         class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 shadow-theme-xs
                              placeholder:text-gray-400 focus:outline-hidden focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10
-                             dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
+                             dark:border-[#28365a] dark:bg-[#0e1626] dark:text-white/90 dark:placeholder:text-white/30"
                     />
                     <button
                         type="button"
@@ -98,7 +98,7 @@
                       inputmode="text"
                       class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 shadow-theme-xs
                            placeholder:text-gray-400 focus:outline-hidden focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10
-                           dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
+                           dark:border-[#28365a] dark:bg-[#0e1626] dark:text-white/90 dark:placeholder:text-white/30"
                   />
                   <p v-if="nameError" class="mt-1 text-sm text-error-500">{{ nameError }}</p>
                 </div>
@@ -117,7 +117,7 @@
                       autocomplete="tel-national"
                       class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 shadow-theme-xs
                            placeholder:text-gray-400 focus:outline-hidden focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10
-                           dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
+                           dark:border-[#28365a] dark:bg-[#0e1626] dark:text-white/90 dark:placeholder:text-white/30"
                   />
                   <p v-if="phoneError" class="mt-1 text-sm text-error-500">{{ phoneError }}</p>
                 </div>
@@ -138,7 +138,7 @@
                         autocomplete="new-password"
                         class="h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-theme-xs
                              placeholder:text-gray-400 focus:outline-hidden focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10
-                             dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
+                             dark:border-[#28365a] dark:bg-[#0e1626] dark:text-white/90 dark:placeholder:text-white/30"
                     />
                     <span
                         @click="togglePasswordVisibility"
@@ -165,7 +165,7 @@
                         autocomplete="new-password"
                         class="h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-theme-xs
                                placeholder:text-gray-400 focus:outline-hidden focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10
-                               dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
+                               dark:border-[#28365a] dark:bg-[#0e1626] dark:text-white/90 dark:placeholder:text-white/30"
                     />
                     <span
                         @click="togglePasswordConfirmVisibility"
@@ -188,7 +188,7 @@
                   <select
                       v-model="role"
                       class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 shadow-theme-xs
-                           focus:outline-hidden focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/30"
+                           focus:outline-hidden focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-[#28365a] dark:bg-[#0e1626] dark:text-white/30"
                   >
                     <option value="SUPERADMIN">본사</option>
                     <option value="MANAGER">팀장</option>

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6"
+    class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-[#1f2a47] dark:bg-[#14203a] sm:p-6"
   >
     <div class="flex justify-between">
       <div>
@@ -13,7 +13,7 @@
       </div>
     </div>
     <div
-      class="px-4 py-6 my-6 overflow-hidden border border-gary-200 rounded-2xl bg-gray-50 dark:border-gray-800 dark:bg-gray-900 sm:px-6"
+      class="px-4 py-6 my-6 overflow-hidden border border-gary-200 rounded-2xl bg-gray-50 dark:border-[#1f2a47] dark:bg-[#0e1626] sm:px-6"
     >
       <div
         ref="mapOneRef"
@@ -36,7 +36,7 @@
         </div>
 
         <div class="flex w-full max-w-[140px] items-center gap-3">
-          <div class="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-gray-800">
+          <div class="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-[#16213b]">
             <div
               class="absolute left-0 top-0 flex h-full w-[79%] items-center justify-center rounded-sm bg-brand-500 text-xs font-medium text-white"
             ></div>
@@ -59,7 +59,7 @@
         </div>
 
         <div class="flex w-full max-w-[140px] items-center gap-3">
-          <div class="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-gray-800">
+          <div class="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-[#16213b]">
             <div
               class="absolute left-0 top-0 flex h-full w-[23%] items-center justify-center rounded-sm bg-brand-500 text-xs font-medium text-white"
             ></div>

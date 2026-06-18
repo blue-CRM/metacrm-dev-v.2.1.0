@@ -102,6 +102,11 @@ public class UserService {
       }
     }
     
+    // 3-3) 관리자(SUPERADMIN) 승격은 총관리자(is_super)만 가능 (프론트 가드와 동일 기준, C-5)
+    if ("type".equals(field) && "관리자".equals(value) && !requesterIsSuper) {
+      throw new AuthException("관리자로의 승격은 총관리자만 가능합니다.", HttpStatus.GONE);
+    }
+
     // 4) 팀장 1명 제한(서버 가드)
     // 4-1) 구분을 '팀장'으로 바꾸는 경우 → 현재 소속에 다른 팀장이 있으면 불가 (본사 제외)
     if ("type".equals(field) && "팀장".equals(value)) {
@@ -171,8 +176,12 @@ public class UserService {
     
     // 5. 전문가 배지 변경 (experts 테이블 연동) — 다른 필드와 분리 처리
     if ("expert".equals(field)) {
+      // C-6) 전문가 지정은 총관리자만 (프론트 editable 기준과 동일)
+      if (!requesterIsSuper) {
+        throw new AuthException("전문가 지정은 총관리자만 가능합니다.",HttpStatus.GONE);
+      }
       if (!"CENTERHEAD".equals(targetRole) && !"EXPERT".equals(targetRole)) {
-        throw new AuthException("권한이 '전문가' 또는 '전문가'인 직원만 전문가를 지정할 수 있습니다.",HttpStatus.GONE);
+        throw new AuthException("권한이 '센터장' 또는 '전문가'인 직원만 전문가를 지정할 수 있습니다.",HttpStatus.GONE);
       }
     }
     
@@ -274,6 +283,12 @@ public class UserService {
       userMapper.updateUserField(userId, "visible", "N");
     }
 
+    // B-1.5) 센터장/전문가 -> 팀장/프로 (강등): 센터 소속 비움(팀 재배정 필요).
+    // 전문가 배지 해제는 아래 B-5.5에서 일괄 처리. (A-1/A-2 정합성 수정)
+    if (oldIsCenterRole && newIsTeam) {
+      userMapper.updateUserField(userId, "center", null);
+    }
+
     // B-2) 센터장 -> 전문가
     if ("CENTERHEAD".equals(oldRole) && "EXPERT".equals(newRole)) {
       userMapper.updateUserField(userId, "visible", "N");
@@ -301,6 +316,12 @@ public class UserService {
       // 소속 미배정, 가시권한 차단, 전문가 배지 제거 (분배권한은 B-6에서 'Y')
       userMapper.updateUserField(userId, "center", null);
       userMapper.updateUserField(userId, "visible", "N");
+      userMapper.updateUserField(userId, "expert", null);
+    }
+
+    // B-5.5) 역할이 바뀌어 'EXPERT'가 아니게 되면 전문가 배지(expert_id) 무조건 해제.
+    // (B-3/B-4가 못 잡던 EXPERT·CENTERHEAD -> 팀장/프로 강등까지 전부 '미지정'으로 정리)
+    if (!oldRole.equals(newRole) && !"EXPERT".equals(newRole)) {
       userMapper.updateUserField(userId, "expert", null);
     }
 

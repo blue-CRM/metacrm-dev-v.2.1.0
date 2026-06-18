@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+  <div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-[#28365a] dark:bg-[#0e1626]">
     <div
         ref="tableScrollHost"
         class="relative max-w-full overflow-x-auto overflow-y-auto custom-scrollbar"
@@ -12,10 +12,10 @@
           <col style="width: 52px" />
           <col v-for="(col, idx) in columns" :key="idx" :style="{ width: colWidth(col) + 'px' }" />
         </colgroup>
-        <thead class="sticky top-0 z-20 bg-white dark:bg-gray-900
+        <thead class="sticky top-0 z-20 bg-white dark:bg-[#18233f]
            shadow-[0_1px_0_0_rgba(229,231,235,0.4)]
-           dark:shadow-[0_1px_0_0_rgba(31,41,55,0.7)]">
-        <tr class="border-b border-gray-200 dark:border-gray-700" style="white-space: nowrap;">
+           dark:shadow-[0_1px_0_0_rgba(40,54,90,0.8)]">
+        <tr class="border-b border-gray-200 dark:border-[#28365a]" style="white-space: nowrap;">
           <th v-if="showCheckbox" class="px-5 py-3 w-10">
             <input type="checkbox" :checked="allSelected" @change="toggleAll" />
           </th>
@@ -36,15 +36,15 @@
             v-for="(row, rowIndex) in data"
             :key="getRowKey(row, rowIndex)"
             :class="[
-              'border-y border-gray-100 dark:border-gray-800',
+              'border-y border-gray-100 dark:border-[#1f2a47]',
               rowIndex % 2 === 0
-                ? 'bg-white dark:bg-gray-900' // 홀수행 흰색
-                : 'bg-gray-50 dark:bg-gray-800/60' // 짝수행 회색
+                ? 'bg-white dark:bg-[#111a30]' // 홀수행
+                : 'bg-gray-50 dark:bg-[#16213b]' // 짝수행
             ]"
         >
 <!--        <tr v-for="(row, rowIndex) in data"-->
 <!--            key="getRowKey(row, rowIndex)"-->
-<!--            class="border-t border-gray-100 dark:border-gray-800">-->
+<!--            class="border-t border-gray-100 dark:border-[#1f2a47]">-->
 
           <!-- 체크박스 -->
           <td v-if="showCheckbox" class="px-5 py-4 sm:px-6">
@@ -74,18 +74,22 @@
               <!-- 이름 인라인 수정 -->
               <div
                   v-if="isTextEditable(col, row)"
-                  class="relative h-9 min-w-[6rem]"
+                  :class="col.wrap ? 'relative min-h-[36px] min-w-[6rem]' : 'relative h-9 min-w-[6rem]'"
               >
                 <span
                     v-if="!(editState.row === rowIndex && editState.col === col.key)"
-                    class="absolute inset-0 flex items-center text-theme-sm leading-5
-                           text-gray-500 dark:text-gray-400
+                    class="text-theme-sm text-gray-500 dark:text-gray-400
                            cursor-pointer transition-colors
                            hover:text-blue-600 dark:hover:text-blue-400"
+                    :class="col.wrap
+                      ? 'flex min-h-[36px] items-center py-1'
+                      : 'absolute inset-0 flex items-center leading-5'"
                     :title="row[col.key] ?? ''"
                     @click.stop="startEdit(rowIndex, col.key, row[col.key])"
                 >
-                  <span class="block w-full truncate">{{ row[col.key] ?? '' }}</span>
+                  <span :class="col.wrap
+                      ? 'block min-w-0 leading-snug whitespace-normal break-all'
+                      : 'block w-full truncate'">{{ row[col.key] ?? '' }}</span>
                 </span>
 
                 <div
@@ -100,7 +104,7 @@
                       type="text"
                       class="w-full h-full min-w-0 px-2 text-xs border border-blue-500 rounded outline-none
                            focus:ring-1 focus:ring-blue-500
-                           dark:bg-gray-800 dark:text-white dark:border-blue-400"
+                           dark:bg-[#16213b] dark:text-white dark:border-blue-400"
                       @mousedown.stop
                       @click.stop
                       @blur="updateText(row, col.key)"
@@ -109,6 +113,12 @@
                   />
                 </div>
               </div>
+
+              <!-- 읽기전용 + wrap: 길어도 줄바꿈으로 전체 표시 -->
+              <span
+                  v-else-if="col.wrap"
+                  class="block leading-snug whitespace-normal break-all text-theme-sm text-gray-500 dark:text-gray-400"
+              >{{ col.key === 'staff' ? (row[col.key]?.toString().trim() || '') : (row[col.key] ?? '') }}</span>
 
               <!-- 일반 텍스트: 클릭 시 '그 자리 팝업'으로 전체 표시(메모와 동일). 잘린 셀에서만 팝업 -->
               <TextPopupCell
@@ -121,7 +131,7 @@
             </template>
 
             <!-- 배지 -->
-            <!-- 기본: 70px 고정 단일줄 pill. badgeWrap 컬럼만: 내용폭(최대 badgeMaxWidth)으로 자동, 길면 2~3줄 줄바꿈 -->
+            <!-- 기본: 70px 고정 단일줄 pill. badgeWrap 컬럼만: 내용폭(최대 badgeMaxWidth)으로 자동, 길면 줄 수 제한 없이 전부 줄바꿈(말줄임 X) -->
             <div v-else-if="col.type === 'badge' && !(col.key === 'prevStatus' && row[col.key] === null)"
                  class="relative inline-block align-middle"
                  :class="badgeExpand(col, row) ? 'min-h-[28px] min-w-[70px]' : 'h-[28px] w-[70px]'"
@@ -133,10 +143,9 @@
                       badgeClass(row[col.key]),
                       col.editable ? 'hover:opacity-80' : '',
                       badgeExpand(col, row)
-                        ? 'block px-3 py-1 text-center leading-tight break-words [overflow-wrap:anywhere]'
+                        ? 'inline-flex w-full items-center justify-center min-h-[28px] px-3 py-1 text-center leading-snug whitespace-normal break-all'
                         : 'absolute inset-0 flex items-center justify-center px-2 py-0.5'
                     ]"
-                    :style="badgeExpand(col, row) ? clamp3 : null"
                     :title="typeof row[col.key] === 'string' ? row[col.key].trim() : row[col.key]"
                     @click.stop="onBadgeClick(row, rowIndex, col)"
                 >
@@ -156,7 +165,7 @@
               <select
                   v-if="editState.row === rowIndex && editState.col === col.key"
                   v-model="editValue"
-                  class="px-1 py-1 text-xs rounded-md border border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+                  class="px-1 py-1 text-xs rounded-md border border-gray-300 dark:border-[#3a4a72] focus:border-blue-500 focus:ring-blue-500 dark:bg-[#16213b] dark:text-white"
                   :class="col.badgeWrap ? 'block w-full min-w-[120px]' : 'absolute inset-0 w-full h-full'"
                   @change="updateBadge(row, col.key)"
                   @blur="cancelEdit"
@@ -214,7 +223,7 @@
                   type="text"
                   class="absolute inset-0 w-full h-full
                        border rounded-md px-2 text-xs leading-5
-                       dark:bg-gray-800 dark:text-white
+                       dark:bg-[#16213b] dark:text-white
                        focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               />
 
@@ -282,12 +291,12 @@
                     :ref="el => setFocusInput(rowIndex, col.key, el)"
                     v-model="editValue"
                     type="number"
-                    class="no-spinner w-full h-full min-w-0 px-2 text-right text-xs border border-blue-500 rounded-l outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-800 dark:text-white dark:border-blue-400"
+                    class="no-spinner w-full h-full min-w-0 px-2 text-right text-xs border border-blue-500 rounded-l outline-none focus:ring-1 focus:ring-blue-500 dark:bg-[#16213b] dark:text-white dark:border-blue-400"
                     placeholder="0"
                     @blur="updateMoney(row, col.key)"
                     @keyup.enter="$event.target.blur()"
                 />
-                <span class="flex items-center justify-center h-full px-1.5 text-[10px] text-gray-500 bg-gray-100 border-y border-r border-gray-300 rounded-r dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 whitespace-nowrap">
+                <span class="flex items-center justify-center h-full px-1.5 text-[10px] text-gray-500 bg-gray-100 border-y border-r border-gray-300 rounded-r dark:bg-[#233152] dark:border-[#3a4a72] dark:text-gray-300 whitespace-nowrap">
                   $
                 </span>
               </div>
@@ -310,7 +319,7 @@
     <div class="grid grid-cols-3 items-center px-4 py-3 gap-x-35">
       <div class="flex justify-end">
         <button
-            class="w-8 h-7 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md disabled:opacity-40"
+            class="w-8 h-7 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#233152] rounded-md disabled:opacity-40"
             :disabled="page === 1"
             @click="page > 1 && $emit('changePage', page - 1)"
         >
@@ -328,7 +337,7 @@
             'px-3 py-1 text-sm transition',
             n === '...' ? 'text-gray-400 cursor-default'
             : page === n ? 'bg-blue-500 text-white rounded-md'
-            : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md'
+            : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#233152] rounded-md'
           ]"
         >
           {{ n }}
@@ -337,7 +346,7 @@
 
       <div class="flex justify-start">
         <button
-            class="w-8 h-7 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md disabled:opacity-40"
+            class="w-8 h-7 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#233152] rounded-md disabled:opacity-40"
             :disabled="page === totalPages"
             @click="page < totalPages && $emit('changePage', page + 1)"
         >
@@ -365,13 +374,11 @@ function ellipsisPx(col) {
 
 // table-fixed용 칼럼 너비(px). 기존 셀들이 span 너비(ellipsisPx)로 이미 폭이 잡혀 있어
 // 그 값을 그대로 따르고, 셀 좌우 패딩(px-2=16px) 여유만 더한다. 비텍스트 타입은 실제 렌더 폭 기준.
-// badgeWrap 배지의 최대 가로폭(px). 이 폭 안에서 줄바꿈, 넘치면 말줄임(3줄).
+// badgeWrap 배지의 최대 가로폭(px). 이 폭 안에서 줄 수 제한 없이 전부 줄바꿈(말줄임 X).
 function badgeMaxPx(col) {
   const n = Number.parseInt(col?.badgeMaxWidth, 10)
   return Number.isFinite(n) ? n : 160
 }
-// 줄바꿈 배지: 최대 3줄까지만 보이고 넘치면 말줄임
-const clamp3 = { display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }
 
 // badgeWrap 확장 임계 글자수(기본 6자)
 function badgeThreshold(col) {
@@ -473,23 +480,35 @@ function getRowKey(row, idx) {
   return `${props.page}-${idx}`
 }
 // 페이지 변경시 선택 초기화
+let savedScrollTop = 0
 watch(
     () => props.loading,
     async (loading, prev) => {
+      // 로딩 시작 시 현재 스크롤 위치 저장 (같은 페이지 새로고침 시 복원용)
+      if (!prev && loading) {
+        const host = tableScrollHost.value
+        savedScrollTop = host ? host.scrollTop : 0
+      }
       // 페이지 로딩이 완료된 이후 초기화 진행
       if (prev && !loading) {
+        const pageChanged = displayPage.value !== props.page
         displayPage.value = props.page
 
         // 펼침/에딧 상태만 초기화 (선택은 id 기반이라 페이지 이동에도 유지)
         resetMemo()   // 열린 메모/텍스트 팝업 닫기
         cancelEdit()
 
-        // 스크롤 위치 초기화
         await nextTick()
         const host = tableScrollHost.value
         if (host) {
-          host.scrollTop = 0
-          host.scrollLeft = 0
+          if (pageChanged) {
+            // 페이지가 실제로 바뀐 경우에만 맨 위로
+            host.scrollTop = 0
+            host.scrollLeft = 0
+          } else {
+            // 같은 페이지 새로고침/패치 → 보던 위치 유지
+            host.scrollTop = savedScrollTop
+          }
         }
       }
     }
@@ -851,16 +870,16 @@ const badgeClass = (value) => {
     case "탈퇴":
     case "거절":
     case "회수":
-      return "bg-[#F8D7DA] text-[#B23A48] dark:bg-[#4A1C1C]/80 dark:text-[#F28B82]/85"
+      return "bg-[#F8D7DA] text-[#B23A48] dark:bg-[#4a1f28] dark:text-[#f7a8b4]"
     case "프로":
     case "신규":
     case "승인":
     case "최초":
-      return "bg-[#D6E4FF] text-[#1E40AF] dark:bg-[#1A2B4C] dark:text-[#8AB4F8]"
+      return "bg-[#D6E4FF] text-[#1E40AF] dark:bg-[#1d3a6b] dark:text-[#9cc4ff]"
     case "팀장":
     case "유효":
     case "재콜":
-      return "bg-[#D1F2D6] text-[#2F855A] dark:bg-[#1B3A2E] dark:text-[#5FA97A]"
+      return "bg-[#D1F2D6] text-[#2F855A] dark:bg-[#1c4636] dark:text-[#7fd6a6]"
     case "센터장":
     case "부재1":
     case "부재2":
@@ -869,23 +888,23 @@ const badgeClass = (value) => {
     case "부재5":
     case "대기":
     case "미할당":
-      return "bg-[#FFF3CD] text-[#B7791F] dark:bg-[#4A3A12]/60 dark:text-[#C9A94B]/80"
+      return "bg-[#FFF3CD] text-[#B7791F] dark:bg-[#4a3a1a] dark:text-[#e8c87a]"
     case "자연풀":
     case "공개":
-      return "bg-[#D0F0F0] text-[#00796B] dark:bg-[#1B3C3C] dark:text-[#66C2A5]"
+      return "bg-[#D0F0F0] text-[#00796B] dark:bg-[#16403c] dark:text-[#79d4c4]"
     case "전문가":
     case "카피":
     case "허용":
-      return "bg-[#E0D7F8] text-[#5B4B9A] dark:bg-[#312C5C] dark:text-[#B6A9E3]"
+      return "bg-[#E0D7F8] text-[#5B4B9A] dark:bg-[#332a5c] dark:text-[#c4b6f0]"
     case "가망":
     case "미지정":
-      return "bg-[#F4E1CC] text-[#944E2A] dark:bg-[#3A2417]/70 dark:text-[#F3C6A6]/80"
+      return "bg-[#F4E1CC] text-[#944E2A] dark:bg-[#4a3320] dark:text-[#f0bf94]"
     case "내방":
-      return "bg-[#FCE7F3] text-[#C026D3] dark:bg-[#3B1126] dark:text-[#F9A8D4]/80"
+      return "bg-[#FCE7F3] text-[#C026D3] dark:bg-[#4a1f3a] dark:text-[#f3a8d4]"
     case '':
-      return "bg-[#FFE7D1] text-[#9A3412] dark:bg-[#3A2417] dark:text-[#FDBA74]"
+      return "bg-[#FFE7D1] text-[#9A3412] dark:bg-[#4a2f1a] dark:text-[#fdba74]"
     default:
-      return "bg-[#E5E7EB] text-[#4B5563] dark:bg-[#374151] dark:text-[#D1D5DB]"
+      return "bg-[#E5E7EB] text-[#4B5563] dark:bg-[#233152] dark:text-[#b9c8e6]"
   }
 }
 

@@ -4,12 +4,12 @@
       ref="dropzoneForm"
       :id="dropzoneId"
       :action="uploadUrl"
-      class="border-gray-300 border-dashed dropzone rounded-xl bg-gray-50 p-7 hover:border-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-brand-500 lg:p-10"
+      class="border-gray-300 border-dashed dropzone rounded-xl bg-gray-50 p-7 hover:border-brand-500 dark:border-[#28365a] dark:bg-[#0e1626] dark:hover:border-brand-500 lg:p-10"
     >
       <div class="dz-message m-0!">
         <div class="mb-[22px] flex justify-center">
           <div
-            class="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
+            class="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-gray-200 text-gray-700 dark:bg-[#16213b] dark:text-gray-400"
           >
             <svg
               class="fill-current"

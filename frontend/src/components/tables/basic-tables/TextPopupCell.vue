@@ -16,6 +16,7 @@
       <span
           ref="previewEl"
           class="block text-theme-sm leading-tight truncate whitespace-nowrap overflow-hidden text-gray-500 dark:text-gray-400"
+          :class="previewClass"
           :style="{ width: width + 'px' }"
       >
         <span v-if="renderHtml" v-html="renderHtml"></span>
@@ -27,7 +28,7 @@
     <Teleport to="body">
       <div v-if="open" ref="popupEl" class="fixed z-[2147483000]" :style="popupStyle">
         <div
-            class="resize overflow-auto rounded-lg border border-gray-200/90 dark:border-gray-700 ring-1 ring-gray-900/[0.04] shadow-xl bg-white dark:bg-gray-900 px-3 py-2.5 w-[300px] min-w-[160px] max-w-[85vw] min-h-[44px] max-h-[280px] text-theme-sm leading-relaxed whitespace-pre-wrap break-words text-gray-700 dark:text-gray-200"
+            class="resize overflow-auto rounded-lg border border-gray-200/90 dark:border-[#28365a] ring-1 ring-gray-900/[0.04] shadow-xl bg-white dark:bg-[#0e1626] px-3 py-2.5 w-[300px] min-w-[160px] max-w-[85vw] min-h-[44px] max-h-[280px] text-theme-sm leading-relaxed whitespace-pre-wrap break-words text-gray-700 dark:text-gray-200"
         >
           <!-- 과거 이력 등 색상(파랑/초록/회색) 유지: render HTML 있으면 그대로, 없으면 일반 텍스트 -->
           <span v-if="renderHtml" v-html="renderHtml"></span>
@@ -47,6 +48,7 @@ const props = defineProps({
   text: { type: [String, Number, null], default: '' },
   renderHtml: { type: [String, null], default: null },
   width: { type: Number, default: 100 },
+  previewClass: { type: [String, Array, Object], default: '' }, // 미리보기 글자 추가 스타일(이름 강조 등)
 })
 
 const anchorEl = ref(null)

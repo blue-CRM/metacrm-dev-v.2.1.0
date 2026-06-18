@@ -2,9 +2,9 @@
   <div class="fixed inset-0 z-[100000] flex items-center justify-center bg-black/40 p-4"
        @click.self="$emit('close')"
        @keydown.esc.prevent.stop="$emit('close')">
-    <div class="w-full max-w-[700px] rounded-2xl bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-gray-800">
+    <div class="w-full max-w-[700px] rounded-2xl bg-white dark:bg-[#0e1626] shadow-xl border border-gray-200 dark:border-[#1f2a47]">
       <!-- 헤더 -->
-      <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+      <div class="px-5 py-4 border-b border-gray-200 dark:border-[#1f2a47] flex items-center justify-between">
         <h3 class="text-base font-semibold text-gray-800 dark:text-gray-100">{{ title }}</h3>
         <button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" @click="$emit('close')">✕</button>
       </div>
@@ -21,9 +21,9 @@
         <div v-if="mode==='HQ'" class="space-y-1">
           <label class="block text-sm text-gray-600 dark:text-gray-300">팀 선택</label>
           <select v-model.number="centerId"
-                  class="w-full h-11 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2
+                  class="w-full h-11 border border-gray-200 dark:border-[#28365a] rounded-lg px-3 py-2
                   text-sm focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                  dark:bg-gray-800 dark:text-gray-200">
+                  dark:bg-[#16213b] dark:text-gray-200">
             <option :value="null" disabled>팀를 선택하세요</option>
             <option v-for="c in centers" :key="c.centerId" :value="c.centerId">
               {{ c.centerName }} (인원 {{ c.userCount }}명)
@@ -51,14 +51,14 @@
                 :disabled="mode==='HQ' && !centerId"
                 class="h-11 w-full rounded-lg border px-3
                    bg-white text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10
-                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"/>
+                   dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100"/>
             <button
                 @click="searchUsers"
                 :disabled="submitting || (mode==='HQ' && !centerId)"
                 class="inline-flex h-11 items-center justify-center
                    rounded-lg border border-gray-200 px-4 text-sm
                    hover:bg-gray-50 disabled:opacity-60
-                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60">
+                   dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60">
               <span class="whitespace-nowrap">검색</span>
             </button>
           </div>
@@ -66,14 +66,14 @@
           <!-- 팀 미선택 시엔 리스트 숨김 -->
           <div
               v-if="!(mode==='HQ' && !centerId) && users.length"
-              class="max-h-52 overflow-auto border border-gray-100 dark:border-gray-800 rounded-md">
+              class="max-h-52 overflow-auto border border-gray-100 dark:border-[#1f2a47] rounded-md">
             <ul>
               <li
                   v-for="u in users"
                   :key="u.userId"
                   @click="selectUser(u)"
-                  class="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
-                  :class="isPicked(u) ? 'bg-gray-100 dark:bg-gray-800/70' : ''"
+                  class="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#16213b]"
+                  :class="isPicked(u) ? 'bg-gray-100 dark:bg-[#16213b]/70' : ''"
               >
                 <div class="text-sm text-gray-700 dark:text-gray-200">
                   <b>{{ u.userName }}</b>
@@ -87,7 +87,7 @@
                     @click.stop="selectUser(u)"
                     :class="isPicked(u)
                         ? 'bg-gray-900 text-white border-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:border-white dark:hover:bg-gray-200'
-                        : 'text-gray-700 border-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800/70'"
+                        : 'text-gray-700 border-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:border-[#28365a] dark:hover:bg-[#16213b]/70'"
                 >
                   {{ isPicked(u) ? '선택됨' : '선택' }}
                 </button>
@@ -103,11 +103,11 @@
       </div>
 
       <!-- 푸터 -->
-      <div class="px-5 py-3 border-t border-gray-200 dark:border-gray-800 flex items-center justify-end gap-2">
+      <div class="px-5 py-3 border-t border-gray-200 dark:border-[#1f2a47] flex items-center justify-end gap-2">
         <button
             class="h-10 px-4 rounded-lg border border-gray-200 text-sm
                  hover:bg-gray-50
-                 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700/60"
+                 dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100 dark:hover:bg-[#233152]/60"
             @click="$emit('close')">
           취소
         </button>

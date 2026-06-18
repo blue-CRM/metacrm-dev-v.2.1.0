@@ -6,11 +6,11 @@
     <div v-else-if="error" class="px-2 py-3 text-theme-xs text-gray-400 text-center">{{ error }}</div>
     <div v-else-if="!chats.length" class="px-2 py-3 text-theme-xs text-gray-400 text-center">메모 없음</div>
 
-    <ul v-else class="divide-y divide-gray-100 dark:divide-gray-800">
+    <ul v-else class="divide-y divide-gray-100 dark:divide-[#1f2a47]">
       <li v-for="c in chats" :key="c.chatId" class="px-2.5 py-1.5"
-          :class="isStatusType(c.chatType) ? 'bg-amber-50 dark:bg-amber-500/10' : ''">
+          :class="isStatusType(c.chatType) ? 'bg-amber-50 dark:bg-amber-900/25' : ''">
         <div class="flex items-center gap-1 text-theme-xs leading-tight text-gray-400 dark:text-gray-500">
-          <span class="font-semibold" :class="isStatusType(c.chatType) ? 'text-amber-700 dark:text-amber-300' : ''">
+          <span class="font-semibold">
             {{ isSystemType(c.chatType) ? '시스템' : (c.authorName || '—') }}
           </span>
           <span class="tabular-nums">{{ fmtDateTime(c.createdAt) }}</span>

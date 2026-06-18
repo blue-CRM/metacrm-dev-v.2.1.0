@@ -4,7 +4,7 @@
 
     <div class="grid grid-cols-12 gap-4 items-stretch min-w-0">
       <div class="col-span-12 space-y-4 min-w-0">
-        <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+        <div class="rounded-2xl border border-gray-200 bg-white dark:border-[#1f2a47] dark:bg-[#14203a]">
           <div class="px-6 py-5 space-y-4">
             <!-- 보기 버튼 + 퇴사자 포함 -->
             <div class="flex flex-wrap items-center justify-between gap-3">
@@ -30,7 +30,7 @@
               <div class="flex items-center gap-2">
                 <button
                     class="inline-flex h-11 items-center gap-2 rounded-lg border border-gray-200 px-4 text-sm font-medium text-gray-600
-                        hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                        hover:bg-gray-50 dark:border-[#28365a] dark:text-gray-200 dark:hover:bg-[#16213b]"
                     @click="includeResigned = !includeResigned"
                 >
                   퇴사자 포함
@@ -39,7 +39,7 @@
 
                 <button
                     class="inline-flex h-11 items-center gap-2 rounded-lg border border-gray-200 px-4 text-sm font-medium text-gray-600
-                          hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                          hover:bg-gray-50 dark:border-[#28365a] dark:text-gray-200 dark:hover:bg-[#16213b]"
                     :disabled="!canSnapshot || snapshotLoading"
                     @click="onSnapshot"
                 >
@@ -48,7 +48,7 @@
               </div>
             </div>
 
-            <hr class="border-gray-200 dark:border-gray-800" />
+            <hr class="border-gray-200 dark:border-[#1f2a47]" />
 
             <!-- 섹션 3개 -->
             <div v-for="sec in sections" :key="sec.key" class="space-y-3" :ref="el => setShotEl(sec.key, el)" :data-shot-key="sec.key">
@@ -59,8 +59,8 @@
               <div class="grid grid-cols-12 gap-4 min-w-0">
                 <!-- 차트 카드 -->
                 <div class="col-span-12 lg:col-span-8 min-w-0">
-                  <div class="rounded-2xl border border-gray-200 p-4 h-full dark:border-gray-800">
-                    <div data-chart-bounds class="relative overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900/30">
+                  <div class="rounded-2xl border border-gray-200 p-4 h-full dark:border-[#1f2a47]">
+                    <div data-chart-bounds class="relative overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-[#1f2a47] dark:bg-[#0e1626]/30">
                       <div class="relative p-4 min-w-0">
                         <!-- 스크롤 영역 -->
                         <div
@@ -116,7 +116,7 @@
                                   <!-- 트랙 -->
                                   <div
                                       class="relative w-full overflow-hidden rounded-md border border-gray-200 bg-gray-100
-                                         dark:border-gray-700 dark:bg-gray-800"
+                                         dark:border-[#28365a] dark:bg-[#16213b]"
                                   >
                                     <!-- 막대는 보조선 위 -->
                                     <div class="relative z-20 flex flex-col">
@@ -198,7 +198,7 @@
                         <!-- x축: sticky + 윗쪽 회색 선 -->
                         <div
                             class="mt-auto sticky bottom-0 z-50 border-t border-gray-200 bg-white pt-2 backdrop-blur-sm
-                                  dark:border-gray-800 dark:bg-gray-900"
+                                  dark:border-[#1f2a47] dark:bg-[#0e1626]"
                         >
                           <div
                               class="grid items-center gap-3"
@@ -224,16 +224,16 @@
 
                 <!-- 순위표 카드 -->
                 <div class="col-span-12 lg:col-span-4 min-w-0">
-                  <div class="rounded-2xl border border-gray-200 p-4 h-full flex flex-col min-h-0 dark:border-gray-800">
+                  <div class="rounded-2xl border border-gray-200 p-4 h-full flex flex-col min-h-0 dark:border-[#1f2a47]">
                     <div class="flex items-center justify-between gap-2">
                       <div class="text-sm font-semibold text-gray-700 dark:text-gray-200">
                         {{ rankTitle(sec.key) }}
                       </div>
                     </div>
 
-                    <div class="mt-3 flex-1 min-h-0 overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+                    <div class="mt-3 flex-1 min-h-0 overflow-hidden rounded-xl border border-gray-200 dark:border-[#1f2a47]">
                       <table class="w-full text-sm">
-                        <thead class="bg-gray-50 dark:bg-gray-900/40">
+                        <thead class="bg-gray-50 dark:bg-[#0e1626]/40">
                         <tr class="text-gray-600 dark:text-gray-200">
                           <th class="w-16 px-3 py-2 text-left">순위</th>
                           <th class="px-3 py-2 text-left">명칭</th>
@@ -245,8 +245,8 @@
                         <tr
                             v-for="(r, idx) in secTopRanks(sec.key)"
                             :key="sec.key + '-rank-' + r.key"
-                            :class="idx === 0 ? 'bg-sky-100/70 dark:bg-sky-900/25' : 'bg-white dark:bg-gray-900/10'"
-                            class="border-t border-gray-200 dark:border-gray-800"
+                            :class="idx === 0 ? 'bg-sky-100/70 dark:bg-sky-900/25' : 'bg-white dark:bg-[#0e1626]/10'"
+                            class="border-t border-gray-200 dark:border-[#1f2a47]"
                         >
                           <td class="px-3 py-3 font-semibold text-gray-700 dark:text-gray-100">
                             {{ idx + 1 }}
@@ -260,7 +260,7 @@
                           </td>
                         </tr>
 
-                        <tr v-if="secTopRanks(sec.key).length === 0" class="border-t border-gray-200 dark:border-gray-800">
+                        <tr v-if="secTopRanks(sec.key).length === 0" class="border-t border-gray-200 dark:border-[#1f2a47]">
                           <td colspan="3" class="px-3 py-6 text-center text-sm text-gray-400">
                             데이터 없음
                           </td>
@@ -284,7 +284,7 @@
                   <div
                       ref="tipInnerEl"
                       class="pointer-events-auto rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 shadow-lg
-                           dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
+                           dark:border-[#28365a] dark:bg-[#0e1626] dark:text-gray-200"
                       style="will-change: transform;"
                       @mouseenter="isTipHover = true; cancelClose()"
                       @mouseleave="isTipHover = false; closeTipDelayed()"
@@ -713,8 +713,8 @@ function bgTickStyle(secKey, tick) {
 function bgTickLineClass(tick) {
   // 파티션은 더 진하게
   return isPartitionTick(tick)
-      ? 'bg-gray-300 dark:bg-gray-500'
-      : 'bg-gray-200 dark:bg-gray-700'
+      ? 'bg-gray-300 dark:bg-[#3a4a72]'
+      : 'bg-gray-200 dark:bg-[#233152]'
 }
 
 /** 통계 데이터 */
@@ -842,8 +842,8 @@ function modeBtnClass(active) {
   return [
     'inline-flex h-11 items-center gap-2 rounded-lg border px-4 text-sm font-medium transition',
     active
-        ? 'border-gray-300 bg-gray-100 text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100'
-        : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/[0.02] dark:text-gray-300 dark:hover:bg-gray-800',
+        ? 'border-gray-300 bg-gray-100 text-gray-800 dark:border-[#28365a] dark:bg-[#16213b] dark:text-gray-100'
+        : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-[#1f2a47] dark:bg-[#14203a] dark:text-gray-300 dark:hover:bg-[#16213b]',
   ].join(' ')
 }
 
