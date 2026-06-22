@@ -184,7 +184,7 @@ import ThemeToggler from "@/components/common/ThemeToggler.vue";
 import { useIdleRefresh } from '@/composables/useIdleRefresh.js'
 
 // 임시로 인증 우회할 때 false
-const REQUIRE_EMAIL_VERIFY = false
+const REQUIRE_EMAIL_VERIFY = true
 const canSignIn = computed(() => !REQUIRE_EMAIL_VERIFY || verified.value)
 
 // 줌 비율 적용 시작
