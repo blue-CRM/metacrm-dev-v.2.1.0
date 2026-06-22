@@ -82,7 +82,7 @@
             v-if="modal.open"
             :mode="modal.mode"
             :selected-count="selectionCount"
-            :allow-multi="role === 'SUPERADMIN'"
+            :allow-multi="role === 'SUPERADMIN' || role === 'MANAGER'"
             @close="closeModal"
             @confirm="onConfirmAllocate"
         >
@@ -495,11 +495,18 @@ async function onConfirmAllocate(payload: {
         assignToManagerAsStaff: payload.assignToManagerAsStaff || false
       })
     } else {
-      // [팀장]
-      await axios.post('/api/work/allocate/manager', {
-        customerIds: ids,
-        targetUserId: userIds[0]
-      })
+      // [팀장] 여러 명(팀원) 선택 시 랜덤 균등분배, 한 명이면 기존 단일 분배
+      if (userIds.length > 1) {
+        await axios.post('/api/work/allocate/manager/random', {
+          customerIds: ids,
+          targetUserIds: userIds
+        })
+      } else {
+        await axios.post('/api/work/allocate/manager', {
+          customerIds: ids,
+          targetUserId: userIds[0]
+        })
+      }
     }
 
     // alert(`분배 완료: ${ids.length}건`)

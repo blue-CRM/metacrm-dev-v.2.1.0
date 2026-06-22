@@ -267,6 +267,67 @@ public class CustomerAllocateService {
     return new AllocateResult(lockIds.size(), req.getCustomerIds().size() - lockIds.size());
   }
   
+  // 팀장 전용 - 같은 팀 여러 팀원에게 랜덤 균등분배
+  // 팀장풀(현재담당=팀장 본인, 상태 없음) DB를 floor(잠금건수/선택인원)개씩 랜덤 배분, 나머지는 풀에 남김.
+  @Transactional
+  public AllocateResult allocateByManagerRandom(String callerEmail, AllocateMgrRandomReq req) {
+    UserContextDto me = mapper.findUserContextByEmail(callerEmail);
+    if (me == null || !"MANAGER".equals(me.getRole())) {
+      throw new AuthException("권한이 없습니다.", HttpStatus.GONE);
+    }
+    if (req.getCustomerIds() == null || req.getCustomerIds().isEmpty()) {
+      return new AllocateResult(0, 0);
+    }
+    if (req.getTargetUserIds() == null || req.getTargetUserIds().isEmpty()) {
+      throw new AuthException("분배할 직원을 선택하세요.", HttpStatus.GONE);
+    }
+
+    // 중복 제거 + 같은 팀 소속 검증
+    List<Long> userIds = req.getTargetUserIds().stream().distinct().toList();
+    for (Long uid : userIds) {
+      Integer ok = mapper.staffInSameCenter(me.getUserId(), uid);
+      if (ok == null || ok == 0) {
+        throw new AuthException("같은 팀의 직원만 분배할 수 있습니다.", HttpStatus.GONE);
+      }
+    }
+
+    // 조건에 맞는 대상만 잠금 (현재담당=팀장 본인 AND 상태=없음)
+    List<Long> lockIds = new java.util.ArrayList<>(mapper.lockCustomersForManager(req.getCustomerIds(), me.getUserId()));
+    if (lockIds.isEmpty()) return new AllocateResult(0, req.getCustomerIds().size());
+
+    // 랜덤 셔플 후 floor 균등 분배
+    java.util.Collections.shuffle(lockIds);
+
+    int k = userIds.size();
+    int per = lockIds.size() / k;   // floor
+    int assigned = 0;
+
+    if (per > 0) {
+      int idx = 0;
+      for (Long uid : userIds) {
+        List<Long> sub = new java.util.ArrayList<>(lockIds.subList(idx, idx + per));
+        idx += per;
+        assigned += sub.size();
+
+        // 팀장→팀원 분배: 팀장 과거이력 삭제 후 팀원 본인 이력 추가 (본인에게 재분배면 생략)
+        boolean selfReallocate = uid.equals(me.getUserId());
+        if (!selfReallocate) {
+          mapper.deleteManagerFromPast(sub, me.getUserId());
+          mapper.insertPastForNewOwner(sub, uid);
+        }
+
+        mapper.updateOwner(sub, uid);
+        mapper.updateStatusToNew(sub);
+
+        // 팀장 풀 → 확정 DB 이므로 isFinalAssign = 1
+        writeAssignLogs(sub, me.getUserId(), me.getUserId(), uid, true, null);
+      }
+    }
+
+    // 나머지(lockIds.size() - assigned)는 분배하지 않고 팀장풀에 남김
+    return new AllocateResult(assigned, req.getCustomerIds().size() - assigned);
+  }
+
   @Transactional
   public AllocateResult allocateByExpertHead(String callerEmail, AllocateHqReq req) {
     UserContextDto me = mapper.findUserContextByEmail(callerEmail);
