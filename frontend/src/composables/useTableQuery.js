@@ -23,7 +23,7 @@ import axios from '@/plugins/axios.js'
  */
 export function useTableQuery({
                                   url,
-                                  pageSize = 50,
+                                  pageSize = 100,
                                   defaultFilters = {},
                                   externalFilters = null,
                                   useExternalKeys = { from: 'from', to: 'to', category: 'category', keyword: 'keyword' },
