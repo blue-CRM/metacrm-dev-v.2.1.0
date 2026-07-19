@@ -328,7 +328,7 @@ const adminColumns = [
       // 회수와 신규 상태는 수동으로 줄 수 없음
       // 회수 : 팀장풀 혹은 개인에게 분배된 이후 회수된 데이터
       // 신규 : 최초의 확정분배 시에만 신규
-      options: ["부재1","부재2","부재3","부재4","부재5","기타","결번","재콜","내방","내방취소","가망","자연풀","카피","거절"] },
+      options: ["부재1","부재2","부재3","입장","가입","기타","결번","재콜","내방","내방취소","가망","자연풀","카피","거절"] },
   { key: "prevStatus", label: "직전상태", type: "badge", editable: false},
   { key: "memo", label: "메모", type: "iconButton", icon: EyeIcon, disabled: (row)=> row.origin==='DUPLICATE' },
   { key: "memo", label: "최근메모", type: "memoRead", ellipsis: { width: 220 }, textOnly: (row)=> row.origin==='DUPLICATE' },
@@ -352,7 +352,7 @@ const commonColumns = [
   { key: "content", label: "내용", type: "text", ellipsis: { width: 150 } },
   { key: "status", label: "상태", type: "badge",
       editable: notDuplicate,
-      options: ["부재1","부재2","부재3","부재4","부재5","기타","결번","재콜","내방","내방취소","가망","자연풀","카피","거절"] },
+      options: ["부재1","부재2","부재3","입장","가입","기타","결번","재콜","내방","내방취소","가망","자연풀","카피","거절"] },
   { key: "prevStatus", label: "직전상태", type: "badge", editable: false},
   { key: "memo", label: "메모", type: "iconButton", icon: EyeIcon, disabled: (row)=> row.origin==='DUPLICATE' },
   { key: "memo", label: "최근메모", type: "memoRead", ellipsis: { width: 220 }, textOnly: (row)=> row.origin==='DUPLICATE' },
@@ -532,11 +532,11 @@ function onTableButtonClick(row, key) {
 // 1. 정적 옵션 정의 (변하지 않는 값)
 const divisionOptions = ['구분 전체', '최초', '유효', '중복'];
 const statusOptions = [
-  '상태 전체', '모든 부재', '부재1', '부재2', '부재3', '부재4', '부재5',
+  '상태 전체', '모든 부재', '부재1', '부재2', '부재3', '입장', '가입',
   '기타', '결번', '재콜', '내방', '내방취소', '신규', '가망', '자연풀', '카피', '거절', '없음', '회수'
 ];
 const prevStatusOptions = [
-  '직전상태 전체', '모든 부재', '부재1', '부재2', '부재3', '부재4', '부재5',
+  '직전상태 전체', '모든 부재', '부재1', '부재2', '부재3', '입장', '가입',
   '기타', '결번', '재콜', '내방', '내방취소', '가망', '자연풀', '카피', '거절',
 ];
 

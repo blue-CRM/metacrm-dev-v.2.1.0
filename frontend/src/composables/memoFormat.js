@@ -185,8 +185,8 @@ export function statusBadgeColor(value) {
     case '부재1':
     case '부재2':
     case '부재3':
-    case '부재4':
-    case '부재5':
+    case '입장':
+    case '가입':
     case '대기':
     case '미할당':
       return 'bg-[#FFF3CD] text-[#B7791F] dark:bg-[#4a3a1a] dark:text-[#e8c87a]'

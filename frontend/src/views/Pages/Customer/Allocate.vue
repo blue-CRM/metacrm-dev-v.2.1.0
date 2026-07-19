@@ -8,7 +8,7 @@
         <ComponentCard
             v-if="['SUPERADMIN', 'CENTERHEAD', 'EXPERT'].includes(role)"
             :selects="[[ '전체','최초','유효' ],
-                       [ '직전상태 전체', '모든 부재', '부재1', '부재2', '부재3', '부재4', '부재5',
+                       [ '직전상태 전체', '모든 부재', '부재1', '부재2', '부재3', '입장', '가입',
                             '기타', '결번', '재콜', '내방', '내방취소', '가망', '자연풀', '카피', '거절' ]]"
             :buttons="allocatorButtons"
             :showRefresh="true"
@@ -42,7 +42,7 @@
         <!-- MANAGER (팀장) -->
         <ComponentCard
             v-else-if="role === 'MANAGER'"
-            :selects="[[ '직전상태 전체', '모든 부재', '부재1', '부재2', '부재3', '부재4', '부재5',
+            :selects="[[ '직전상태 전체', '모든 부재', '부재1', '부재2', '부재3', '입장', '가입',
                             '기타', '결번', '재콜', '내방', '내방취소', '가망', '자연풀', '카피', '거절' ]]"
             :buttons="mgrButtons"
             :showRefresh="true"
@@ -299,7 +299,7 @@ const hqColumns = [
     // 회수와 신규 상태는 수동으로 줄 수 없음
     // 회수 : DB회수하기 메뉴에서
     // 신규 : 한번도 분배가 되지 않은 항목만
-    options: ["부재1","부재2","부재3","부재4","부재5","기타","결번","재콜","내방","내방취소","가망","자연풀","카피","거절"] },
+    options: ["부재1","부재2","부재3","입장","가입","기타","결번","재콜","내방","내방취소","가망","자연풀","카피","거절"] },
   { key: 'prevStatus', label: '직전상태', type: 'badge', editable: false },
   { key: 'memo',    label: '메모', type: 'iconButton', icon: EyeIcon },
   { key: 'actions', label: '관리', type: 'iconButton', icon: ClipboardDocumentListIcon }, // HQ 전용

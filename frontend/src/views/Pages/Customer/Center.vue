@@ -210,7 +210,7 @@ const columns = [
   { key: "content", label: "내용", type: "text", ellipsis: { width: 150 } },
   { key: "memo", label: "메모", type: "memoRead", ellipsis: { width: 220 } },
   { key: "status", label: "상태", type: "badge",
-    options: ["부재1","부재2","부재3","부재4","부재5","기타","결번","재콜","내방","내방취소","가망","자연풀","카피","거절"] },
+    options: ["부재1","부재2","부재3","입장","가입","기타","결번","재콜","내방","내방취소","가망","자연풀","카피","거절"] },
   { key: "reservation", label: "예약", type: "text", ellipsis: { width: 120 } },
   { key: "initialPrice", label: "최초(달러)", type: "text", ellipsis: { width: 110 } },
   { key: "upsellPrice",  label: "업셀(달러)", type: "text", ellipsis: { width: 110 } },
@@ -254,7 +254,7 @@ async function loadCentersByBranch(bid) {
 ============================= */
 const divisionOptions = ["구분 전체", "최초", "유효", "중복"];
 const statusOptions = [
-  "상태 전체", "모든 부재", "부재1", "부재2", "부재3", "부재4", "부재5",
+  "상태 전체", "모든 부재", "부재1", "부재2", "부재3", "입장", "가입",
   "기타", "결번", "재콜", "내방", "내방취소", "신규", "가망", "자연풀", "카피", "거절", "없음", "회수"
 ];
 const expertOptions = ref(["전문가 전체"]);

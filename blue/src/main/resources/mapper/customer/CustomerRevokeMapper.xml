@@ -61,7 +61,7 @@
     <sql id="ORDER_DEFAULT">
         <choose>
             <when test="sort == 'status'">
-                ORDER BY FIELD(c.customer_status,'회수','없음','신규','가망','재콜','내방','내방취소','부재1','부재2','부재3','부재4','부재5','기타','결번','거절','자연풀','카피'),
+                ORDER BY FIELD(c.customer_status,'회수','없음','신규','가망','재콜','내방','내방취소','부재1','부재2','부재3','입장','가입','기타','결번','거절','자연풀','카피'),
                 c.customer_created_at DESC
             </when>
             <when test="sort == 'oldest'">

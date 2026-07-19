@@ -70,7 +70,7 @@
         <if test="status != null and status != ''">
             <choose>
                 <when test="status == '모든 부재'">
-                    AND t.status IN ('부재1', '부재2', '부재3', '부재4', '부재5')
+                    AND t.status IN ('부재1', '부재2', '부재3', '입장', '가입')
                 </when>
                 <otherwise>
                     AND t.status = #{status}
@@ -80,7 +80,7 @@
         <if test="prevStatus != null and prevStatus != ''">
             <choose>
                 <when test="prevStatus == '모든 부재'">
-                    AND t.prevStatus IN ('부재1','부재2','부재3','부재4','부재5')
+                    AND t.prevStatus IN ('부재1','부재2','부재3','입장','가입')
                 </when>
                 <otherwise>
                     AND t.prevStatus = #{prevStatus}
@@ -108,7 +108,7 @@
                 ORDER BY
                 FIELD(t.division, '최초','유효','중복'),
                 FIELD(t.status,
-                '부재1','부재2','부재3','부재4','부재5','기타','결번',
+                '부재1','부재2','부재3','입장','가입','기타','결번',
                 '재콜','내방','내방취소','신규','가망','자연풀','카피','거절','없음','회수'),
                 /* 재콜 묶음 내부: 예약 없는 것 뒤로, 예약 빠른 순 */
                 CASE WHEN t.status IN ('재콜','내방') THEN (t.promiseAt IS NULL) END ASC,
@@ -125,7 +125,7 @@
             <when test="hasStatus">
                 ORDER BY
                 FIELD(t.status,
-                '부재1','부재2','부재3','부재4','부재5','기타','결번',
+                '부재1','부재2','부재3','입장','가입','기타','결번',
                 '재콜','내방','내방취소','신규','가망','자연풀','카피','거절','없음','회수'),
                 CASE WHEN t.status IN ('재콜','내방') THEN (t.promiseAt IS NULL) END ASC,
                 CASE WHEN t.status IN ('재콜','내방') THEN t.promiseAt END ASC,
@@ -220,7 +220,7 @@
         <if test="status != null and status != ''">
             <choose>
                 <when test="status == '모든 부재'">
-                    AND c.customer_status IN ('부재1', '부재2', '부재3', '부재4', '부재5')
+                    AND c.customer_status IN ('부재1', '부재2', '부재3', '입장', '가입')
                 </when>
                 <otherwise>
                     AND c.customer_status = #{status}
@@ -306,7 +306,7 @@
         <if test="status != null and status != ''">
             <choose>
                 <when test="status == '모든 부재'">
-                    AND c.customer_status IN ('부재1', '부재2', '부재3', '부재4', '부재5')
+                    AND c.customer_status IN ('부재1', '부재2', '부재3', '입장', '가입')
                 </when>
                 <otherwise>
                     AND c.customer_status = #{status}
@@ -378,7 +378,7 @@
         <if test="pStatus != null and pStatus != ''">
             <choose>
                 <when test="pStatus == '모든 부재'">
-                    AND c.customer_status IN ('부재1', '부재2', '부재3', '부재4', '부재5')
+                    AND c.customer_status IN ('부재1', '부재2', '부재3', '입장', '가입')
                 </when>
                 <otherwise>
                     AND c.customer_status = #{pStatus}
@@ -388,7 +388,7 @@
         <if test="prevStatus != null and prevStatus != ''">
             <choose>
                 <when test="prevStatus == '모든 부재'">
-                    AND c.customer_prev_status IN ('부재1','부재2','부재3','부재4','부재5')
+                    AND c.customer_prev_status IN ('부재1','부재2','부재3','입장','가입')
                 </when>
                 <otherwise>
                     AND c.customer_prev_status = #{prevStatus}
@@ -413,7 +413,7 @@
             <when test="hasStatus">
                 ORDER BY
                     FIELD(c.customer_status,
-                    '부재1','부재2','부재3','부재4','부재5','기타','결번',
+                    '부재1','부재2','부재3','입장','가입','기타','결번',
                     '재콜','내방','내방취소','신규','가망','자연풀','카피','거절','없음','회수'),
                     CASE WHEN c.customer_status IN ('재콜','내방') THEN (c.customer_promise_time IS NULL) END ASC,
                     CASE WHEN c.customer_status IN ('재콜','내방') THEN c.customer_promise_time END ASC,
